@@ -3,7 +3,9 @@
 == Preparation
 
 If you are testing the backend, you should create a `.env` file in the root dir.
+
 This is because the rfid reader lib is loaded per default when no .env file is present.
+
 The content could look like:
 
 [source,bash]
@@ -14,24 +16,22 @@ PORT=8080
 
 == Init submodule (UI)
 
- Run `git submodule init`
+Run `git submodule init`
 
 == Install dependencies backend
 
- Run `npm install`
+Run `npm install`
 
 == Install dependencies UI
 
- Run `npm run ui-init`
+Run `npm run ui-init`
 
 == Build UI
 
- Run `npm run ui-build`
+Run `npm run ui-build`
 
 == Run it
 
- Run `npm start`
+Run `npm start`
 
 == Configuration
-
-
