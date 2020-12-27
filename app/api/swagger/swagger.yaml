@@ -1,0 +1,284 @@
+openapi: 3.0.0
+servers:
+  - description: Main Endpoint
+    url: /api/
+info:
+  description: This is the API for the DIY Media Player for children Management
+  version: "0.1.0"
+  title: DIY Media Player for children API
+  contact:
+    email: info@pmoscode.de
+  license:
+    name: GPLv3
+    url: 'https://www.gnu.org/licenses/gpl-3.0.en.html'
+tags:
+  - name: Health
+    description: Just an ordinary health check
+  - name: Audio Book
+    description: Everything about audio book operation
+  - name: Card
+    description: Everything about card handling
+  - name: Testing
+    description: Everything which is used for testing
+components:
+  schemas:
+    AudioBook:
+      additionalProperties: false
+      type: object
+      required:
+        - title
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        lastPlayed:
+          type: string
+          format: date-time
+          nullable: true
+        card:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: string
+              format: uuid
+            cardId:
+              type: string
+        timesPlayed:
+          type: integer
+        trackList:
+          type: array
+          items:
+            $ref: '#/components/schemas/AudioBookTrackList'
+    AudioBookTrackList:
+      additionalProperties: false
+      type: object
+      properties:
+        track:
+          type: integer
+        title:
+          type: string
+        length:
+          type: string
+        fileName:
+          type: string
+    AudioBookResponse:
+      description: Returns a complete audio book
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AudioBook'
+    AudioBookArrayResponse:
+      description: Returns an array of complete audio books
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/AudioBook'
+    CardArrayResponse:
+      description: Returns an array of unused card ids
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                cardId:
+                  type: string
+    HealthResponse:
+      description: Status of the service.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - status
+            properties:
+              status:
+                type: string
+                example: 'OK'
+            additionalProperties: false
+paths:
+  /health:
+    get:
+      summary: Returns current status of the service.
+      tags:
+        - Health
+      responses:
+        '200':
+          $ref: '#/components/schemas/HealthResponse'
+        '401':
+          description: 'invalid input, object invalid'
+        '500':
+          description: 'Internal Server error'
+  /audio-books:
+    get:
+      tags:
+        - Audio Book
+      summary: Gets all available audio books
+      responses:
+        '200':
+          $ref: '#/components/schemas/AudioBookArrayResponse'
+        '401':
+          description: 'invalid input or object invalid'
+        '500':
+          description: 'Internal Server error'
+    post:
+      summary: Saves a new audio book
+      tags:
+        - Audio Book
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AudioBook'
+      responses:
+        '201':
+          $ref: '#/components/schemas/AudioBookResponse'
+        '500':
+          description: 'Internal Server error'
+  /cards/unassigned:
+    get:
+      tags:
+        - Card
+      summary: Gets all unassigned NFC card ids
+      responses:
+        '200':
+          $ref: '#/components/schemas/CardArrayResponse'
+        '401':
+          description: 'invalid input or object invalid'
+        '500':
+          description: 'Internal Server error'
+  /audio-books/{id}:
+    patch:
+      summary: This method updates an existing audio book
+      tags:
+        - Audio Book
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AudioBook'
+      responses:
+        '200':
+          $ref: '#/components/schemas/AudioBookResponse'
+        '500':
+          $ref: '#/components/schemas/InternalServerError'
+    delete:
+      summary: Deletes an audio book
+      tags:
+        - Audio Book
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK - successful
+        '500':
+          description: 'Internal Server error'
+
+  /audio-books/{id}/tracks:
+    post:
+      tags:
+        - Audio Book
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      summary: Post audio file
+      description: Posts an audio file. Usually a mp3
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                audioFile:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          $ref: '#/components/schemas/AudioBookResponse'
+        '400':
+          description: 'invalid input, object invalid'
+        '409':
+          description: an existing audio file already exists
+    delete:
+      summary: Deletes all audio files of a single audio book
+      tags:
+        - Audio Book
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK - successful
+        '500':
+          description: 'Internal Server error'
+  /audio-books/{id}/track/{track}/play:
+    post:
+      tags:
+        - Testing
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: track
+          required: true
+          schema:
+            type: string
+      summary: Plays the mp3 file at the given track position
+      responses:
+        '200':
+          description: Everything's ok
+  /audio-books/pause:
+    post:
+      tags:
+        - Testing
+      summary: Pauses / Resumes the currently played mp3
+      responses:
+        '200':
+          description: Everything's ok
+        '400':
+          description: No track is playing
+  /audio-books/stop:
+    post:
+      tags:
+        - Testing
+      summary: Stops the currently played mp3
+      responses:
+        '200':
+          description: Stopped
+        '400':
+          description: No track is playing
