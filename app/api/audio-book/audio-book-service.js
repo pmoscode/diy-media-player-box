@@ -107,7 +107,7 @@ const deleteMediaFolder = (id) => {
 }
 
 const deleteMediaFolderContent = (audioBook) => {
-    for (let track of audioBook.trackList) {
+    for (const track of audioBook.trackList) {
         const mediaPath = audioBookPlayerHelper.getCompletePathToAudioFile(audioBook, track)
         fs.unlinkSync(mediaPath)
     }

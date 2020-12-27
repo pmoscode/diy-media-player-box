@@ -23,6 +23,8 @@
   },
   "scripts": {
     "start": "node server.js",
+    "ui-init": "cd ui && npm install",
+    "ui-build": "cd ui && npm run build",
     "test": "jest --config jest.json --detectOpenHandles --forceExit --runInBand",
     "lint": "eslint .",
     "lint-fix": "eslint . --fix"

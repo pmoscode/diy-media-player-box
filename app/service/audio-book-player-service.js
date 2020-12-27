@@ -39,7 +39,7 @@ const nfcCardDetected = (uid) => {
                 currentAudioTrack = 0
                 playAudioFile(result.filePath, result.uid)
                 helper.updateMetadata(currentAudioBook).then(result => {
-                    logger.info('Update metadata for uid: ' + uid + ` and audioBook: ` + currentAudioBook.title + ' is ' + result.ok)
+                    logger.info('Update metadata for uid: ' + uid + ' and audioBook: ' + currentAudioBook.title + ' is ' + result.ok)
                 })
             } else {
                 try {

@@ -1,7 +1,7 @@
 const { OpenApiValidator } = require('express-openapi-validate')
 const swaggerDocument = require('./swagger').getSwaggerDocument()
 
-const validator = new OpenApiValidator(swaggerDocument, { ajvOptions: { 'allErrors': true } })
+const validator = new OpenApiValidator(swaggerDocument, { ajvOptions: { allErrors: true } })
 
 const _get = (app, path, callbacks) => {
     addRoute('get', app, path, callbacks)

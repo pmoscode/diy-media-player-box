@@ -4,6 +4,7 @@ const express = require('express')
 const helmet = require('helmet')
 const listEndpoints = require('express-list-endpoints')
 const fileUpload = require('express-fileupload')
+const path = require('path')
 
 exports.createAndInit = async () => {
     const app = express()
@@ -30,7 +31,7 @@ const init = async (app) => {
     //     next()
     // })
 
-    app.use(express.static('public'))
+    app.use(express.static(path.join(process.cwd(), 'ui/public')))
 
     require('../api/health/health-api').init(app)
     require('../api/swagger/swagger-api').init(app)

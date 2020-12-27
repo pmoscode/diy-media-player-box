@@ -1,0 +1,3 @@
+[submodule "ui"]
+	path = ui
+	url = git@gitlab.com:pmoscode/diy-media-player-box-ui.git
