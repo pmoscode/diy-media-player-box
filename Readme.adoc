@@ -8,6 +8,11 @@ This is the main repository which merges the backend and the ui. (ui as a submod
 
 == Preparation
 
+You need:
+
+* NodeJS >= 10.23
+* mfrc522 module (RFID GPIO module) or set `RFID_ENABLED` to false
+
 If you are testing the backend, you should create a `.env` file in the root dir.
 
 This is because for example the rfid reader lib is loaded per default when no `RFID_ENABLED` environment variable is set.
@@ -25,7 +30,6 @@ ALLOW_ALL_ORIGIN=false
 
 Here is a short description:
 
-
 |===
 |Name                       |Default value                  |Description
 
@@ -38,6 +42,14 @@ Here is a short description:
 
 You can also define these as usual environment variables. (export ...)
 
+== Before you start
+
+I tested this on a Raspberry PI (3 and Zero) and the audio preview in the browser.
+
+NOTE: You cannot compile the UI on a Raspberry Pi Zero due to lack of memory (512 MB)
+
+So you will have to compile it elsewhere and copy it to the Pi Zero. Here you can use the `UI_CONTENT_PATH` variable.
+
 == Init submodule (UI)
 Load (aka clone) the content of the UI repository.
 
@@ -49,11 +61,17 @@ Install all necessary libraries for the backend part.
 Run `npm install`
 
 == Install dependencies UI
+
+NOTE: Not working on the Raspberry Pi Zero (See 'Before you start')
+
 Install all necessary libraries for the UI part. (Needed to build the UI).
 
 Run `npm run ui-init`
 
 == Build UI
+
+NOTE: Not working on the Raspberry Pi Zero (See 'Before you start')
+
 Build the UI part.
 
 Run `npm run ui-build`
