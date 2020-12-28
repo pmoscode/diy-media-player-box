@@ -12,6 +12,7 @@ You need:
 
 * NodeJS >= 10.23
 * mfrc522 module (RFID GPIO module) or set `RFID_ENABLED` to false
+* If you use a HifiBerry DAC zero, see here: https://www.hifiberry.com/docs/software/configuring-linux-3-18-x/
 
 If you are testing the backend, you should create a `.env` file in the root dir.
 
