@@ -1,7 +1,7 @@
 const path = require('path')
 const audioPlayer = require('../../audio-player/audio-player-controller')
 const audioBookDbClient = require('../../service/audio-book-db-client')
-const logger = require('../../logger')(module)
+const logger = require('../../helper/logger')(module)
 
 const play = async (audioBookId, trackNumber) => {
     const audioBook = await audioBookDbClient.findOneAudioBookById(audioBookId)

@@ -1,6 +1,6 @@
 const path = require('path')
 const fs = require('fs')
-const logger = require('../../logger')(module)
+const logger = require('../../helper/logger')(module)
 const audioBookDbClient = require('../../service/audio-book-db-client')
 const audioBookHelper = require('./audio-book-helper')
 const audioBookPlayerHelper = require('../../service/audio-book-player-helper')

@@ -3,7 +3,7 @@ const cardDbClient = require('./card-db-client')
 const audioPlayer = require('../audio-player/audio-player-controller')
 const ad = require('./audioDefinition')
 const path = require('path')
-const logger = require('../logger')(module)
+const logger = require('../helper/logger')(module)
 
 const getFilePathForUid = async (uid) => {
     const audioBook = await findAudioBookWithUid(uid)

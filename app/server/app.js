@@ -1,22 +1,18 @@
 const bodyParser = require('body-parser')
-const logger = require('../logger')(module)
+const logger = require('../helper/logger')(module)
 const express = require('express')
 const helmet = require('helmet')
 const listEndpoints = require('express-list-endpoints')
 const fileUpload = require('express-fileupload')
-const path = require('path')
+const environmentHelper = require('../helper/environment')
 
-exports.createAndInit = async () => {
+exports.createAndInit = () => {
     const app = express()
-    await init(app)
+    const httpRequestSizeLimit = environmentHelper.getHttpRequestSizeLimit()
 
-    return app
-}
-
-const init = async (app) => {
     app.use(helmet())
     app.use(bodyParser.urlencoded({
-        limit: '30mb',
+        limit: httpRequestSizeLimit,
         extended: true
     }))
     app.use(bodyParser.json())
@@ -24,14 +20,16 @@ const init = async (app) => {
         useTempFiles: true,
         tempFileDir: '/tmp/'
     }))
-    // app.use(function (req, res, next) {
-    //     res.header('Access-Control-Allow-Origin', '*')
-    //     res.header('Access-Control-Allow-Methods', 'PATCH,POST,GET,DELETE')
-    //     res.header('Access-Control-Allow-Headers', 'content-type')
-    //     next()
-    // })
+    if(environmentHelper.getAllowAllOrigin()) {
+        app.use(function (req, res, next) {
+            res.header('Access-Control-Allow-Origin', '*')
+            res.header('Access-Control-Allow-Methods', 'PATCH,POST,GET,DELETE')
+            res.header('Access-Control-Allow-Headers', 'content-type')
+            next()
+        })
+    }
 
-    app.use(express.static(path.join(process.cwd(), 'ui/public')))
+    app.use(express.static(environmentHelper.getStaticContentPath()))
 
     require('../api/health/health-api').init(app)
     require('../api/swagger/swagger-api').init(app)
@@ -40,14 +38,7 @@ const init = async (app) => {
 
     logRegisteredRoutes(app)
 
-    if (isRfidEnabled()) {
-        logger.info('Rfid capability enabled')
-
-        const rfid = require('../rfid/rfid-service')
-        rfid.initRfid()
-    } else {
-        logger.info('Rfid capability NOT enabled')
-    }
+    return app
 }
 
 const logRegisteredRoutes = function (app) {
@@ -71,12 +62,4 @@ const logRegisteredRoutes = function (app) {
     })
     logger.info('###                                                           ###')
     logger.info('#################################################################')
-}
-
-const isRfidEnabled = () => {
-    if (process.env.RFID_ENABLED === undefined) {
-        return true
-    }
-
-    return JSON.parse(process.env.RFID_ENABLED)
 }

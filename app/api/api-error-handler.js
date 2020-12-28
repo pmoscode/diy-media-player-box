@@ -1,4 +1,4 @@
-const logger = require('../logger')(module)
+const logger = require('../helper/logger')(module)
 
 function handle (err, req, res, next) {
     logger.error('handling error: %s', err)

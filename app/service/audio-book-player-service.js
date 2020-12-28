@@ -1,5 +1,5 @@
 const audioPlayer = require('../audio-player/audio-player-controller')
-const logger = require('../logger')(module)
+const logger = require('../helper/logger')(module)
 const helper = require('./audio-book-player-helper')
 
 let lastPlayedUid = 0

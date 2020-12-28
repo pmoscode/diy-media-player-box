@@ -1,6 +1,6 @@
 const Mfrc522 = require('mfrc522-rpi')
 const SoftSPI = require('rpi-softspi')
-const logger = require('../logger')(module)
+const logger = require('../helper/logger')(module)
 const audioBookPlayerService = require('../service/audio-book-player-service')
 
 let mfrc522

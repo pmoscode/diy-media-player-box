@@ -1,10 +1,16 @@
 = DIY Media Player Box - Backend
 
+This is a small application which turns any Raspberry Pi in a music box.
+
+My target was to build a DIY Music Box for small children. (Like the Toniebox)
+
+This is the main repository which merges the backend and the ui. (ui as a submodule)
+
 == Preparation
 
 If you are testing the backend, you should create a `.env` file in the root dir.
 
-This is because the rfid reader lib is loaded per default when no .env file is present.
+This is because for example the rfid reader lib is loaded per default when no `RFID_ENABLED` environment variable is set.
 
 The content could look like:
 
@@ -12,26 +18,47 @@ The content could look like:
 ----
 RFID_ENABLED=false
 PORT=8080
+UI_CONTENT_PATH=ui/public
+HTTP_REQUEST_SIZE_LIMIT=60mb
+ALLOW_ALL_ORIGIN=false
 ----
 
-== Init submodule (UI)
+Here is a short description:
 
-Run `git submodule init`
+
+|===
+|Name                       |Default value                  |Description
+
+|RFID_ENABLED               |true                           |If true, the rfid library is loaded. Should be enabled on a Raspberry Pi.
+|PORT                       |8080                           |The port the application server is listening on.
+|UI_CONTENT_PATH            |Application root + 'ui/public' |Points to the path where the UI content is located.
+|HTTP_REQUEST_SIZE_LIMIT    |30mb                           |The maximum http request header size (must end with 'mb')
+|ALLOW_ALL_ORIGIN           |false                          |If you are running the backend and the ui on different ports, you need to enable this to be able to access the backend API. (Should be used only for testing. UI content is served by the application server usually.)
+|===
+
+You can also define these as usual environment variables. (export ...)
+
+== Init submodule (UI)
+Load (aka clone) the content of the UI repository.
+
+To do so, run `git submodule init`
 
 == Install dependencies backend
+Install all necessary libraries for the backend part.
 
 Run `npm install`
 
 == Install dependencies UI
+Install all necessary libraries for the UI part. (Needed to build the UI).
 
 Run `npm run ui-init`
 
 == Build UI
+Build the UI part.
 
 Run `npm run ui-build`
 
 == Run it
+If the `UI_CONTENT_PATH` environment variable is not changed, start the server with
 
-Run `npm start`
-
-== Configuration
+ `npm start`
