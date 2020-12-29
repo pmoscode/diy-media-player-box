@@ -10,7 +10,22 @@ exports.createAndInit = () => {
     const app = express()
     const httpRequestSizeLimit = environmentHelper.getHttpRequestSizeLimit()
 
-    app.use(helmet())
+    app.use(helmet({
+        contentSecurityPolicy: {
+            directives: {
+                "default-src": ["'self'"],
+                "base-uri": ["'self'"],
+                "block-all-mixed-content": [],
+                "font-src": ["'self'", "https:", "data:"],
+                "frame-ancestors": ["'self'"],
+                "img-src": ["'self'", "data:"],
+                "object-src": ["'none'"],
+                "script-src": ["'self'"],
+                "script-src-attr": ["'none'"],
+                "style-src": ["'self'", "https:", "'unsafe-inline'"]
+            }
+        }
+    }))
     app.use(bodyParser.urlencoded({
         limit: httpRequestSizeLimit,
         extended: true
