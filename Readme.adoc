@@ -11,18 +11,14 @@ This is the main repository which merges the backend and the ui. (ui as a submod
 You need:
 
 * NodeJS >= 10.23
-* mfrc522 module (RFID GPIO module) or set `RFID_ENABLED` to false
 * If you use a HifiBerry DAC zero, see here: https://www.hifiberry.com/docs/software/configuring-linux-3-18-x/
 
 If you are testing the backend, you should create a `.env` file in the root dir.
-
-This is because for example the rfid reader lib is loaded per default when no `RFID_ENABLED` environment variable is set.
 
 The content could look like:
 
 [source,bash]
 ----
-RFID_ENABLED=false
 PORT=8080
 UI_CONTENT_PATH=ui/public
 HTTP_REQUEST_SIZE_LIMIT=60mb
@@ -34,7 +30,6 @@ Here is a short description:
 |===
 |Name                       |Default value                  |Description
 
-|RFID_ENABLED               |true                           |If true, the rfid library is loaded. Should be enabled on a Raspberry Pi.
 |PORT                       |8080                           |The port the application server is listening on.
 |UI_CONTENT_PATH            |Application root + 'ui/public' |Points to the path where the UI content is located.
 |HTTP_REQUEST_SIZE_LIMIT    |30mb                           |The maximum http request header size (must end with 'mb')
@@ -54,7 +49,7 @@ So you will have to compile it elsewhere and copy it to the Pi Zero. Here you ca
 == Init submodule (UI)
 Load (aka clone) the content of the UI repository.
 
-To do so, run `git submodule init`
+To do so, run `git submodule update --init --recursive`
 
 == Install dependencies backend
 Install all necessary libraries for the backend part.

@@ -45,9 +45,7 @@ testem.log
 .DS_Store
 Thumbs.db
 
-/database/
-/public
-/logs
-.package-lock.json
-/media
-.env
+/controller/database/
+/controller/logs
+/controller/media
+/controller/.env
