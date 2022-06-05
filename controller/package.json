@@ -25,9 +25,9 @@
     "start": "node server.js",
     "ui-init": "cd ui && npm install",
     "ui-build": "cd ui && npm run build",
-    "test": "jest --config jest.json --detectOpenHandles --forceExit --runInBand",
-    "lint": "eslint .",
-    "lint-fix": "eslint . --fix"
+    "test": "../node_modules/.bin/jest --config jest.json --detectOpenHandles --forceExit --runInBand",
+    "lint": "../node_modules/.bin/eslint .",
+    "lint-fix": "../node_modules/.bin/eslint . --fix"
   },
   "private": true,
   "dependencies": {
