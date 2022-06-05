@@ -5,10 +5,6 @@ const getStaticContentPath = () => {
     return helper.getValueFromEnvironment('UI_CONTENT_PATH', path.join(process.cwd(), 'ui/public'))
 }
 
-const isRfidEnabled = () => {
-    return helper.parseBool(helper.getValueFromEnvironment('RFID_ENABLED', true))
-}
-
 const getHttpRequestSizeLimit = () => {
     return helper.getValueFromEnvironment('HTTP_REQUEST_SIZE_LIMIT', '30mb')
 }
@@ -23,7 +19,6 @@ const getAppServerPort = () => {
 
 module.exports = {
     getStaticContentPath,
-    isRfidEnabled,
     getHttpRequestSizeLimit,
     getAllowAllOrigin,
     getAppServerPort
