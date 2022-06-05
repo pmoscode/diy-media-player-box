@@ -2,7 +2,6 @@ const router = require('express').Router()
 const swaggerValidator = require('../swagger/swagger-validator')
 const apiErrorHandler = require('../api-error-handler')
 const audioBookService = require('./audio-book-service')
-const audioBookTestingService = require('./audio-book-testing-service')
 const audioBookHelper = require('./audio-book-helper')
 
 const wrap = fn => (...args) => fn(...args).catch(args[2])
@@ -14,8 +13,7 @@ exports.init = (app) => {
     swaggerValidator.delete(router, '/audio-books/:id', wrap(deleteAudioBook))
     swaggerValidator.post(router, '/audio-books/:id/tracks', wrap(uploadTracks))
     swaggerValidator.delete(router, '/audio-books/:id/tracks', wrap(deleteAllTracks))
-
-    // Testing api
+    swaggerValidator.post(router, '/audio-books/:uid/play', wrap(playAudioBook))
     swaggerValidator.post(router, '/audio-books/:id/track/:track/play', wrap(playTrack))
     swaggerValidator.post(router, '/audio-books/pause', wrap(pauseTrack))
     swaggerValidator.post(router, '/audio-books/stop', wrap(stopTrack))
@@ -103,12 +101,24 @@ const deleteAllTracks = async (req, res) => {
     }
 }
 
+const playAudioBook = async (req, res) => {
+    const uid = req.params.id
+
+    try {
+        await audioBookService.playAudioBookFromUid(uid)
+
+        return res.status(200).send({ status: 'playing' })
+    } catch (e) {
+        return res.status(500).send(e)
+    }
+}
+
 const playTrack = async (req, res) => {
     const audioBookId = req.params.id
     const trackNumber = req.params.track
 
     try {
-        await audioBookTestingService.play(audioBookId, trackNumber)
+        await audioBookService.playAudioBook(audioBookId, trackNumber)
 
         return res.status(200).send({ status: 'playing' })
     } catch (e) {
@@ -118,7 +128,7 @@ const playTrack = async (req, res) => {
 
 const pauseTrack = async (req, res) => {
     try {
-        audioBookTestingService.pause()
+        audioBookService.pauseAudioBook()
 
         return res.status(200).send({ status: 'play state toggled' })
     } catch (e) {
@@ -128,7 +138,7 @@ const pauseTrack = async (req, res) => {
 
 const stopTrack = async (req, res) => {
     try {
-        audioBookTestingService.stop()
+        audioBookService.stopAudioBook()
 
         return res.status(200).send({ status: 'stopped' })
     } catch (e) {

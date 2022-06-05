@@ -1,4 +1,5 @@
-const audioPlayer = require('../audio-player/audio-player-controller')
+// TODO: This service must be implemented in GO
+
 const logger = require('../helper/logger')(module)
 const helper = require('./audio-book-player-helper')
 
@@ -62,23 +63,6 @@ const playAudioFile = (filePath, uid) => {
         .catch(e => {
             logger.error(e)
         })
-}
-
-const monitorProgress = () => {
-    checkProgressInterval = setInterval(
-        () => {
-            try {
-                helper.getProgress()
-                    .then((data) => {
-                        // console.info('Progress: ' + data.p.toFixed(4))
-                    })
-            } catch (e) {
-                clearInterval(checkProgressInterval)
-                playNextTrack()
-            }
-        },
-        300
-    )
 }
 
 const playNextTrack = () => {

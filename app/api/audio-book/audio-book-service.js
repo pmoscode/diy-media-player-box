@@ -96,6 +96,35 @@ const deleteAllTracks = async (audioBookId) => {
     }
 }
 
+const playAudioBook = async (audioBookId, trackNumber) => {
+    const audioBook = await audioBookDbClient.findOneAudioBookById(audioBookId)
+    const trackList = audioBook.trackList[trackNumber - 1]
+
+    const completePath = path.join(process.cwd(), 'media', audioBookId, trackList.fileName)
+    logger.info('Playing audio "%s"', completePath)
+
+    // Call player microservice api "/audio" with POST and send: uid and file lit to audio files
+}
+
+// TODO: Has to call player microservice with uid and absolute paths to audio files
+const playAudioBookFromUid = async (uid) => {
+    const audioBook = await audioBookDbClient.findOneAudioBookById(uid)
+    const trackList = audioBook.trackList[trackNumber - 1]
+
+    const completePath = path.join(process.cwd(), 'media', uid, trackList.fileName)
+    logger.info('Playing audio "%s"', completePath)
+
+    // Call player microservice api "/audio" with POST and send: uid and file lit to audio files
+}
+
+const pauseAudioBook = () => {
+    // Call player microservice api "/audio" with PATCH
+}
+
+const stopAudioBook = () => {
+    // Call player microservice api "/audio" with DELETE
+}
+
 const createMediaFolder = (id) => {
     const mediaPath = getCompletePathToMediaFolder(id)
     fs.mkdirSync(mediaPath, { recursive: true })
@@ -137,5 +166,9 @@ module.exports = {
     updateAudioBook,
     deleteAudioBook,
     uploadTracks,
-    deleteAllTracks
+    deleteAllTracks,
+    playAudioBook,
+    playAudioBookFromUid,
+    pauseAudioBook,
+    stopAudioBook
 }

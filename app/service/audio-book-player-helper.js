@@ -1,10 +1,10 @@
 const audioBookDbClient = require('./audio-book-db-client')
 const cardDbClient = require('./card-db-client')
-const audioPlayer = require('../audio-player/audio-player-controller')
 const ad = require('./audioDefinition')
 const path = require('path')
 const logger = require('../helper/logger')(module)
 
+// TODO: Return list of absolute paths to audio files + uid
 const getFilePathForUid = async (uid) => {
     const audioBook = await findAudioBookWithUid(uid)
 
@@ -46,12 +46,6 @@ const insertUnusedCard = async (uid) => {
     return { filePath: null, uid: uid }
 }
 
-const getProgress = (() => {
-    return () => {
-        return audioPlayer.getProgress()
-    }
-})()
-
 const playPredefinedAudio = (audioDefinition, playDelay) => {
     logger.debug(audioDefinition)
 }
@@ -84,7 +78,6 @@ const updateMetadata = (audioBook) => {
 }
 
 module.exports = {
-    getProgress,
     getFilePathForUid,
     getCompletePathToAudioFile,
     updateMetadata

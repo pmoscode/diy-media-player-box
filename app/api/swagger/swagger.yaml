@@ -196,7 +196,6 @@ paths:
           description: OK - successful
         '500':
           description: 'Internal Server error'
-
   /audio-books/{id}/tracks:
     post:
       tags:
@@ -259,6 +258,20 @@ paths:
           schema:
             type: string
       summary: Plays the mp3 file at the given track position
+      responses:
+        '200':
+          description: Everything's ok
+  /audio-books/{uid}/play:
+    post:
+      tags:
+        - Testing
+      parameters:
+        - in: path
+          name: uid
+          required: true
+          schema:
+            type: integer
+      summary: Plays the mp3 file (from uid) from the beginning
       responses:
         '200':
           description: Everything's ok
