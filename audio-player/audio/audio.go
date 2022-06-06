@@ -1,7 +1,6 @@
 package audio
 
 import (
-	"fmt"
 	"github.com/faiface/beep"
 	"github.com/faiface/beep/mp3"
 	"github.com/faiface/beep/speaker"
@@ -13,42 +12,93 @@ import (
 
 var control *beep.Ctrl
 
-func Play(c *gin.Context) {
-	speaker.Clear()
+var lastPlayedUid = "-1"
 
-	f, err := os.Open("/home/peter/Arbeit/GIT/GitLab/GoLang/diy-media-player-box-backend/test/test.mp3")
-	if err != nil {
-		log.Fatal(err)
+func Play(context *gin.Context) {
+
+	var body audioRequestInput
+
+	if err := context.ShouldBindJSON(&body); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
-	streamer, format, err := mp3.Decode(f)
-	if err != nil {
-		log.Fatal(err)
+	log.Println("body: ", body)
+
+	uidChanged := checkLastPlayedUidChanged(&body)
+	log.Println("uid changed: ", uidChanged)
+
+	if uidChanged {
+		speaker.Clear()
+
+		var samples []beep.Streamer
+
+		for _, trackPath := range body.TrackList {
+			f, err := os.Open(trackPath)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			streamer, format, err := mp3.Decode(f)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			const sampleRate = beep.SampleRate(44100)
+			resampled := beep.Resample(4, format.SampleRate, sampleRate, streamer)
+			samples = append(samples, resampled)
+		}
+
+		samples = append(samples, beep.Callback(func() {
+			lastPlayedUid = "-1"
+		}))
+
+		if len(samples) > 0 {
+			sequence := beep.Seq(samples...)
+			control = &beep.Ctrl{Streamer: sequence, Paused: false}
+
+			speaker.Play(control)
+
+			context.JSON(http.StatusOK, gin.H{"status": "playing"})
+		} else {
+			context.JSON(http.StatusOK, gin.H{"status": "no tracks"})
+		}
+	} else {
+		if control.Paused {
+			SwitchPlayState(context)
+		} else {
+			context.JSON(http.StatusOK, gin.H{"status": "untouched"})
+		}
 	}
-
-	const sampleRate = beep.SampleRate(44100)
-	resampled := beep.Resample(4, format.SampleRate, sampleRate, streamer)
-
-	fmt.Println("Before control")
-	control = &beep.Ctrl{Streamer: resampled, Paused: false}
-	fmt.Println("Before play")
-	speaker.Play(control)
-
-	c.JSON(http.StatusOK, gin.H{"status": "playing..."})
 }
 
-func SwitchPlayState(c *gin.Context) {
+func checkLastPlayedUidChanged(body *audioRequestInput) bool {
+	if lastPlayedUid != body.Uid {
+		lastPlayedUid = body.Uid
+
+		return true
+	}
+
+	return false
+}
+
+func SwitchPlayState(context *gin.Context) {
 	speaker.Lock()
 	control.Paused = !control.Paused
 	speaker.Unlock()
 
-	c.JSON(http.StatusOK, gin.H{"status": "switched playing state..."})
+	status := "paused"
+	if !control.Paused {
+		status = "continuing"
+	}
+
+	context.JSON(http.StatusOK, gin.H{"status": status})
 }
 
-func Stop(c *gin.Context) {
-	speaker.Lock()
-	control.Paused = true
-	speaker.Unlock()
+func Stop(context *gin.Context) {
+	speaker.Clear()
 
-	c.JSON(http.StatusOK, gin.H{"status": "stopped playing..."})
+	lastPlayedUid = "-1"
+
+	context.JSON(http.StatusOK, gin.H{"status": "stopped"})
 }
