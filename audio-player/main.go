@@ -4,11 +4,14 @@ import (
 	"github.com/faiface/beep"
 	"github.com/faiface/beep/speaker"
 	"github.com/gin-gonic/gin"
+	"os"
 	"pmoscode.diy-media-player-box-backend/audio"
 	"time"
 )
 
 func main() {
+	port := os.Getenv("AUDIO_PLAYER_PORT")
+
 	router := gin.Default()
 	//gin.SetMode(gin.ReleaseMode)
 	const sampleRate = beep.SampleRate(44100)
@@ -18,5 +21,5 @@ func main() {
 	router.PATCH("/audio", audio.SwitchPlayState)
 	router.DELETE("/audio", audio.Stop)
 
-	router.Run()
+	router.Run(port)
 }
