@@ -1,4 +1,4 @@
-module pmoscode.diy-media-player-box-backend
+module audio-player
 
 go 1.18
 

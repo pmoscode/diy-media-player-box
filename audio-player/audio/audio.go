@@ -10,6 +10,8 @@ import (
 	"os"
 )
 
+const SampleRate = 44100
+
 var control *beep.Ctrl
 
 var lastPlayedUid = "-1"
@@ -44,9 +46,18 @@ func Play(context *gin.Context) {
 				log.Fatal(err)
 			}
 
-			const sampleRate = beep.SampleRate(44100)
-			resampled := beep.Resample(4, format.SampleRate, sampleRate, streamer)
-			samples = append(samples, resampled)
+			var stream beep.Streamer
+
+			if SampleRate != format.SampleRate {
+				const sampleRate = beep.SampleRate(SampleRate)
+				stream = beep.Resample(1, format.SampleRate, sampleRate, streamer)
+				log.Println("Need to resample: ", trackPath)
+			} else {
+				stream = streamer
+				log.Println("No need to resample: ", trackPath)
+			}
+
+			samples = append(samples, stream)
 		}
 
 		samples = append(samples, beep.Callback(func() {
