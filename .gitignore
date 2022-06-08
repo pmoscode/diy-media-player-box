@@ -49,5 +49,7 @@ Thumbs.db
 /controller/logs
 /controller/media
 /controller/.env
+/controller/node_modules
+/controller/ui
 
 audio-player/pmoscode.diy-media-player-box-backend
