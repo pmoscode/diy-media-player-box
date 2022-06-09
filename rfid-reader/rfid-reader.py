@@ -54,23 +54,25 @@ def start():
 
 def send_play_request(tag_id: str):
     global controller_port
-    api_endpoint = f"http://localhost:{controller_port}/audio-books/{tag_id}/play"
+    api_endpoint = f"http://localhost:{controller_port}/api/audio-books/{tag_id}/play"
 
     send_request(api_endpoint)
 
 
 def send_pause_request():
     global controller_port
-    api_endpoint = f"http://localhost:{controller_port}/audio-books/pause"
+    api_endpoint = f"http://localhost:{controller_port}/api/audio-books/pause"
 
     send_request(api_endpoint)
 
 
 def send_request(api_endpoint: str):
+    print("Sending request: ", api_endpoint)
     r = requests.post(url=api_endpoint)
 
     response = r.text
-    print("Response: %s" % response)
+    code = r.status_code
+    print("Code: %s ## Response: %s" % (code, response))
 
 
 if __name__ == "__main__":
