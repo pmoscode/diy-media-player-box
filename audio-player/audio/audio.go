@@ -94,16 +94,21 @@ func checkLastPlayedUidChanged(body *audioRequestInput) bool {
 }
 
 func SwitchPlayState(context *gin.Context) {
-	speaker.Lock()
-	control.Paused = !control.Paused
-	speaker.Unlock()
+	if control != nil {
+		speaker.Lock()
+		control.Paused = !control.Paused
+		speaker.Unlock()
 
-	status := "paused"
-	if !control.Paused {
-		status = "continuing"
+		status := "paused"
+		if !control.Paused {
+			status = "continuing"
+		}
+
+		context.JSON(http.StatusOK, gin.H{"status": status})
+	} else {
+		context.JSON(http.StatusOK, gin.H{"status": "no audio stream"})
 	}
 
-	context.JSON(http.StatusOK, gin.H{"status": status})
 }
 
 func Stop(context *gin.Context) {
