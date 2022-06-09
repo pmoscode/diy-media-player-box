@@ -102,7 +102,7 @@ const deleteAllTracks = async (req, res) => {
 }
 
 const playAudioBook = async (req, res) => {
-    const uid = req.params.id
+    const uid = req.params.uid
 
     try {
         await audioBookService.playAudioBookFromUid(uid)
