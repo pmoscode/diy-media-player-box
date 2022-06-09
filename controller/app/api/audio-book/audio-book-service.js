@@ -127,7 +127,7 @@ const playAudioBookFromUid = async (uid) => {
 
         for (const track of trackList) {
             const completePath = path.join(process.cwd(), 'media', uid, track.fileName)
-            // logger.info('Playing audio "%s"', completePath)
+            logger.info('Adding audio file path to request: "%s"', completePath)
             trackListPath.push(completePath)
         }
 
@@ -143,8 +143,6 @@ const playAudioBookFromUid = async (uid) => {
             }).catch((err) => {
                 console.error(err)
             })
-    } else {
-        console.log('Seems the card used is not known...: ', uid)
     }
 }
 
