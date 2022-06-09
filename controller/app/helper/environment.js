@@ -2,7 +2,7 @@ const helper = require('./generic')
 const path = require('path')
 
 const getStaticContentPath = () => {
-    return helper.getValueFromEnvironment('UI_CONTENT_PATH', path.join(process.cwd(), 'ui/public'))
+    return helper.getValueFromEnvironment('UI_CONTENT_PATH', path.join(process.cwd(), 'ui'))
 }
 
 const getHttpRequestSizeLimit = () => {

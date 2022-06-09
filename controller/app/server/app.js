@@ -13,16 +13,16 @@ exports.createAndInit = () => {
     app.use(helmet({
         contentSecurityPolicy: {
             directives: {
-                "default-src": ["'self'"],
-                "base-uri": ["'self'"],
-                "block-all-mixed-content": [],
-                "font-src": ["'self'", "https:", "data:"],
-                "frame-ancestors": ["'self'"],
-                "img-src": ["'self'", "data:"],
-                "object-src": ["'none'"],
-                "script-src": ["'self'"],
-                "script-src-attr": ["'none'"],
-                "style-src": ["'self'", "https:", "'unsafe-inline'"]
+                'default-src': ['\'self\''],
+                'base-uri': ['\'self\''],
+                'block-all-mixed-content': [],
+                'font-src': ['\'self\'', 'https:', 'data:'],
+                'frame-ancestors': ['\'self\''],
+                'img-src': ['\'self\'', 'data:'],
+                'object-src': ['\'none\''],
+                'script-src': ['\'self\''],
+                'script-src-attr': ['\'none\''],
+                'style-src': ['\'self\'', 'https:', '\'unsafe-inline\'']
             }
         }
     }))
@@ -35,7 +35,7 @@ exports.createAndInit = () => {
         useTempFiles: true,
         tempFileDir: '/tmp/'
     }))
-    if(environmentHelper.getAllowAllOrigin()) {
+    if (environmentHelper.getAllowAllOrigin()) {
         app.use(function (req, res, next) {
             res.header('Access-Control-Allow-Origin', '*')
             res.header('Access-Control-Allow-Methods', 'PATCH,POST,GET,DELETE')
@@ -57,7 +57,7 @@ exports.createAndInit = () => {
 }
 
 const logRegisteredRoutes = function (app) {
-    function space (x) {
+    function space(x) {
         let res = ''
         for (; x > 0; x--) {
             res += ' '

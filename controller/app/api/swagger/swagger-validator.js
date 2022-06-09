@@ -24,11 +24,11 @@ const _delete = (app, path, callbacks) => {
 }
 
 function addRoute (method, app, path, callbacks) {
-    // logger.info('adding validated route: %s %s', method, path)
+    // console.info('adding validated route: %s %s', method, path)
 
     const openApiPath = convertToOpenApiPath(path)
 
-    // logger.debug('calculated open api path=%s', openApiPath)
+    // console.debug('calculated open api path=%s', openApiPath)
 
     if (!Array.isArray(callbacks)) {
         callbacks = [callbacks]

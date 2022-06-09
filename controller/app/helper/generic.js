@@ -1,11 +1,11 @@
 const getValueFromEnvironment = (key, defaultValue) => {
     const value = process.env[key]
 
-    return value ? value : defaultValue
+    return value || defaultValue
 }
 
 const parseBool = (bool) => {
-    if(typeof bool === 'boolean') {
+    if (typeof bool === 'boolean') {
         return bool
     }
 
@@ -13,7 +13,7 @@ const parseBool = (bool) => {
 }
 
 const parseInteger = (int) => {
-    if(typeof int === 'number') {
+    if (typeof int === 'number') {
         return int
     }
 

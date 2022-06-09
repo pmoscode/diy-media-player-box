@@ -4,8 +4,8 @@ const ad = require('./audioDefinition')
 const path = require('path')
 const logger = require('../helper/logger')(module)
 
-// TODO: Return list of absolute paths to audio files + uid
 const getFilePathForUid = async (uid) => {
+    logger.info('Checking if card with uid "' + uid + '" is present')
     const audioBook = await findAudioBookWithUid(uid)
 
     if (!audioBook) {

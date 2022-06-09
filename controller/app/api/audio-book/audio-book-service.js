@@ -1,5 +1,6 @@
 const path = require('path')
 const fs = require('fs')
+const axios = require('axios')
 const logger = require('../../helper/logger')(module)
 const audioBookDbClient = require('../../service/audio-book-db-client')
 const audioBookHelper = require('./audio-book-helper')
@@ -103,26 +104,68 @@ const playAudioBook = async (audioBookId, trackNumber) => {
     const completePath = path.join(process.cwd(), 'media', audioBookId, trackList.fileName)
     logger.info('Playing audio "%s"', completePath)
 
-    // Call player microservice api "/audio" with POST and send: uid and file lit to audio files
+    const requestBody = {
+        uid: audioBookId,
+        trackList: [completePath]
+    }
+
+    axios.post('http://localhost:8080/audio', requestBody)
+        .then((res) => {
+            console.log(`Status: ${res.status}`)
+            console.log('Student Info: ', res.data)
+        }).catch((err) => {
+            console.error(err)
+        })
 }
 
-// TODO: Has to call player microservice with uid and absolute paths to audio files
 const playAudioBookFromUid = async (uid) => {
-    const audioBook = await audioBookDbClient.findOneAudioBookById(uid)
-    const trackList = audioBook.trackList[trackNumber - 1]
+    const tryAudioBook = await audioBookPlayerHelper.getFilePathForUid(uid)
+    if (tryAudioBook.audioBook) {
+        const trackList = tryAudioBook.audioBook.trackList
 
-    const completePath = path.join(process.cwd(), 'media', uid, trackList.fileName)
-    logger.info('Playing audio "%s"', completePath)
+        const trackListPath = []
 
-    // Call player microservice api "/audio" with POST and send: uid and file lit to audio files
+        for (const track of trackList) {
+            const completePath = path.join(process.cwd(), 'media', uid, track.fileName)
+            // logger.info('Playing audio "%s"', completePath)
+            trackListPath.push(completePath)
+        }
+
+        const requestBody = {
+            uid: uid,
+            trackList: trackListPath
+        }
+
+        axios.post('http://localhost:8080/audio', requestBody)
+            .then((res) => {
+                console.log(`Status: ${res.status}`)
+                console.log('Response: ', res.data)
+            }).catch((err) => {
+                console.error(err)
+            })
+    } else {
+        console.log('Seems the card used is not known...: ', uid)
+    }
 }
 
 const pauseAudioBook = () => {
-    // Call player microservice api "/audio" with PATCH
+    axios.patch('http://localhost:8080/audio')
+        .then((res) => {
+            console.log(`Status: ${res.status}`)
+            console.log('Response: ', res.data)
+        }).catch((err) => {
+            console.error(err)
+        })
 }
 
 const stopAudioBook = () => {
-    // Call player microservice api "/audio" with DELETE
+    axios.delete('http://localhost:8080/audio')
+        .then((res) => {
+            console.log(`Status: ${res.status}`)
+            console.log('Response: ', res.data)
+        }).catch((err) => {
+            console.error(err)
+        })
 }
 
 const createMediaFolder = (id) => {

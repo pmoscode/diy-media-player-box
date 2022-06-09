@@ -18,8 +18,6 @@ tags:
     description: Everything about audio book operation
   - name: Card
     description: Everything about card handling
-  - name: Testing
-    description: Everything which is used for testing
 components:
   schemas:
     AudioBook:
@@ -244,7 +242,7 @@ paths:
   /audio-books/{id}/track/{track}/play:
     post:
       tags:
-        - Testing
+        - Audio Book
       parameters:
         - in: path
           name: id
@@ -264,13 +262,13 @@ paths:
   /audio-books/{uid}/play:
     post:
       tags:
-        - Testing
+        - Audio Book
       parameters:
         - in: path
           name: uid
           required: true
           schema:
-            type: integer
+            type: string
       summary: Plays the mp3 file (from uid) from the beginning
       responses:
         '200':
@@ -278,7 +276,7 @@ paths:
   /audio-books/pause:
     post:
       tags:
-        - Testing
+        - Audio Book
       summary: Pauses / Resumes the currently played mp3
       responses:
         '200':
@@ -288,7 +286,7 @@ paths:
   /audio-books/stop:
     post:
       tags:
-        - Testing
+        - Audio Book
       summary: Stops the currently played mp3
       responses:
         '200':
