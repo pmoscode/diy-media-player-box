@@ -43,7 +43,7 @@ const insertUnusedCard = async (uid) => {
 
     logger.info('Unused card, but already stored')
 
-    return { filePath: null, uid: uid }
+    return { filePath: null, uid: uid, audioBook: null }
 }
 
 const playPredefinedAudio = (audioDefinition, playDelay) => {

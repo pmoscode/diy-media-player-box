@@ -112,7 +112,7 @@ const playAudioBook = async (audioBookId, trackNumber) => {
     axios.post('http://localhost:8080/audio', requestBody)
         .then((res) => {
             console.log(`Status: ${res.status}`)
-            console.log('Student Info: ', res.data)
+            console.log('Response: ', res.data)
         }).catch((err) => {
             console.error(err)
         })
@@ -126,7 +126,7 @@ const playAudioBookFromUid = async (uid) => {
         const trackListPath = []
 
         for (const track of trackList) {
-            const completePath = path.join(process.cwd(), 'media', uid, track.fileName)
+            const completePath = path.join(process.cwd(), 'media', tryAudioBook.audioBook.id, track.fileName)
             logger.info('Adding audio file path to request: "%s"', completePath)
             trackListPath.push(completePath)
         }
