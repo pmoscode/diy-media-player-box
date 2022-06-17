@@ -1,0 +1,94 @@
+version: '3'
+
+dotenv: ['.env']
+
+tasks:
+  copyAudioPlayerSource:
+    desc: Copies all source content of Audio Player
+    dir: audio-player
+    cmds:
+      - sshpass -p "$RASPBERRY_PASSWORD" scp -r ./ pi@$REMOTE_SERVER:/home/pi/audio-player
+
+  installAudioPlayerOsDependencies:
+    desc: Installs all os dependencies of Audio Player
+    dir: audio-player
+    cmds:
+      - sshpass -p "$RASPBERRY_PASSWORD" ssh pi@$REMOTE_SERVER "sudo apt install -y libasound2-dev"
+
+  installAudioPlayerDependencies:
+    desc: Installs all go dependencies of Audio Player
+    dir: audio-player
+    cmds:
+      - sshpass -p "$RASPBERRY_PASSWORD" ssh pi@$REMOTE_SERVER "cd /home/pi/audio-player && /usr/local/go/bin/go mod tidy"
+
+  compileAudioPlayer:
+    desc: Compile the binary of Audio Player (remotely)
+    dir: audio-player
+    cmds:
+      - sshpass -p "$RASPBERRY_PASSWORD" ssh pi@$REMOTE_SERVER "cd /home/pi/audio-player && /usr/local/go/bin/go build -o audio-player"
+
+  copyControllerSource:
+    desc: Copies all source content of Controller
+    dir: controller
+    cmds:
+      - sshpass -p "$RASPBERRY_PASSWORD" scp -r app/ ui/ .env package.json server.js pi@$REMOTE_SERVER:/home/pi/controller
+
+  createControllerDatabaseDirectory:
+    desc: Creates the folder where all data will be stored of Controller
+    dir: controller
+    cmds:
+      - sshpass -p "$RASPBERRY_PASSWORD" ssh pi@$REMOTE_SERVER "cd /home/pi/controller && mkdir database"
+
+  copyRfidReaderSource:
+    desc: Copies all source content of Rfid-Reader
+    dir: rfid-reader
+    cmds:
+      - sshpass -p "$RASPBERRY_PASSWORD" scp -r ./ pi@$REMOTE_SERVER:/home/pi/rfid-reader
+
+  installRfidReaderDependencies:
+    desc: Installs all go dependencies of Rfid-Reader
+    dir: rfid-reader
+    cmds:
+      - sshpass -p "$RASPBERRY_PASSWORD" ssh pi@$REMOTE_SERVER "cd /home/pi/rfid-reader && /usr/local/go/bin/go mod tidy"
+
+  compileRfidReader:
+    desc: Compile the binary of Rfid-Reader (remotely)
+    dir: rfid-reader
+    cmds:
+      - sshpass -p "$RASPBERRY_PASSWORD" ssh pi@$REMOTE_SERVER "cd /home/pi/rfid-reader && /usr/local/go/bin/go build -o rfid-reader"
+
+  buildAudioPlayer:
+    desc: Execute Tasks -> copyAudioPlayerSource and compileAudioPlayer
+    cmds:
+      - task: copyAudioPlayerSource
+      - task: compileAudioPlayer
+
+  buildRfidReader:
+    desc: Execute Tasks -> copyRfidReaderSource and compileRfidReader
+    cmds:
+      - task: copyRfidReaderSource
+      - task: compileRfidReader
+
+  initController:
+    desc: Execute Tasks ->  copyControllerSource and createControllerDatabaseDirectory
+    cmds:
+      - task: copyControllerSource
+      - task: createControllerDatabaseDirectory
+
+  initAudioPlayer:
+    desc: Execute Tasks ->  installAudioPlayerOsDependencies, installAudioPlayerDependencies and buildAudioPlayer
+    cmds:
+      - task: installAudioPlayerOsDependencies
+      - task: installAudioPlayerDependencies
+      - task: buildAudioPlayer
+
+  initRfidReader:
+    desc: Execute Tasks ->  installRfidReaderDependencies and buildRfidReader
+    cmds:
+      - task: installRfidReaderDependencies
+      - task: buildRfidReader
+
+  default:
+    cmds:
+      - go-task -l
+    silent: true
