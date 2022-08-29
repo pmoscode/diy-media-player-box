@@ -47,21 +47,23 @@ func main() {
 
 	rfid.SetAntennaGain(6)
 
+	cb := make(chan []byte)
+	defer func() {
+		close(cb)
+	}()
 	for true {
-		search()
+		search(cb)
 	}
-
 }
 
-func search() {
+func search(cb chan []byte) {
 	timedOut := false
-	cb := make(chan []byte)
+
 	timer := time.NewTimer(time.Second)
 
 	defer func() {
 		timer.Stop()
 		timedOut = true
-		close(cb)
 	}()
 
 	go func() {
