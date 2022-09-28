@@ -39,7 +39,6 @@ func main() {
 	speaker.Init(sampleRate, sampleRate.N(time.Second/time.Duration(sampleRateFactor)))
 
 	router := gin.Default()
-	gin.SetMode(gin.ReleaseMode)
 	router.POST("/audio", audio.Play)
 	router.PATCH("/audio", audio.SwitchPlayState)
 	router.DELETE("/audio", audio.Stop)
