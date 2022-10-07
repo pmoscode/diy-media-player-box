@@ -11,11 +11,6 @@ import (
 	"time"
 )
 
-type Message struct {
-	Topic string
-	Value interface{}
-}
-
 const notConnected = "Mqtt Client not connected! Call 'connect' method..."
 
 func (m Message) FromJson() string {

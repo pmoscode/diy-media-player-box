@@ -95,6 +95,8 @@ func (a *Audio) OnMessageReceivedPlay(message mqtt.Message) {
 }
 
 func (a *Audio) OnMessageReceivedSwitch(message mqtt.Message) {
+	log.Println(message)
+
 	if a.control != nil {
 		speaker.Lock()
 		a.control.Paused = !a.control.Paused
@@ -114,6 +116,8 @@ func (a *Audio) OnMessageReceivedSwitch(message mqtt.Message) {
 }
 
 func (a *Audio) OnMessageReceivedStop(message mqtt.Message) {
+	log.Println(message)
+
 	speaker.Clear()
 
 	a.lastPlayedUid = "-1"
