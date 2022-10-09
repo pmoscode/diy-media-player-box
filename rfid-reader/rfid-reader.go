@@ -1,141 +1,68 @@
 package main
 
 import (
-	"encoding/hex"
-	"encoding/json"
-	"fmt"
+	"flag"
 	"log"
-	"net/http"
-	"os"
-	"time"
-
-	"periph.io/x/conn/v3/spi/spireg"
-	"periph.io/x/devices/v3/mfrc522"
-	"periph.io/x/host/v3"
-	"periph.io/x/host/v3/rpi"
+	"os/exec"
+	"rfid-reader/mqtt"
+	"rfid-reader/rfid"
 )
 
-var (
-	rfid           *mfrc522.Dev
-	lastId         = ""
-	removeCounter  = 0
-	controllerPort = getEnv("CONTROLLER_PORT", "2020")
-)
+var mqttClient *mqtt.Client
 
-const removeOkThreshold = 2
+type CliOptions struct {
+	mqttBrokerIp     *string
+	mqttClientId     *string
+	sampleRateFactor *int
+}
+
+type Module interface {
+	Run()
+}
+
+func getCliOptions() CliOptions {
+	mqttBrokerIp := flag.String("mqtt-broker", "localhost", "Ip of MQTT broker")
+	mqttClientId := flag.String("mqtt-client-id", "rfid-reader", "Client id for Mqtt connection")
+	flag.Parse()
+
+	log.Println("Publishing / Subscribing to broker: ", *mqttBrokerIp)
+
+	return CliOptions{
+		mqttBrokerIp: mqttBrokerIp,
+		mqttClientId: mqttClientId,
+	}
+}
 
 func main() {
-	var err error
-	err = nil
+	cliOptions := getCliOptions()
 
-	if _, err := host.Init(); err != nil {
-		log.Fatal(err)
-	}
+	mqttClient = mqtt.CreateClient(*cliOptions.mqttBrokerIp, 1883, *cliOptions.mqttClientId)
+	mqttClient.Connect()
 
-	p, errOpen := spireg.Open("")
-	if errOpen != nil {
-		log.Fatal(err)
-	}
-	defer p.Close()
+	var rfidClient Module
 
-	rfid, err = mfrc522.NewSPI(p, rpi.P1_22, rpi.P1_18)
+	cmd := exec.Command("cat", "/sys/firmware/devicetree/base/serial-number")
+	_, err := cmd.CombinedOutput()
 	if err != nil {
-		log.Fatal(err)
+		log.Println("Not on Raspi... Switching to Mock mode...")
+		rfidClient = rfid.NewMock(mqttClient)
+	} else {
+		log.Println("On Raspi... Switching to Rfid mode...")
+		rfidClient = rfid.NewRfid(sendCardIdMessage, sendStatusMessage)
 	}
-
-	defer rfid.Halt()
-
-	rfid.SetAntennaGain(6)
-
-	cb := make(chan []byte)
-	defer func() {
-		close(cb)
-	}()
-	for true {
-		search(cb)
-	}
+	rfidClient.Run()
 }
 
-func search(cb chan []byte) {
-	timedOut := false
-
-	timer := time.NewTimer(time.Second)
-
-	defer func() {
-		timer.Stop()
-		timedOut = true
-	}()
-
-	go func() {
-		for {
-			uid, err := rfid.ReadUID(time.Second)
-
-			if timedOut {
-				return
-			}
-
-			if err != nil {
-				time.Sleep(time.Second)
-				continue
-			}
-
-			cb <- uid
-			return
-		}
-	}()
-
-	for {
-		// fmt.Print("\033[G")
-		select {
-		case <-timer.C:
-			if lastId != "" {
-				removeCounter++
-				if removeCounter >= removeOkThreshold {
-					log.Print("Card removed...")
-					sendRequest(fmt.Sprintf("http://localhost:%s/api/audio-books/pause", controllerPort))
-					lastId = ""
-					removeCounter = 0
-				}
-			}
-
-			// fmt.Print("\033[A")
-			return
-		case data := <-cb:
-			cardId := hex.EncodeToString(data)
-			if cardId != lastId {
-				fmt.Println("New card present: ", cardId)
-				lastId = cardId
-				sendRequest(fmt.Sprintf("http://localhost:%s/api/audio-books/%s/play", controllerPort, cardId))
-			}
-			removeCounter = 0
-			time.Sleep(time.Second)
-			// fmt.Print("\033[A")
-			return
-		}
-	}
+func sendStatusMessage(message string) {
+	mqttClient.SendMessage(&mqtt.Message{
+		Topic: "/status/RfidReader",
+		Value: "{\"status\": \"" + message + "\"}",
+	})
 }
 
-func getEnv(name string, defaultValue string) string {
-	env, ok := os.LookupEnv(name)
-	if !ok {
-		return defaultValue
-	}
-
-	return env
-}
-
-func sendRequest(apiEndpoint string) {
-	fmt.Println("Sending request to: ", apiEndpoint)
-
-	resp, err := http.Post(apiEndpoint, "application/json", nil)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	var res map[string]interface{}
-
-	json.NewDecoder(resp.Body).Decode(&res)
-
-	fmt.Println("Code: ", resp.StatusCode, " ## Response: ", res["json"])
+func sendCardIdMessage(cardId string) {
+	mqttClient.SendMessage(&mqtt.Message{
+		Topic: "/rfidReader/cardId",
+		Value: "{\"cardId\": \"" + cardId + "\"}",
+	})
 }
