@@ -42,7 +42,7 @@ func main() {
 	const sampleRate = beep.SampleRate(audio.DefaultSampleRate)
 	speaker.Init(sampleRate, sampleRate.N(time.Second/time.Duration(*cliOptions.sampleRateFactor)))
 
-	audioClient := audio.NewAudio(sendStatus)
+	audioClient := audio.NewAudio(sendStatusMessage)
 
 	mqttClient.Subscribe("/audioPlayer/play", audioClient.OnMessageReceivedPlay)
 	mqttClient.Subscribe("/audioPlayer/switch", audioClient.OnMessageReceivedSwitch)
@@ -50,7 +50,7 @@ func main() {
 	mqttClient.LoopForever()
 }
 
-func sendStatus(message string) {
+func sendStatusMessage(message string) {
 	mqttClient.SendMessage(&mqtt.Message{
 		Topic: "/status/audioPlayer",
 		Value: "{\"status\": \"" + message + "\"}",

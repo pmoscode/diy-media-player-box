@@ -12,9 +12,9 @@ import (
 const DefaultSampleRate = 44100
 
 type Audio struct {
-	control       *beep.Ctrl
-	lastPlayedUid string
-	sendMessage   func(message string)
+	control           *beep.Ctrl
+	lastPlayedUid     string
+	sendStatusMessage func(message string)
 }
 
 func (a *Audio) checkLastPlayedUidChanged(body *audioRequestInput) bool {
@@ -69,7 +69,7 @@ func (a *Audio) OnMessageReceivedPlay(message mqtt.Message) {
 		samples = append(samples, beep.Callback(func() {
 			a.lastPlayedUid = "-1"
 			log.Println("status: ", "stopped")
-			a.sendMessage("stopped")
+			a.sendStatusMessage("stopped")
 		}))
 
 		if len(samples) > 0 {
@@ -79,17 +79,17 @@ func (a *Audio) OnMessageReceivedPlay(message mqtt.Message) {
 			speaker.Play(a.control)
 
 			log.Println("status: ", "playing")
-			a.sendMessage("playing")
+			a.sendStatusMessage("playing")
 		} else {
 			log.Println("status: ", "no tracks")
-			a.sendMessage("no tracks")
+			a.sendStatusMessage("no tracks")
 		}
 	} else {
 		if a.control.Paused {
 			a.OnMessageReceivedSwitch(message)
 		} else {
 			log.Println("status: ", "untouched")
-			a.sendMessage("untouched")
+			a.sendStatusMessage("untouched")
 		}
 	}
 }
@@ -108,10 +108,10 @@ func (a *Audio) OnMessageReceivedSwitch(message mqtt.Message) {
 		}
 
 		log.Println("status: ", status)
-		a.sendMessage(status)
+		a.sendStatusMessage(status)
 	} else {
 		log.Println("status: ", "no audio stream")
-		a.sendMessage("no audio stream")
+		a.sendStatusMessage("no audio stream")
 	}
 }
 
@@ -122,9 +122,9 @@ func (a *Audio) OnMessageReceivedStop(message mqtt.Message) {
 
 	a.lastPlayedUid = "-1"
 	log.Println("status: ", "stopped")
-	a.sendMessage("stopped")
+	a.sendStatusMessage("stopped")
 }
 
-func NewAudio(fn func(message string)) *Audio {
-	return &Audio{sendMessage: fn}
+func NewAudio(statusMessage func(statusMessage string)) *Audio {
+	return &Audio{sendStatusMessage: statusMessage}
 }
