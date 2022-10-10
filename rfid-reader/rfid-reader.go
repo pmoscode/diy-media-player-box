@@ -11,9 +11,8 @@ import (
 var mqttClient *mqtt.Client
 
 type CliOptions struct {
-	mqttBrokerIp     *string
-	mqttClientId     *string
-	sampleRateFactor *int
+	mqttBrokerIp *string
+	mqttClientId *string
 }
 
 type Module interface {
