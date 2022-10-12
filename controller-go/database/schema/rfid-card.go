@@ -4,5 +4,6 @@ import "gorm.io/gorm"
 
 type Card struct {
 	gorm.Model
-	CardId string
+	AudioBookID uint
+	CardId      string
 }

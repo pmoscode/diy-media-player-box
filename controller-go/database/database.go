@@ -19,6 +19,8 @@ const (
 	DbError
 )
 
+var databaseSingleton *Database = nil
+
 type Database struct {
 	db *gorm.DB
 }
@@ -57,23 +59,23 @@ func (r *Database) initDatabase(dbFilename string, debug bool) {
 	r.db = db
 }
 
-func (r *Database) GetAllAudioBooks() ([]schema.AudioBook, DbResult) {
+func (r *Database) GetAllAudioBooks() (*[]schema.AudioBook, DbResult) {
 	var data []schema.AudioBook
 
 	result := r.db.Preload(clause.Associations).Find(&data)
 
 	if result.RowsAffected == 0 {
-		return data, DbRecordNotFound
+		return &data, DbRecordNotFound
 	}
 
-	return data, DbOk
+	return &data, DbOk
 }
 
-func (r *Database) GetAudioBook(audioBook *schema.AudioBook) (schema.AudioBook, DbResult) {
+func (r *Database) GetAudioBook(audioBook *schema.AudioBook) (*schema.AudioBook, DbResult) {
 	return r.GetAudioBookById(audioBook.ID)
 }
 
-func (r *Database) GetAudioBookById(id uint) (schema.AudioBook, DbResult) {
+func (r *Database) GetAudioBookById(id uint) (*schema.AudioBook, DbResult) {
 	var data schema.AudioBook
 
 	result := r.db.Where(&schema.AudioBook{
@@ -83,10 +85,10 @@ func (r *Database) GetAudioBookById(id uint) (schema.AudioBook, DbResult) {
 	}).First(&data)
 
 	if result.RowsAffected == 0 {
-		return data, DbRecordNotFound
+		return &data, DbRecordNotFound
 	}
 
-	return data, DbOk
+	return &data, DbOk
 }
 
 func (r *Database) InsertAudioBook(audioBook *schema.AudioBook) DbResult {
@@ -119,19 +121,19 @@ func (r *Database) DeleteAudioBook(audioBook *schema.AudioBook) DbResult {
 	return DbOk
 }
 
-func (r *Database) GetAllUnassignedCards() ([]schema.Card, DbResult) {
+func (r *Database) GetAllCards() (*[]schema.Card, DbResult) {
 	var data []schema.Card
 
 	result := r.db.Find(&data)
 
 	if result.RowsAffected == 0 {
-		return data, DbRecordNotFound
+		return &data, DbRecordNotFound
 	}
 
-	return data, DbOk
+	return &data, DbOk
 }
 
-func (r *Database) AddUnusedCard(cardId string) (schema.Card, DbResult) {
+func (r *Database) AddUnusedCard(cardId string) (*schema.Card, DbResult) {
 	data := schema.Card{
 		CardId: cardId,
 	}
@@ -139,10 +141,10 @@ func (r *Database) AddUnusedCard(cardId string) (schema.Card, DbResult) {
 	result := r.db.Save(&data)
 
 	if result.RowsAffected == 0 {
-		return data, DbError
+		return &data, DbError
 	}
 
-	return data, DbOk
+	return &data, DbOk
 }
 
 func (r *Database) RemoveUnusedCard(id uint) DbResult {
@@ -162,8 +164,10 @@ func (r *Database) RemoveUnusedCard(id uint) DbResult {
 }
 
 func CreateDatabase(debug bool) (*Database, error) {
-	db := Database{}
-	db.initDatabase("data", debug)
+	if databaseSingleton == nil {
+		databaseSingleton = &Database{}
+		databaseSingleton.initDatabase("data", debug)
+	}
 
-	return &db, nil
+	return databaseSingleton, nil
 }
