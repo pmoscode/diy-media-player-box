@@ -5,8 +5,8 @@ import "gorm.io/gorm"
 type AudioTrack struct {
 	gorm.Model
 	AudioBookID uint
-	Track       string
+	Track       uint
 	Title       string
-	Length      int
+	Length      string
 	FileName    string
 }

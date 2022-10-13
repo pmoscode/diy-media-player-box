@@ -2,13 +2,18 @@ package main
 
 import (
 	"controller/api"
-	"github.com/gin-gonic/gin"
+	"fmt"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+	"log"
 )
 
 func main() {
-	router := gin.Default()
+	router := echo.New()
+	// router.Use(middleware.Logger())
+	router.Use(middleware.Recover())
 
-	router.Static("ui", "/")
+	router.Static("/", "ui")
 
 	apiRoute := router.Group("/api")
 	{
@@ -26,7 +31,11 @@ func main() {
 		apiRoute.POST("/audio-books/stop", api.StopTrack)
 	}
 
-	router.Run("2020")
+	for _, route := range router.Routes() {
+		log.Println(fmt.Sprintf("%-6s", route.Method), " - ", route.Path)
+	}
+
+	router.Logger.Fatal(router.Start(":2020"))
 
 	//db, _ := database.CreateDatabase(false)
 	//

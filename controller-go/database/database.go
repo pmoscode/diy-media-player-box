@@ -112,7 +112,7 @@ func (r *Database) UpdateAudioBook(audioBook *schema.AudioBook) DbResult {
 }
 
 func (r *Database) DeleteAudioBook(audioBook *schema.AudioBook) DbResult {
-	result := r.db.Unscoped().Delete(&audioBook)
+	result := r.db.Unscoped().Select(clause.Associations).Delete(&audioBook)
 
 	if result.RowsAffected == 0 {
 		return DbError

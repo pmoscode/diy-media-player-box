@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"strconv"
 )
 
 func PrintPrettyFormatStruct(obj interface{}) {
@@ -20,4 +21,13 @@ func PrintFormatStruct(obj interface{}) {
 		log.Fatalf(err.Error())
 	}
 	fmt.Printf("%s\n", string(empJSON))
+}
+
+func ConvertToUint(src string) uint {
+	i, err := strconv.ParseUint(src, 10, 64)
+	if err == nil {
+		return uint(i)
+	}
+
+	return 0
 }
