@@ -1,13 +1,14 @@
 package api
 
 import (
-	"controller/database/schema"
+	"controller/api/schema"
 	"controller/utils"
 	"github.com/labstack/echo/v4"
 	"net/http"
 )
 
 var audioBookService = NewAudioBookService()
+var cardService = NewCardService()
 
 func GetAllAudioBooks(c echo.Context) error {
 	audioBooks, err := audioBookService.GetAllAudioBooks()
@@ -25,7 +26,7 @@ func AddAudioBook(c echo.Context) error {
 	if err == nil {
 		audioBookResult, err := audioBookService.AddAudioBook(&audioBook)
 		if err != nil {
-			return err
+			return c.JSON(http.StatusInternalServerError, &Response{message: err.Error()})
 		}
 		return c.JSON(http.StatusOK, audioBookResult)
 	}
@@ -53,24 +54,24 @@ func UpdateAudioBook(c echo.Context) error {
 func DeleteAudioBook(c echo.Context) error {
 	id := c.Param("id")
 
-	err := audioBookService.DeleteAudioBook(utils.ConvertToUint(id))
+	audioBook, err := audioBookService.DeleteAudioBook(utils.ConvertToUint(id))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, &Response{message: err.Error()})
 	}
 
-	return c.NoContent(http.StatusOK)
+	return c.JSON(http.StatusOK, audioBook)
 }
 
 func UploadTracks(c echo.Context) error {
 	id := c.Param("id")
 	files := utils.GetAllFilesFromRequest(c)
 
-	err := audioBookService.UploadTracks(utils.ConvertToUint(id), files)
+	tracks, err := audioBookService.UploadTracks(utils.ConvertToUint(id), files)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, &Response{message: err.Error()})
 	}
 
-	return c.NoContent(http.StatusOK)
+	return c.JSON(http.StatusOK, tracks)
 }
 
 func DeleteAllTracks(c echo.Context) error {
@@ -83,6 +84,15 @@ func DeleteAllTracks(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, audioBook)
 
+}
+
+func GetAllUnassignedCards(c echo.Context) error {
+	cards, err := cardService.GetAllUnusedCards()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, &Response{message: err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, cards)
 }
 
 func PlayAudioBook(c echo.Context) error {

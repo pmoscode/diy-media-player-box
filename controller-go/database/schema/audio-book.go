@@ -9,7 +9,7 @@ type AudioBook struct {
 	gorm.Model
 	Title       string
 	LastPlayed  time.Time
-	CardId      *Card
+	CardId      string
 	TimesPlayed int
 	TrackList   []*AudioTrack
 }

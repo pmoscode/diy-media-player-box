@@ -7,15 +7,21 @@ import (
 	"io"
 	"log"
 	"os"
+	"strconv"
+	"strings"
 )
 
 func GetAudioInformation(audioFilename string) (string, string) {
 	file, _ := os.Open(audioFilename)
 
+	title := "no title"
+
 	// Read mp3TagInfo
 	m, err := tag.ReadFrom(file)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+	} else {
+		title = m.Title()
 	}
 
 	// Get Track length
@@ -35,8 +41,22 @@ func GetAudioInformation(audioFilename string) (string, string) {
 			break
 		}
 
-		t = t + f.Duration().Seconds()
+		t = t + f.Duration().Minutes()
 	}
 
-	return m.Title(), fmt.Sprintf("%.2f", t)
+	time := fmt.Sprintf("%.2f", t)
+
+	return title, convertMinutes(time)
+}
+
+func convertMinutes(min string) string {
+	split := strings.Split(min, ".")
+
+	secs, err := strconv.ParseFloat(split[1], 64)
+	if err != nil {
+		log.Println(err)
+		return min
+	}
+
+	return split[0] + ":" + fmt.Sprintf("%.0f", secs*0.6)
 }

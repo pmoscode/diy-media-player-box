@@ -1,12 +1,14 @@
 package api
 
 import (
+	uiSchema "controller/api/schema"
 	"controller/database"
-	"controller/database/schema"
+	dbSchema "controller/database/schema"
 	"controller/utils"
-	"log"
 	"mime/multipart"
 	"path/filepath"
+	"sort"
+	"time"
 )
 
 type AudioBookService struct {
@@ -14,79 +16,86 @@ type AudioBookService struct {
 	cardService *CardService
 }
 
-func (a *AudioBookService) GetAllAudioBooks() (*[]schema.AudioBook, error) {
-	allAudioBooks, dbResult := a.dbClient.GetAllAudioBooks()
-	log.Println(dbResult)
+func (a *AudioBookService) GetAllAudioBooks() ([]*uiSchema.AudioBook, error) {
+	allAudioBooks, _ := a.dbClient.GetAllAudioBooks()
 
-	return allAudioBooks, nil
+	audioBooks := make([]*uiSchema.AudioBook, 0)
+	for _, audioBook := range *allAudioBooks {
+		converted := utils.ConvertAudioBookDbToUi(&audioBook)
+		audioBooks = append(audioBooks, converted)
+	}
+
+	return audioBooks, nil
 }
 
-func (a *AudioBookService) AddAudioBook(audioBook *schema.AudioBook) (*schema.AudioBook, error) {
-	dbResult := a.dbClient.InsertAudioBook(audioBook)
-	log.Println(dbResult)
+func (a *AudioBookService) AddAudioBook(audioBook *uiSchema.AudioBook) (*uiSchema.AudioBook, error) {
+	dbAudioBook := utils.ConvertAudioBookUiToDb(audioBook)
+	dbAudioBook.TimesPlayed = 0
+	dbAudioBook.LastPlayed = time.Now()
+	a.dbClient.InsertAudioBook(dbAudioBook)
 
-	if audioBook.CardId != nil {
-		err := a.cardService.RemoveUnusedCard(audioBook.CardId.ID)
+	if audioBook.Card != nil {
+		err := a.cardService.RemoveUnusedCard(uint(audioBook.Card.Id))
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	utils.CreateMediaFolder(audioBook.ID)
+	utils.CreateMediaFolder(dbAudioBook.ID)
 
 	return audioBook, nil
 }
 
-func (a *AudioBookService) UpdateAudioBook(id uint, audioBook *schema.AudioBook) error {
-	audioBookDb, dbResult := a.dbClient.GetAudioBookById(id)
-	log.Println(dbResult)
+func (a *AudioBookService) UpdateAudioBook(id uint, audioBookUi *uiSchema.AudioBook) error {
+	audioBookDb, _ := a.dbClient.GetAudioBookById(id)
 
-	if audioBookDb.CardId != nil && audioBook.CardId != nil && audioBookDb.CardId.ID != audioBook.CardId.ID {
-		_, err := a.cardService.AddUnusedCard(audioBookDb.CardId.CardId)
+	if audioBookDb.CardId != "" && audioBookUi.Card != nil && audioBookDb.CardId != audioBookUi.Card.CardId {
+		_, err := a.cardService.AddUnusedCard(audioBookDb.CardId)
 		if err != nil {
 			return err
 		}
 	}
 
-	if audioBook.CardId != nil {
-		err := a.cardService.RemoveUnusedCard(audioBook.CardId.ID)
+	if audioBookUi.Card != nil {
+		err := a.cardService.RemoveUnusedCard(uint(audioBookUi.Card.Id))
 		if err != nil {
 			return err
 		}
 	}
 
-	err := utils.MergeAudioBook(audioBookDb, *audioBook)
-	if err != nil {
-		return err
-	}
+	utils.MergeAudioBookUiToDb(audioBookDb, audioBookUi)
 
-	dbResult = a.dbClient.UpdateAudioBook(audioBookDb)
-	log.Println(dbResult)
+	a.dbClient.UpdateAudioBook(audioBookDb)
 
 	return nil
 }
 
-func (a *AudioBookService) DeleteAudioBook(id uint) error {
-	audioBookDb, dbResult := a.dbClient.GetAudioBookById(id)
-	log.Println(dbResult)
+func (a *AudioBookService) DeleteAudioBook(id uint) (*uiSchema.AudioBook, error) {
+	audioBookDb, _ := a.dbClient.GetAudioBookById(id)
 
 	a.dbClient.DeleteAudioBook(audioBookDb)
 
 	utils.DeleteMediaFolder(id)
 
-	if audioBookDb.CardId != nil {
-		_, err := a.cardService.AddUnusedCard(audioBookDb.CardId.CardId)
+	if audioBookDb.CardId != "" {
+		_, err := a.cardService.AddUnusedCard(audioBookDb.CardId)
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
 
-	return nil
+	return utils.ConvertAudioBookDbToUi(audioBookDb), nil
 }
 
-func (a *AudioBookService) UploadTracks(id uint, audioFiles []*multipart.FileHeader) error {
-	audioBookDb, dbResult := a.dbClient.GetAudioBookById(id)
-	log.Println(dbResult)
+func (a *AudioBookService) UploadTracks(id uint, audioFiles []*multipart.FileHeader) ([]*uiSchema.AudioTrack, error) {
+	audioBookDb, _ := a.dbClient.GetAudioBookById(id)
+
+	uiTracks := make([]*dbSchema.AudioTrack, 0)
+	trackSum := len(audioBookDb.TrackList) + 1
+
+	sort.SliceStable(audioFiles, func(i, j int) bool {
+		return audioFiles[i].Filename < audioFiles[j].Filename
+	})
 
 	for trackNumber, file := range audioFiles {
 		mediaPath := utils.GetCompletePathToMediaFolder(audioBookDb.ID)
@@ -97,32 +106,35 @@ func (a *AudioBookService) UploadTracks(id uint, audioFiles []*multipart.FileHea
 		}
 
 		title, length := utils.GetAudioInformation(filepath.Join(mediaPath, file.Filename))
-		track := &schema.AudioTrack{
-			Track:    uint(trackNumber),
+		track := &dbSchema.AudioTrack{
+			Track:    uint(trackNumber + trackSum),
 			Title:    title,
 			Length:   length,
 			FileName: file.Filename,
 		}
 		audioBookDb.TrackList = append(audioBookDb.TrackList, track)
+		uiTracks = append(uiTracks, track)
 	}
-
-	dbResult = a.dbClient.UpdateAudioBook(audioBookDb)
-	log.Println(dbResult)
-
-	return nil
-}
-
-func (a *AudioBookService) DeleteAllTracks(id uint) (*schema.AudioBook, error) {
-	audioBookDb, dbResult := a.dbClient.GetAudioBookById(id)
-	log.Println(dbResult)
-
-	utils.DeleteMediaFolderContent(audioBookDb)
-
-	audioBookDb.TrackList = make([]*schema.AudioTrack, 0)
 
 	a.dbClient.UpdateAudioBook(audioBookDb)
 
-	return audioBookDb, nil
+	return utils.ConvertAudioBookTracksDbToUi(uiTracks), nil
+}
+
+func (a *AudioBookService) DeleteAllTracks(id uint) (*uiSchema.AudioBook, error) {
+	audioBookDb, _ := a.dbClient.GetAudioBookById(id)
+
+	utils.DeleteMediaFolderContent(audioBookDb)
+
+	for _, audioTrack := range audioBookDb.TrackList {
+		a.dbClient.DeleteAudioTrack(audioTrack)
+	}
+
+	audioBookDb.TrackList = make([]*dbSchema.AudioTrack, 0)
+
+	a.dbClient.UpdateAudioBook(audioBookDb)
+
+	return utils.ConvertAudioBookDbToUi(audioBookDb), nil
 }
 
 func NewAudioBookService() *AudioBookService {

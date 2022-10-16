@@ -16,6 +16,7 @@ type DbResult int
 const (
 	DbOk DbResult = iota
 	DbRecordNotFound
+	DbNoRowsAffected
 	DbError
 )
 
@@ -78,7 +79,7 @@ func (r *Database) GetAudioBook(audioBook *schema.AudioBook) (*schema.AudioBook,
 func (r *Database) GetAudioBookById(id uint) (*schema.AudioBook, DbResult) {
 	var data schema.AudioBook
 
-	result := r.db.Where(&schema.AudioBook{
+	result := r.db.Preload(clause.Associations).Where(&schema.AudioBook{
 		Model: gorm.Model{
 			ID: id,
 		},
@@ -95,17 +96,17 @@ func (r *Database) InsertAudioBook(audioBook *schema.AudioBook) DbResult {
 	result := r.db.Create(&audioBook)
 
 	if result.RowsAffected == 0 {
-		return DbError
+		return DbNoRowsAffected
 	}
 
 	return DbOk
 }
 
 func (r *Database) UpdateAudioBook(audioBook *schema.AudioBook) DbResult {
-	result := r.db.Save(&audioBook)
+	result := r.db.Preload(clause.Associations).Save(&audioBook)
 
 	if result.RowsAffected == 0 {
-		return DbError
+		return DbNoRowsAffected
 	}
 
 	return DbOk
@@ -115,7 +116,17 @@ func (r *Database) DeleteAudioBook(audioBook *schema.AudioBook) DbResult {
 	result := r.db.Unscoped().Select(clause.Associations).Delete(&audioBook)
 
 	if result.RowsAffected == 0 {
-		return DbError
+		return DbNoRowsAffected
+	}
+
+	return DbOk
+}
+
+func (r *Database) DeleteAudioTrack(audioTrack *schema.AudioTrack) DbResult {
+	result := r.db.Unscoped().Delete(&audioTrack)
+
+	if result.RowsAffected == 0 {
+		return DbNoRowsAffected
 	}
 
 	return DbOk
@@ -141,7 +152,7 @@ func (r *Database) AddUnusedCard(cardId string) (*schema.Card, DbResult) {
 	result := r.db.Save(&data)
 
 	if result.RowsAffected == 0 {
-		return &data, DbError
+		return &data, DbNoRowsAffected
 	}
 
 	return &data, DbOk
@@ -157,7 +168,7 @@ func (r *Database) RemoveUnusedCard(id uint) DbResult {
 	result := r.db.Unscoped().Delete(&data)
 
 	if result.RowsAffected == 0 {
-		return DbError
+		return DbNoRowsAffected
 	}
 
 	return DbOk

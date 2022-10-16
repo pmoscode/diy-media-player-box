@@ -1,32 +1,34 @@
 package api
 
 import (
+	uiSchema "controller/api/schema"
 	"controller/database"
-	"controller/database/schema"
-	"log"
+	"controller/utils"
 )
 
 type CardService struct {
 	dbClient *database.Database
 }
 
-func (c *CardService) GetAllUnusedCards() (*[]schema.Card, error) {
-	allCards, dbResult := c.dbClient.GetAllCards()
-	log.Println(dbResult)
+func (c *CardService) GetAllUnusedCards() ([]*uiSchema.Card, error) {
+	allCards, _ := c.dbClient.GetAllCards()
 
-	return allCards, nil
+	cards := make([]*uiSchema.Card, 0)
+	for _, card := range *allCards {
+		cards = append(cards, utils.ConvertCardDbToUi(&card))
+	}
+
+	return cards, nil
 }
 
-func (c *CardService) AddUnusedCard(cardId string) (*schema.Card, error) {
-	card, dbResult := c.dbClient.AddUnusedCard(cardId)
-	log.Println(dbResult)
+func (c *CardService) AddUnusedCard(cardId string) (*uiSchema.Card, error) {
+	card, _ := c.dbClient.AddUnusedCard(cardId)
 
-	return card, nil
+	return utils.ConvertCardDbToUi(card), nil
 }
 
 func (c *CardService) RemoveUnusedCard(id uint) error {
-	dbResult := c.dbClient.RemoveUnusedCard(id)
-	log.Println(dbResult)
+	c.dbClient.RemoveUnusedCard(id)
 
 	return nil
 }
