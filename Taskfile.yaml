@@ -33,12 +33,6 @@ tasks:
     cmds:
       - sshpass -p "$RASPBERRY_PASSWORD" scp -r app/ ui/ .env package.json server.js pi@$REMOTE_SERVER:/home/pi/controller
 
-  createControllerDatabaseDirectory:
-    desc: Creates the folder where all data will be stored of Controller
-    dir: controller
-    cmds:
-      - sshpass -p "$RASPBERRY_PASSWORD" ssh pi@$REMOTE_SERVER "cd /home/pi/controller && mkdir database"
-
   copyRfidReaderSource:
     desc: Copies all source content of Rfid-Reader
     dir: rfid-reader

@@ -45,13 +45,19 @@ testem.log
 .DS_Store
 Thumbs.db
 
-/controller/database/
-/controller/logs
-/controller/media
-/controller/.env
-/controller/node_modules
+/audio-player/audio-player
+
+/controller-old/database/
+/controller-old/logs
+/controller-old/media
+/controller-old/.env
+/controller-old/node_modules
+/controller-old/ui
+
+/controller/go-contr
+/controller/data.db
+/controller/media/**
 /controller/ui
 
+/rfid-reader/rfid-reader
 .env
-
-audio-player/pmoscode.diy-media-player-box-backend
