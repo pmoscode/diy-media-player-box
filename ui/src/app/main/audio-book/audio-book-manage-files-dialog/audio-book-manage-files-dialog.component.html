@@ -1,0 +1,24 @@
+<h1 mat-dialog-title>Manage audio book audio files</h1>
+<div mat-dialog-content class="dialog-height">
+    <div class="flex-container">
+        <mat-list class="center" *ngIf="files.length > 0">
+            <mat-list-item *ngFor="let file of files">{{file.name}}</mat-list-item>
+        </mat-list>
+        <div class="center" *ngIf="files.length === 0">
+            <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="dropped($event)" accept=".mp3" multiple="true">
+                <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+                    <button type="button" (click)="openFileSelector()">Browse Files</button>
+                </ng-template>
+            </ngx-file-drop>
+        </div>
+    </div>
+    <mat-action-row class="space-between">
+        <div>
+            <button *ngIf="data.hasFiles" mat-button color="warn" (click)="deleteAllTracks()">Delete all tracks</button>
+        </div>
+        <div>
+            <button mat-raised-button color="primary" cdkFocusInitial [mat-dialog-close]="{ files: files }" [disabled]="files.length === 0">Save</button>
+            <button mat-raised-button (click)="close()">Close</button>
+        </div>
+    </mat-action-row>
+</div>

@@ -1,0 +1,30 @@
+@import "~@angular/material/prebuilt-themes/indigo-pink.css"
+@import 'https://fonts.googleapis.com/icon?family=Material+Icons'
+@import '~@angular/material/_theming.scss'
+
+@media (max-width: 768px)
+  .content
+    margin: 0
+    padding: 1.4rem
+
+@media (min-width: 769px)
+  .content
+    margin: 0
+    padding: 1.4rem 10% 1.4rem 10%
+
+$primaryPalette: mat-palette($mat-indigo)
+$accentPalette:  mat-palette($mat-pink, A200, A100, A400)
+
+// the default warn palette is red, so use that if the theme doesn't define one
+$warnPalette:    mat-palette($mat-red)
+
+.full-width
+  width: 100%
+
+.audio-book-accordion .mat-expansion-panel-header-title,
+.audio-book-accordion .mat-expansion-panel-header-description
+  flex-basis: 0
+
+.audio-book-accordion .mat-expansion-panel-header-description
+  justify-content: space-between
+  align-items: center

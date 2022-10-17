@@ -1,0 +1,18 @@
+<mat-list class="full-width">
+    <mat-list-item>
+        <small>Title</small>
+        {{audioBook.title}}
+    </mat-list-item>
+    <mat-list-item>
+        <small>Card ID</small>
+        {{audioBook.card ? audioBook.card.cardId : 'not assigned yet'}}
+    </mat-list-item>
+    <mat-list-item>
+        <small>Times played</small>
+        {{audioBook.timesPlayed ? audioBook.timesPlayed : 0}}
+    </mat-list-item>
+    <mat-list-item>
+        <small>Last play</small>
+        {{audioBook.lastPlayed ? (audioBook.lastPlayed | date) : 'never'}}
+    </mat-list-item>
+</mat-list>

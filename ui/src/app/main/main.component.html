@@ -1,0 +1,10 @@
+<div class="content">
+    <mat-toolbar color="primary">
+        <mat-toolbar-row>
+            <button mat-icon-button (click)="addNewAudioBookDialog()"><mat-icon>add_circle</mat-icon></button>
+        </mat-toolbar-row>
+    </mat-toolbar>
+    <mat-accordion class="audio-book-accordion">
+        <tb-audio-book *ngFor="let audioBook of audioBooks" [audioBook]="audioBook" (audioBookDeletedEvent)="audioBookDeleted()"></tb-audio-book>
+    </mat-accordion>
+</div>

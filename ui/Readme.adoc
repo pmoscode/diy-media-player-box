@@ -1,0 +1,8 @@
+= DIY Media Player Box - UI
+
+This is the UI part of the DIY Media Player Box.
+You can use the https://gitlab.com/pmoscode/diy-media-player-box-backend[Backend repo] to Build it completely.
+
+This you can use, if you want to separate the UI and the backend. Usually the UI is served by the application server of the backend.
+
+The UI is build with Angular 11.

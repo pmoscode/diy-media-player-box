@@ -1,0 +1,29 @@
+<mat-expansion-panel hideToggle>
+    <mat-expansion-panel-header>
+        <mat-panel-title>
+            {{audioBook.title}}
+        </mat-panel-title>
+        <mat-panel-description>
+            # Tracks: {{audioBook.trackList ? audioBook.trackList.length : 'No tracklist available yet'}}
+            <span>Last played: {{audioBook.lastPlayed ? (audioBook.lastPlayed | timeAgo) : 'never'}}</span>
+            <mat-icon>audiotrack</mat-icon>
+        </mat-panel-description>
+    </mat-expansion-panel-header>
+    <mat-grid-list cols="5" rowHeight="300">
+        <mat-grid-tile colspan="3">
+            <tb-audio-book-information class="full-width" [audioBook]="audioBook"></tb-audio-book-information>
+        </mat-grid-tile>
+        <mat-grid-tile colspan="2">
+            <mat-spinner *ngIf="loadingTracks$ | async"></mat-spinner>
+            <tb-audio-book-track-list *ngIf="audioBook.trackList && audioBook.trackList.length > 0" class="full-width"
+                                      [audioBook]="audioBook"></tb-audio-book-track-list>
+        </mat-grid-tile>
+    </mat-grid-list>
+    <mat-action-row>
+        <div>
+            <button mat-button color="primary" (click)="editAudioBook(audioBook)">Edit</button>
+            <button mat-button color="primary" (click)="manageAudioFiles(audioBook)">Manage audio files</button>
+        </div>
+        <button mat-button color="warn" (click)="deleteAudioBook(audioBook)">Delete</button>
+    </mat-action-row>
+</mat-expansion-panel>

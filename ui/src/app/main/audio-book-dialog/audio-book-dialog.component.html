@@ -1,0 +1,27 @@
+<h1 mat-dialog-title>{{data.audioBook ? "Update" : "Add new"}} audio book</h1>
+<form mat-dialog-content [formGroup]="formGroup">
+    <div class="field-container">
+        <mat-form-field class="form-field">
+            <label>
+                <input matInput placeholder="Title of audio book" formControlName="title" required>
+            </label>
+            <mat-error *ngIf="getTitleMessage().length > 0">
+                {{ getTitleMessage() }}
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>CardId (optional)</mat-label>
+            <mat-select [compareWith]="compareCard" formControlName="card">
+                <mat-option *ngFor="let card of cards" [value]="card">{{card.cardId}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div mat-dialog-actions>
+        <button mat-raised-button (click)="cancel()">Cancel</button>
+        <button mat-raised-button
+                [disabled]="formGroup.invalid" color="primary"
+                [mat-dialog-close]="{ audioBook: formGroup.value }" cdkFocusInitial>
+            {{data.audioBook ? "Update" : "Add"}}
+        </button>
+    </div>
+</form>

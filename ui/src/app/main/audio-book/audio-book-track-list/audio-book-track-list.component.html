@@ -1,0 +1,22 @@
+<div class="track-list-container">
+    <p>Track content:</p>
+    <div class="track-list-table-container">
+        <table class="mat-elevation-z8">
+            <tr>
+                <th>Actions</th>
+                <th>Track No.</th>
+                <th>Title</th>
+                <th>Length</th>
+            </tr>
+            <tr *ngFor="let trackList of trackLists">
+                <td>
+                    <button *ngIf="!isPlaying(trackList)" (click)="playTrack(trackList)" mat-icon-button><mat-icon>play_arrow</mat-icon></button>
+                    <button *ngIf="isPlaying(trackList)" (click)="stopTrack()" mat-icon-button><mat-icon>stop</mat-icon></button>
+                </td>
+                <td>{{trackList.track}}</td>
+                <td>{{trackList.title}} </td>
+                <td>{{trackList.length}} </td>
+            </tr>
+        </table>
+    </div>
+</div>
