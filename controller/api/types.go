@@ -12,3 +12,7 @@ type audioPlayerPublishMessage struct {
 type rfidReaderSubscribeMessage struct {
 	CardId string `json:"cardId"`
 }
+
+type statusPublishMessage struct {
+	Status string `json:"status"`
+}

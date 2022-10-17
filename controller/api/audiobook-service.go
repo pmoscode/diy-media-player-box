@@ -215,20 +215,31 @@ func (a *AudioBookService) OnMessageReceivedCardId(message mqtt.Message) {
 	} else {
 		audioBookDb, _ := a.dbClient.GetAudioBookByCardId(card.CardId)
 
-		request := &audioPlayerPublishMessage{
-			Id:        strconv.Itoa(int(audioBookDb.ID)),
-			TrackList: []string{},
+		if audioBookDb.ID > 0 {
+			request := &audioPlayerPublishMessage{
+				Id:        strconv.Itoa(int(audioBookDb.ID)),
+				TrackList: []string{},
+			}
+
+			for _, track := range audioBookDb.TrackList {
+				mediaPath := utils.GetCompletePathToMediaFolder(audioBookDb.ID)
+				audioFilePath := filepath.Join(mediaPath, track.FileName)
+
+				request.TrackList = append(request.TrackList, audioFilePath)
+
+			}
+			audioPlayerMessage.Topic = "/audioPlayer/play"
+			audioPlayerMessage.Value = request
+		} else {
+			a.dbClient.AddUnusedCard(card.CardId)
+
+			statusMessage := &statusPublishMessage{
+				Status: "Added new card: " + card.CardId,
+			}
+
+			audioPlayerMessage.Topic = "/status/controller"
+			audioPlayerMessage.Value = statusMessage
 		}
-
-		for _, track := range audioBookDb.TrackList {
-			mediaPath := utils.GetCompletePathToMediaFolder(audioBookDb.ID)
-			audioFilePath := filepath.Join(mediaPath, track.FileName)
-
-			request.TrackList = append(request.TrackList, audioFilePath)
-
-		}
-		audioPlayerMessage.Topic = "/audioPlayer/play"
-		audioPlayerMessage.Value = request
 	}
 
 	mqttClient.Publish(audioPlayerMessage)
