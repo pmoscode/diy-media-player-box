@@ -17,9 +17,9 @@ type Audio struct {
 	sendStatusMessage func(message string)
 }
 
-func (a *Audio) checkLastPlayedUidChanged(body *audioRequestInput) bool {
-	if a.lastPlayedUid != body.Uid {
-		a.lastPlayedUid = body.Uid
+func (a *Audio) checkLastPlayedUidChanged(body *TracksSubscriptionMessage) bool {
+	if a.lastPlayedUid != body.Id {
+		a.lastPlayedUid = body.Id
 
 		return true
 	}
@@ -28,10 +28,9 @@ func (a *Audio) checkLastPlayedUidChanged(body *audioRequestInput) bool {
 }
 
 func (a *Audio) OnMessageReceivedPlay(message mqtt.Message) {
-	body := audioRequestInput{}
+	body := TracksSubscriptionMessage{}
 
 	message.ToStruct(&body)
-	log.Println(body)
 
 	uidChanged := a.checkLastPlayedUidChanged(&body)
 	log.Println("uid changed: ", uidChanged)
@@ -95,8 +94,6 @@ func (a *Audio) OnMessageReceivedPlay(message mqtt.Message) {
 }
 
 func (a *Audio) OnMessageReceivedSwitch(message mqtt.Message) {
-	log.Println(message)
-
 	if a.control != nil {
 		speaker.Lock()
 		a.control.Paused = !a.control.Paused
@@ -116,8 +113,6 @@ func (a *Audio) OnMessageReceivedSwitch(message mqtt.Message) {
 }
 
 func (a *Audio) OnMessageReceivedStop(message mqtt.Message) {
-	log.Println(message)
-
 	speaker.Clear()
 
 	a.lastPlayedUid = "-1"

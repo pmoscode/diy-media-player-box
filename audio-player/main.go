@@ -51,8 +51,12 @@ func main() {
 }
 
 func sendStatusMessage(message string) {
+	publishMessage := &audio.StatusPublishMessage{
+		Status: message,
+	}
+
 	mqttClient.SendMessage(&mqtt.Message{
 		Topic: "/status/audioPlayer",
-		Value: "{\"status\": \"" + message + "\"}",
+		Value: publishMessage,
 	})
 }
