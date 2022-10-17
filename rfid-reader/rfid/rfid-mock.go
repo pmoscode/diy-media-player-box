@@ -6,15 +6,22 @@ import (
 )
 
 type Mock struct {
+	cardId     string
 	mqttClient *mqtt.Client
 }
 
 func (m *Mock) Run() {
-	// To be implemented
-	log.Println("Mock not implemented yet...")
-	//m.mqttClient.LoopForever()
+	log.Println("Sending mock message...")
+	message := &CardIdPublishMessage{
+		CardId: m.cardId,
+	}
+
+	m.mqttClient.SendMessage(&mqtt.Message{
+		Topic: "/rfidReader/cardId",
+		Value: message,
+	})
 }
 
-func NewMock(mqttClient *mqtt.Client) *Mock {
-	return &Mock{mqttClient}
+func NewMock(cardId *string, mqttClient *mqtt.Client) *Mock {
+	return &Mock{*cardId, mqttClient}
 }

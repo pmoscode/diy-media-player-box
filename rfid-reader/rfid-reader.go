@@ -13,6 +13,7 @@ var mqttClient *mqtt.Client
 type CliOptions struct {
 	mqttBrokerIp *string
 	mqttClientId *string
+	mockCardId   *string
 }
 
 type Module interface {
@@ -22,6 +23,7 @@ type Module interface {
 func getCliOptions() CliOptions {
 	mqttBrokerIp := flag.String("mqtt-broker", "localhost", "Ip of MQTT broker")
 	mqttClientId := flag.String("mqtt-client-id", "rfid-reader", "Client id for Mqtt connection")
+	mockCardId := flag.String("mock-card-id", "123456", "Only used when in mock mode")
 	flag.Parse()
 
 	log.Println("Publishing / Subscribing to broker: ", *mqttBrokerIp)
@@ -29,6 +31,7 @@ func getCliOptions() CliOptions {
 	return CliOptions{
 		mqttBrokerIp: mqttBrokerIp,
 		mqttClientId: mqttClientId,
+		mockCardId:   mockCardId,
 	}
 }
 
@@ -44,7 +47,7 @@ func main() {
 	_, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Println("Not on Raspi... Switching to Mock mode...")
-		rfidClient = rfid.NewMock(mqttClient)
+		rfidClient = rfid.NewMock(cliOptions.mockCardId, mqttClient)
 	} else {
 		log.Println("On Raspi... Switching to Rfid mode...")
 		rfidClient = rfid.NewRfid(sendCardIdMessage, sendStatusMessage)
@@ -52,16 +55,24 @@ func main() {
 	rfidClient.Run()
 }
 
-func sendStatusMessage(message string) {
+func sendStatusMessage(statusMmessage string) {
+	message := &rfid.StatusPublishMessage{
+		Status: statusMmessage,
+	}
+
 	mqttClient.SendMessage(&mqtt.Message{
 		Topic: "/status/RfidReader",
-		Value: "{\"status\": \"" + message + "\"}",
+		Value: message,
 	})
 }
 
 func sendCardIdMessage(cardId string) {
+	message := &rfid.CardIdPublishMessage{
+		CardId: cardId,
+	}
+
 	mqttClient.SendMessage(&mqtt.Message{
 		Topic: "/rfidReader/cardId",
-		Value: "{\"cardId\": \"" + cardId + "\"}",
+		Value: message,
 	})
 }
