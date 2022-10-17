@@ -4,12 +4,16 @@ import (
 	uiSchema "controller/api/schema"
 	"controller/database"
 	dbSchema "controller/database/schema"
+	mqtt "controller/mqtt"
 	"controller/utils"
 	"mime/multipart"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"time"
 )
+
+var mqttClient *mqtt.Client
 
 type AudioBookService struct {
 	dbClient    *database.Database
@@ -137,14 +141,95 @@ func (a *AudioBookService) DeleteAllTracks(id uint) (*uiSchema.AudioBook, error)
 	return utils.ConvertAudioBookDbToUi(audioBookDb), nil
 }
 
+func (a *AudioBookService) PlayAudioTrack(id uint, idxTrack uint) error {
+	audioBookDb, _ := a.dbClient.GetAudioBookById(id)
+	track := audioBookDb.TrackList[idxTrack-1]
+
+	mediaPath := utils.GetCompletePathToMediaFolder(id)
+	audioFilePath := filepath.Join(mediaPath, track.FileName)
+
+	request := &audioPlayerPublishMessage{
+		Id:        strconv.Itoa(int(id)),
+		TrackList: []string{audioFilePath},
+	}
+
+	message := &mqtt.Message{
+		Topic: "/audioPlayer/play",
+		Value: request,
+	}
+
+	mqttClient.Publish(message)
+
+	return nil
+}
+
+func (a *AudioBookService) StopAudioTrack() error {
+	message := &mqtt.Message{
+		Topic: "/audioPlayer/stop",
+		Value: nil,
+	}
+
+	mqttClient.Publish(message)
+
+	return nil
+}
+
+func (a *AudioBookService) PauseAudioTrack() error {
+	message := &mqtt.Message{
+		Topic: "/audioPlayer/switch",
+		Value: nil,
+	}
+
+	mqttClient.Publish(message)
+
+	return nil
+}
+
 func NewAudioBookService() *AudioBookService {
 	databaseSingleton, err := database.CreateDatabase(false)
 	if err != nil {
 		return nil
 	}
 
-	return &AudioBookService{
+	audioBookService := &AudioBookService{
 		dbClient:    databaseSingleton,
 		cardService: NewCardService(),
 	}
+
+	mqttClient = mqtt.CreateClient(*cliOptions.mqttBrokerIp, 1883, *cliOptions.mqttClientId)
+	mqttClient.Connect()
+	mqttClient.Subscribe("/rfidReader/cardId", audioBookService.OnMessageReceivedCardId)
+
+	return audioBookService
+}
+
+func (a *AudioBookService) OnMessageReceivedCardId(message mqtt.Message) {
+	card := &rfidReaderSubscribeMessage{}
+	message.ToStruct(card)
+
+	audioPlayerMessage := &mqtt.Message{}
+
+	if card.CardId == "" {
+		audioPlayerMessage.Topic = "/audioPlayer/switch"
+		audioPlayerMessage.Value = nil
+	} else {
+		audioBookDb, _ := a.dbClient.GetAudioBookByCardId(card.CardId)
+
+		request := &audioPlayerPublishMessage{
+			Id:        strconv.Itoa(int(audioBookDb.ID)),
+			TrackList: []string{},
+		}
+
+		for _, track := range audioBookDb.TrackList {
+			mediaPath := utils.GetCompletePathToMediaFolder(audioBookDb.ID)
+			audioFilePath := filepath.Join(mediaPath, track.FileName)
+
+			request.TrackList = append(request.TrackList, audioFilePath)
+
+		}
+		audioPlayerMessage.Topic = "/audioPlayer/play"
+		audioPlayerMessage.Value = request
+	}
+
+	mqttClient.Publish(audioPlayerMessage)
 }

@@ -92,6 +92,20 @@ func (r *Database) GetAudioBookById(id uint) (*schema.AudioBook, DbResult) {
 	return &data, DbOk
 }
 
+func (r *Database) GetAudioBookByCardId(cardId string) (*schema.AudioBook, DbResult) {
+	var data schema.AudioBook
+
+	result := r.db.Preload(clause.Associations).Where(&schema.AudioBook{
+		CardId: cardId,
+	}).First(&data)
+
+	if result.RowsAffected == 0 {
+		return &data, DbRecordNotFound
+	}
+
+	return &data, DbOk
+}
+
 func (r *Database) InsertAudioBook(audioBook *schema.AudioBook) DbResult {
 	result := r.db.Create(&audioBook)
 

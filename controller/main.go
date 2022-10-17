@@ -25,7 +25,6 @@ func main() {
 		apiRoute.POST("/audio-books/:id/tracks", api.UploadTracks)
 		apiRoute.DELETE("/audio-books/:id/tracks", api.DeleteAllTracks)
 
-		apiRoute.POST("/audio-books/:uid/play", api.PlayAudioBook)
 		apiRoute.POST("/audio-books/:id/track/:track/play", api.PlayTrack)
 		apiRoute.POST("/audio-books/pause", api.PauseTrack)
 		apiRoute.POST("/audio-books/stop", api.StopTrack)

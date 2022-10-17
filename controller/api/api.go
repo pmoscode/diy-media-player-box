@@ -13,7 +13,7 @@ var cardService = NewCardService()
 func GetAllAudioBooks(c echo.Context) error {
 	audioBooks, err := audioBookService.GetAllAudioBooks()
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, &Response{message: err.Error()})
+		return c.JSON(http.StatusInternalServerError, &response{message: err.Error()})
 	}
 
 	return c.JSON(http.StatusOK, audioBooks)
@@ -26,12 +26,12 @@ func AddAudioBook(c echo.Context) error {
 	if err == nil {
 		audioBookResult, err := audioBookService.AddAudioBook(&audioBook)
 		if err != nil {
-			return c.JSON(http.StatusInternalServerError, &Response{message: err.Error()})
+			return c.JSON(http.StatusInternalServerError, &response{message: err.Error()})
 		}
 		return c.JSON(http.StatusOK, audioBookResult)
 	}
 
-	return c.JSON(http.StatusInternalServerError, &Response{message: err.Error()})
+	return c.JSON(http.StatusInternalServerError, &response{message: err.Error()})
 }
 
 func UpdateAudioBook(c echo.Context) error {
@@ -43,12 +43,12 @@ func UpdateAudioBook(c echo.Context) error {
 	if err == nil {
 		err = audioBookService.UpdateAudioBook(utils.ConvertToUint(id), &audioBook)
 		if err != nil {
-			return c.JSON(http.StatusInternalServerError, &Response{message: err.Error()})
+			return c.JSON(http.StatusInternalServerError, &response{message: err.Error()})
 		}
 		return c.JSON(http.StatusOK, &audioBook)
 	}
 
-	return c.JSON(http.StatusInternalServerError, &Response{message: err.Error()})
+	return c.JSON(http.StatusInternalServerError, &response{message: err.Error()})
 }
 
 func DeleteAudioBook(c echo.Context) error {
@@ -56,7 +56,7 @@ func DeleteAudioBook(c echo.Context) error {
 
 	audioBook, err := audioBookService.DeleteAudioBook(utils.ConvertToUint(id))
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, &Response{message: err.Error()})
+		return c.JSON(http.StatusInternalServerError, &response{message: err.Error()})
 	}
 
 	return c.JSON(http.StatusOK, audioBook)
@@ -68,7 +68,7 @@ func UploadTracks(c echo.Context) error {
 
 	tracks, err := audioBookService.UploadTracks(utils.ConvertToUint(id), files)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, &Response{message: err.Error()})
+		return c.JSON(http.StatusInternalServerError, &response{message: err.Error()})
 	}
 
 	return c.JSON(http.StatusOK, tracks)
@@ -79,7 +79,7 @@ func DeleteAllTracks(c echo.Context) error {
 
 	audioBook, err := audioBookService.DeleteAllTracks(utils.ConvertToUint(id))
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, &Response{message: err.Error()})
+		return c.JSON(http.StatusInternalServerError, &response{message: err.Error()})
 	}
 
 	return c.JSON(http.StatusOK, audioBook)
@@ -89,28 +89,41 @@ func DeleteAllTracks(c echo.Context) error {
 func GetAllUnassignedCards(c echo.Context) error {
 	cards, err := cardService.GetAllUnusedCards()
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, &Response{message: err.Error()})
+		return c.JSON(http.StatusInternalServerError, &response{message: err.Error()})
 	}
 
 	return c.JSON(http.StatusOK, cards)
 }
 
-func PlayAudioBook(c echo.Context) error {
-
-	return nil
-}
-
 func PlayTrack(c echo.Context) error {
+	id := c.Param("id")
+	idxTrack := c.Param("track")
 
-	return nil
+	err := audioBookService.PlayAudioTrack(utils.ConvertToUint(id), utils.ConvertToUint(idxTrack))
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, &response{message: err.Error()})
+	}
+
+	return c.NoContent(http.StatusOK)
 }
 
 func PauseTrack(c echo.Context) error {
+	err := audioBookService.PauseAudioTrack()
 
-	return nil
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, &response{message: err.Error()})
+	}
+
+	return c.NoContent(http.StatusOK)
 }
 
 func StopTrack(c echo.Context) error {
+	err := audioBookService.StopAudioTrack()
 
-	return nil
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, &response{message: err.Error()})
+	}
+
+	return c.NoContent(http.StatusOK)
 }
