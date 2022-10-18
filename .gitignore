@@ -54,7 +54,7 @@ Thumbs.db
 /controller-old/node_modules
 /controller-old/ui
 
-/controller/go-contr
+/controller/controller
 /controller/data.db
 /controller/media/**
 /controller/ui
