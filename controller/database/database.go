@@ -158,6 +158,22 @@ func (r *Database) GetAllCards() (*[]schema.Card, DbResult) {
 	return &data, DbOk
 }
 
+func (r *Database) GetCard(cardId string) (*schema.Card, DbResult) {
+	var data schema.Card
+
+	query := schema.Card{
+		CardId: cardId,
+	}
+
+	result := r.db.Where(query).First(&data)
+
+	if result.RowsAffected == 0 {
+		return &data, DbRecordNotFound
+	}
+
+	return &data, DbOk
+}
+
 func (r *Database) AddUnusedCard(cardId string) (*schema.Card, DbResult) {
 	data := schema.Card{
 		CardId: cardId,

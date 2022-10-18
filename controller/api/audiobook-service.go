@@ -4,7 +4,7 @@ import (
 	uiSchema "controller/api/schema"
 	"controller/database"
 	dbSchema "controller/database/schema"
-	mqtt "controller/mqtt"
+	"controller/mqtt"
 	"controller/utils"
 	"mime/multipart"
 	"path/filepath"
@@ -20,10 +20,10 @@ type AudioBookService struct {
 	cardService *CardService
 }
 
-func (a *AudioBookService) GetAllAudioBooks() ([]*uiSchema.AudioBook, error) {
+func (a *AudioBookService) GetAllAudioBooks() ([]*uiSchema.AudioBookFull, error) {
 	allAudioBooks, _ := a.dbClient.GetAllAudioBooks()
 
-	audioBooks := make([]*uiSchema.AudioBook, 0)
+	audioBooks := make([]*uiSchema.AudioBookFull, 0)
 	for _, audioBook := range *allAudioBooks {
 		converted := utils.ConvertAudioBookDbToUi(&audioBook)
 		audioBooks = append(audioBooks, converted)
@@ -32,11 +32,11 @@ func (a *AudioBookService) GetAllAudioBooks() ([]*uiSchema.AudioBook, error) {
 	return audioBooks, nil
 }
 
-func (a *AudioBookService) AddAudioBook(audioBook *uiSchema.AudioBook) (*uiSchema.AudioBook, error) {
-	dbAudioBook := utils.ConvertAudioBookUiToDb(audioBook)
-	dbAudioBook.TimesPlayed = 0
-	dbAudioBook.LastPlayed = time.Now()
-	a.dbClient.InsertAudioBook(dbAudioBook)
+func (a *AudioBookService) AddAudioBook(audioBook *uiSchema.AudioBookUi) (*uiSchema.AudioBookFull, error) {
+	audioBookDb := utils.ConvertAudioBookUiToDb(audioBook)
+	audioBookDb.TimesPlayed = 0
+	audioBookDb.LastPlayed = time.Now()
+	a.dbClient.InsertAudioBook(audioBookDb)
 
 	if audioBook.Card != nil {
 		err := a.cardService.RemoveUnusedCard(uint(audioBook.Card.Id))
@@ -45,25 +45,25 @@ func (a *AudioBookService) AddAudioBook(audioBook *uiSchema.AudioBook) (*uiSchem
 		}
 	}
 
-	utils.CreateMediaFolder(dbAudioBook.ID)
+	utils.CreateMediaFolder(audioBookDb.ID)
 
-	return audioBook, nil
+	return utils.ConvertAudioBookDbToUi(audioBookDb), nil
 }
 
-func (a *AudioBookService) UpdateAudioBook(id uint, audioBookUi *uiSchema.AudioBook) error {
+func (a *AudioBookService) UpdateAudioBook(id uint, audioBookUi *uiSchema.AudioBookUi) (*uiSchema.AudioBookFull, error) {
 	audioBookDb, _ := a.dbClient.GetAudioBookById(id)
 
 	if audioBookDb.CardId != "" && audioBookUi.Card != nil && audioBookDb.CardId != audioBookUi.Card.CardId {
 		_, err := a.cardService.AddUnusedCard(audioBookDb.CardId)
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
 
 	if audioBookUi.Card != nil {
 		err := a.cardService.RemoveUnusedCard(uint(audioBookUi.Card.Id))
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
 
@@ -71,10 +71,10 @@ func (a *AudioBookService) UpdateAudioBook(id uint, audioBookUi *uiSchema.AudioB
 
 	a.dbClient.UpdateAudioBook(audioBookDb)
 
-	return nil
+	return utils.ConvertAudioBookDbToUi(audioBookDb), nil
 }
 
-func (a *AudioBookService) DeleteAudioBook(id uint) (*uiSchema.AudioBook, error) {
+func (a *AudioBookService) DeleteAudioBook(id uint) (*uiSchema.AudioBookFull, error) {
 	audioBookDb, _ := a.dbClient.GetAudioBookById(id)
 
 	a.dbClient.DeleteAudioBook(audioBookDb)
@@ -125,7 +125,7 @@ func (a *AudioBookService) UploadTracks(id uint, audioFiles []*multipart.FileHea
 	return utils.ConvertAudioBookTracksDbToUi(uiTracks), nil
 }
 
-func (a *AudioBookService) DeleteAllTracks(id uint) (*uiSchema.AudioBook, error) {
+func (a *AudioBookService) DeleteAllTracks(id uint) (*uiSchema.AudioBookFull, error) {
 	audioBookDb, _ := a.dbClient.GetAudioBookById(id)
 
 	utils.DeleteMediaFolderContent(audioBookDb)
@@ -231,14 +231,24 @@ func (a *AudioBookService) OnMessageReceivedCardId(message mqtt.Message) {
 			audioPlayerMessage.Topic = "/audioPlayer/play"
 			audioPlayerMessage.Value = request
 		} else {
-			a.dbClient.AddUnusedCard(card.CardId)
-
-			statusMessage := &statusPublishMessage{
-				Status: "Added new card: " + card.CardId,
-			}
-
+			_, dbResult := a.dbClient.GetCard(card.CardId)
 			audioPlayerMessage.Topic = "/status/controller"
-			audioPlayerMessage.Value = statusMessage
+
+			if dbResult == database.DbRecordNotFound {
+				a.dbClient.AddUnusedCard(card.CardId)
+
+				statusMessage := &statusPublishMessage{
+					Status: "Added new card: " + card.CardId,
+				}
+
+				audioPlayerMessage.Value = statusMessage
+			} else {
+				statusMessage := &statusPublishMessage{
+					Status: "Card not assigned: " + card.CardId,
+				}
+
+				audioPlayerMessage.Value = statusMessage
+			}
 		}
 	}
 

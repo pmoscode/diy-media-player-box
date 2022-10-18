@@ -5,7 +5,7 @@ import (
 	dbSchema "controller/database/schema"
 )
 
-func ConvertAudioBookUiToDb(src *uiSchema.AudioBook) *dbSchema.AudioBook {
+func ConvertAudioBookUiToDb(src *uiSchema.AudioBookUi) *dbSchema.AudioBook {
 	dest := &dbSchema.AudioBook{}
 
 	if src.Card != nil {
@@ -16,8 +16,8 @@ func ConvertAudioBookUiToDb(src *uiSchema.AudioBook) *dbSchema.AudioBook {
 	return dest
 }
 
-func ConvertAudioBookDbToUi(src *dbSchema.AudioBook) *uiSchema.AudioBook {
-	dest := &uiSchema.AudioBook{}
+func ConvertAudioBookDbToUi(src *dbSchema.AudioBook) *uiSchema.AudioBookFull {
+	dest := &uiSchema.AudioBookFull{}
 
 	dest.Id = int(src.ID)
 	if src.CardId != "" {
@@ -36,9 +36,12 @@ func ConvertAudioBookDbToUi(src *dbSchema.AudioBook) *uiSchema.AudioBook {
 	return dest
 }
 
-func MergeAudioBookUiToDb(dest *dbSchema.AudioBook, src *uiSchema.AudioBook) {
+func MergeAudioBookUiToDb(dest *dbSchema.AudioBook, src *uiSchema.AudioBookUi) {
 	dest.Title = src.Title
-	dest.CardId = src.Card.CardId
+
+	if src.Card != nil {
+		dest.CardId = src.Card.CardId
+	}
 }
 
 func ConvertAudioBookTracksDbToUi(src []*dbSchema.AudioTrack) []*uiSchema.AudioTrack {

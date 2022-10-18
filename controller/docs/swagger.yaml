@@ -1,0 +1,285 @@
+basePath: /api
+definitions:
+  schema.AudioBookFull:
+    properties:
+      card:
+        $ref: '#/definitions/schema.Card'
+      id:
+        type: integer
+      lastPlayed:
+        type: string
+      timesPlayed:
+        type: integer
+      title:
+        type: string
+      trackList:
+        items:
+          $ref: '#/definitions/schema.AudioTrack'
+        type: array
+    type: object
+  schema.AudioBookUi:
+    properties:
+      card:
+        $ref: '#/definitions/schema.Card'
+      title:
+        type: string
+    type: object
+  schema.AudioTrack:
+    properties:
+      filename:
+        type: string
+      length:
+        type: string
+      title:
+        type: string
+      track:
+        type: integer
+    type: object
+  schema.Card:
+    properties:
+      cardId:
+        type: string
+      id:
+        type: integer
+    type: object
+host: localhost:2020
+info:
+  contact:
+    email: info@pmoscode.de
+    name: pmoscode
+    url: https://pmoscode.de
+  description: This is the controller app for the DIY Music Box for Children.
+  license:
+    name: GNU General Public License v3.0
+    url: https://gitlab.com/pmoscode/diy-media-player-box/-/raw/master/LICENSE
+  title: DIY Music Box for Children
+  version: "1.0"
+paths:
+  /audio-books:
+    get:
+      description: Get all audiobooks stored
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.AudioBookFull'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: GetAllAudioBooks
+      tags:
+      - audio-book
+    post:
+      consumes:
+      - application/json
+      description: Add a new audiobook
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.AudioBookFull'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: AddAudioBook
+      tags:
+      - audio-book
+  /audio-books/{id}:
+    delete:
+      description: Delete an existing audiobook
+      parameters:
+      - description: id of audio-book
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.AudioBookFull'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: DeleteAudioBook
+      tags:
+      - audio-book
+    patch:
+      consumes:
+      - application/json
+      description: Update an existing audiobook
+      parameters:
+      - description: id of audio-book
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: content of audio-book
+        in: body
+        name: audio-book
+        required: true
+        schema:
+          $ref: '#/definitions/schema.AudioBookUi'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.AudioBookFull'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: UpdateAudioBook
+      tags:
+      - audio-book
+  /audio-books/{id}/track/{track}/play:
+    post:
+      description: Plays an audio tracks of an existing audiobook
+      parameters:
+      - description: id of audio-book
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: track number to be played
+        in: path
+        name: track
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: No Content
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: PlayTrack
+      tags:
+      - audio-book-debug
+  /audio-books/{id}/tracks:
+    delete:
+      description: Delete all audio tracks of an existing audiobook
+      parameters:
+      - description: id of audio-book
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.AudioBookFull'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: DeleteAllTracks
+      tags:
+      - audio-track
+    post:
+      consumes:
+      - application/json
+      description: Uploads audio tracks to an existing audiobook
+      parameters:
+      - description: id of audio-book
+        in: path
+        name: id
+        required: true
+        type: integer
+      - in: formData
+        name: filename
+        type: string
+      - in: formData
+        name: length
+        type: string
+      - in: formData
+        name: title
+        type: string
+      - in: formData
+        name: track
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.AudioBookFull'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: UploadTracks
+      tags:
+      - audio-track
+  /audio-books/pause:
+    post:
+      description: Pauses the current playing audio track (if any) - Can be called
+        again to resume playback
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: No Content
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: PauseTrack
+      tags:
+      - audio-book-debug
+  /audio-books/stop:
+    post:
+      description: Stops the current playing audio track (if any)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: No Content
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: StopTrack
+      tags:
+      - audio-book-debug
+  /cards/unassigned:
+    get:
+      description: Get all unassigned cards (rfid card ids)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Card'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: GetAllUnassignedCards
+      tags:
+      - card
+swagger: "2.0"
