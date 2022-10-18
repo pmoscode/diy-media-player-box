@@ -5,7 +5,7 @@ type response struct {
 }
 
 type audioPlayerPublishMessage struct {
-	Id        string   `json:"id"`
+	Id        uint     `json:"id"`
 	TrackList []string `json:"trackList"`
 }
 
@@ -15,4 +15,8 @@ type rfidReaderSubscribeMessage struct {
 
 type statusPublishMessage struct {
 	Status string `json:"status"`
+}
+
+type PlayDoneSubscribeMessage struct {
+	Uid uint `json:"uid"`
 }

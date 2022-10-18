@@ -9,7 +9,6 @@ import (
 	"mime/multipart"
 	"path/filepath"
 	"sort"
-	"strconv"
 	"time"
 )
 
@@ -149,7 +148,7 @@ func (a *AudioBookService) PlayAudioTrack(id uint, idxTrack uint) error {
 	audioFilePath := filepath.Join(mediaPath, track.FileName)
 
 	request := &audioPlayerPublishMessage{
-		Id:        strconv.Itoa(int(id)),
+		Id:        id,
 		TrackList: []string{audioFilePath},
 	}
 
@@ -199,6 +198,7 @@ func NewAudioBookService() *AudioBookService {
 	mqttClient = mqtt.CreateClient(*cliOptions.mqttBrokerIp, 1883, *cliOptions.mqttClientId)
 	mqttClient.Connect()
 	mqttClient.Subscribe("/rfidReader/cardId", audioBookService.OnMessageReceivedCardId)
+	mqttClient.Subscribe("/audioPlayer/done", audioBookService.OnMessageReceivedPlayDone)
 
 	return audioBookService
 }
@@ -213,11 +213,11 @@ func (a *AudioBookService) OnMessageReceivedCardId(message mqtt.Message) {
 		audioPlayerMessage.Topic = "/audioPlayer/switch"
 		audioPlayerMessage.Value = nil
 	} else {
-		audioBookDb, _ := a.dbClient.GetAudioBookByCardId(card.CardId)
+		audioBookDb, dbResult := a.dbClient.GetAudioBookByCardId(card.CardId)
 
-		if audioBookDb.ID > 0 {
+		if dbResult != database.DbRecordNotFound {
 			request := &audioPlayerPublishMessage{
-				Id:        strconv.Itoa(int(audioBookDb.ID)),
+				Id:        audioBookDb.ID,
 				TrackList: []string{},
 			}
 
@@ -253,4 +253,18 @@ func (a *AudioBookService) OnMessageReceivedCardId(message mqtt.Message) {
 	}
 
 	mqttClient.Publish(audioPlayerMessage)
+}
+
+func (a *AudioBookService) OnMessageReceivedPlayDone(message mqtt.Message) {
+	playDone := &PlayDoneSubscribeMessage{}
+	message.ToStruct(playDone)
+
+	audioBookDb, dbResult := a.dbClient.GetAudioBookById(playDone.Uid)
+
+	if dbResult != database.DbRecordNotFound {
+		audioBookDb.LastPlayed = time.Now()
+		audioBookDb.TimesPlayed++
+
+		a.dbClient.UpdateAudioBook(audioBookDb)
+	}
 }
