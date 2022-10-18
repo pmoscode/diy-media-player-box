@@ -7,18 +7,24 @@ import (
 	"github.com/faiface/beep/speaker"
 	"log"
 	"os"
+	"strconv"
 )
 
 const DefaultSampleRate = 44100
 
 type Audio struct {
-	control           *beep.Ctrl
-	lastPlayedUid     string
-	sendStatusMessage func(message string)
+	control             *beep.Ctrl
+	lastPlayedUid       uint
+	sendStatusMessage   func(message string)
+	sendPlayDoneMessage func(id uint)
 }
 
 func (a *Audio) checkLastPlayedUidChanged(body *TracksSubscriptionMessage) bool {
 	if a.lastPlayedUid != body.Id {
+		if a.lastPlayedUid > 0 {
+			a.sendPlayDoneMessage(a.lastPlayedUid)
+		}
+
 		a.lastPlayedUid = body.Id
 
 		return true
@@ -33,7 +39,7 @@ func (a *Audio) OnMessageReceivedPlay(message mqtt.Message) {
 	message.ToStruct(&body)
 
 	uidChanged := a.checkLastPlayedUidChanged(&body)
-	log.Println("uid changed: ", uidChanged)
+	a.sendStatusMessage("uid changed: " + strconv.FormatBool(uidChanged))
 
 	if uidChanged {
 		speaker.Clear()
@@ -43,11 +49,13 @@ func (a *Audio) OnMessageReceivedPlay(message mqtt.Message) {
 		for _, trackPath := range body.TrackList {
 			f, err := os.Open(trackPath)
 			if err != nil {
+				a.sendStatusMessage("Could not open '" + trackPath + "'... DYING!!!")
 				log.Fatal(err)
 			}
 
 			streamer, format, err := mp3.Decode(f)
 			if err != nil {
+				a.sendStatusMessage("Could not decode '" + trackPath + "'... DYING!!!")
 				log.Fatal(err)
 			}
 
@@ -56,19 +64,19 @@ func (a *Audio) OnMessageReceivedPlay(message mqtt.Message) {
 			if DefaultSampleRate != format.SampleRate {
 				const sampleRate = beep.SampleRate(DefaultSampleRate)
 				stream = beep.Resample(1, format.SampleRate, sampleRate, streamer)
-				log.Println("Need to resample: ", trackPath)
+				a.sendStatusMessage("Need to resample: '" + trackPath + "'...")
 			} else {
 				stream = streamer
-				log.Println("No need to resample: ", trackPath)
+				a.sendStatusMessage("No need to resample: '" + trackPath + "'...")
 			}
 
 			samples = append(samples, stream)
 		}
 
 		samples = append(samples, beep.Callback(func() {
-			a.lastPlayedUid = "-1"
-			log.Println("status: ", "stopped")
+			a.lastPlayedUid = 0
 			a.sendStatusMessage("stopped")
+			a.sendPlayDoneMessage(body.Id)
 		}))
 
 		if len(samples) > 0 {
@@ -77,17 +85,14 @@ func (a *Audio) OnMessageReceivedPlay(message mqtt.Message) {
 
 			speaker.Play(a.control)
 
-			log.Println("status: ", "playing")
 			a.sendStatusMessage("playing")
 		} else {
-			log.Println("status: ", "no tracks")
 			a.sendStatusMessage("no tracks")
 		}
 	} else {
 		if a.control.Paused {
 			a.OnMessageReceivedSwitch(message)
 		} else {
-			log.Println("status: ", "untouched")
 			a.sendStatusMessage("untouched")
 		}
 	}
@@ -104,10 +109,8 @@ func (a *Audio) OnMessageReceivedSwitch(message mqtt.Message) {
 			status = "continuing"
 		}
 
-		log.Println("status: ", status)
 		a.sendStatusMessage(status)
 	} else {
-		log.Println("status: ", "no audio stream")
 		a.sendStatusMessage("no audio stream")
 	}
 }
@@ -115,11 +118,13 @@ func (a *Audio) OnMessageReceivedSwitch(message mqtt.Message) {
 func (a *Audio) OnMessageReceivedStop(message mqtt.Message) {
 	speaker.Clear()
 
-	a.lastPlayedUid = "-1"
-	log.Println("status: ", "stopped")
+	a.lastPlayedUid = 0
 	a.sendStatusMessage("stopped")
 }
 
-func NewAudio(statusMessage func(statusMessage string)) *Audio {
-	return &Audio{sendStatusMessage: statusMessage}
+func NewAudio(statusMessage func(statusMessage string), playDoneMessage func(id uint)) *Audio {
+	return &Audio{
+		sendStatusMessage:   statusMessage,
+		sendPlayDoneMessage: playDoneMessage,
+	}
 }
