@@ -2,12 +2,12 @@ package audio
 
 import (
 	"audio-player/mqtt"
+	"fmt"
 	"github.com/faiface/beep"
 	"github.com/faiface/beep/mp3"
 	"github.com/faiface/beep/speaker"
 	"log"
 	"os"
-	"strconv"
 )
 
 const DefaultSampleRate = 44100
@@ -38,8 +38,9 @@ func (a *Audio) OnMessageReceivedPlay(message mqtt.Message) {
 
 	message.ToStruct(&body)
 
+	transition := fmt.Sprintf("%d to %d", a.lastPlayedUid, body.Id)
 	uidChanged := a.checkLastPlayedUidChanged(&body)
-	a.sendStatusMessage("uid changed: " + strconv.FormatBool(uidChanged))
+	a.sendStatusMessage("uid changed: " + transition)
 
 	if uidChanged {
 		speaker.Clear()
