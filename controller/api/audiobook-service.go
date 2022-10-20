@@ -203,7 +203,7 @@ func NewAudioBookService() *AudioBookService {
 			log.Fatalln("MQTT broker not found... exiting.")
 		}
 	}
-	mqttClient.Subscribe("/rfidReader/cardId", audioBookService.OnMessageReceivedCardId)
+	mqttClient.Subscribe("/rfid-reader/cardId", audioBookService.OnMessageReceivedCardId)
 	mqttClient.Subscribe("/audioPlayer/done", audioBookService.OnMessageReceivedPlayDone)
 
 	return audioBookService
