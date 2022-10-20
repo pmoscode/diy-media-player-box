@@ -15,11 +15,11 @@ const DefaultSampleRate = 44100
 type Audio struct {
 	control             *beep.Ctrl
 	lastPlayedUid       uint
-	sendStatusMessage   func(message string)
+	sendStatusMessage   func(messageType mqtt.StatusType, message ...any)
 	sendPlayDoneMessage func(id uint)
 }
 
-func (a *Audio) checkLastPlayedUidChanged(body *TracksSubscriptionMessage) bool {
+func (a *Audio) checkLastPlayedUidChanged(body *mqtt.TracksSubscriptionMessage) bool {
 	if a.lastPlayedUid != body.Id {
 		if a.lastPlayedUid > 0 {
 			a.sendPlayDoneMessage(a.lastPlayedUid)
@@ -34,13 +34,13 @@ func (a *Audio) checkLastPlayedUidChanged(body *TracksSubscriptionMessage) bool 
 }
 
 func (a *Audio) OnMessageReceivedPlay(message mqtt.Message) {
-	body := TracksSubscriptionMessage{}
+	body := mqtt.TracksSubscriptionMessage{}
 
 	message.ToStruct(&body)
 
 	transition := fmt.Sprintf("%d to %d", a.lastPlayedUid, body.Id)
 	uidChanged := a.checkLastPlayedUidChanged(&body)
-	a.sendStatusMessage("uid changed: " + transition)
+	a.sendStatusMessage("uid changed: ", transition)
 
 	if uidChanged {
 		speaker.Clear()
@@ -50,13 +50,13 @@ func (a *Audio) OnMessageReceivedPlay(message mqtt.Message) {
 		for _, trackPath := range body.TrackList {
 			f, err := os.Open(trackPath)
 			if err != nil {
-				a.sendStatusMessage("Could not open '" + trackPath + "'... DYING!!!")
+				a.sendStatusMessage(mqtt.Error, "Could not open '"+trackPath+"'... DYING!!!")
 				log.Fatal(err)
 			}
 
 			streamer, format, err := mp3.Decode(f)
 			if err != nil {
-				a.sendStatusMessage("Could not decode '" + trackPath + "'... DYING!!!")
+				a.sendStatusMessage(mqtt.Error, "Could not decode '"+trackPath+"'... DYING!!!")
 				log.Fatal(err)
 			}
 
@@ -65,10 +65,10 @@ func (a *Audio) OnMessageReceivedPlay(message mqtt.Message) {
 			if DefaultSampleRate != format.SampleRate {
 				const sampleRate = beep.SampleRate(DefaultSampleRate)
 				stream = beep.Resample(1, format.SampleRate, sampleRate, streamer)
-				a.sendStatusMessage("Need to resample: '" + trackPath + "'...")
+				a.sendStatusMessage(mqtt.Info, "Need to resample: '"+trackPath+"'...")
 			} else {
 				stream = streamer
-				a.sendStatusMessage("No need to resample: '" + trackPath + "'...")
+				a.sendStatusMessage(mqtt.Info, "No need to resample: '"+trackPath+"'...")
 			}
 
 			samples = append(samples, stream)
@@ -110,7 +110,7 @@ func (a *Audio) OnMessageReceivedSwitch(message mqtt.Message) {
 			status = "continuing"
 		}
 
-		a.sendStatusMessage(status)
+		a.sendStatusMessage(mqtt.Info, status)
 	} else {
 		a.sendStatusMessage("no audio stream")
 	}
@@ -123,7 +123,7 @@ func (a *Audio) OnMessageReceivedStop(message mqtt.Message) {
 	a.sendStatusMessage("stopped")
 }
 
-func NewAudio(statusMessage func(statusMessage string), playDoneMessage func(id uint)) *Audio {
+func NewAudio(statusMessage func(messageType mqtt.StatusType, message ...any), playDoneMessage func(id uint)) *Audio {
 	return &Audio{
 		sendStatusMessage:   statusMessage,
 		sendPlayDoneMessage: playDoneMessage,
