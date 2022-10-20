@@ -71,7 +71,7 @@ func sendStatusMessage(messageType mqtt.StatusType, message ...any) {
 	}
 
 	mqttClient.Publish(&mqtt.Message{
-		Topic: "/status/RfidReader",
+		Topic: "/status/rfid-reader",
 		Value: mqttMessage,
 	})
 
@@ -86,7 +86,7 @@ func sendCardIdMessage(cardId string) {
 	}
 
 	mqttClient.Publish(&mqtt.Message{
-		Topic: "/rfidReader/cardId",
+		Topic: "/rfid-reader/cardId",
 		Value: message,
 	})
 }
