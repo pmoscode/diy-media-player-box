@@ -7,6 +7,7 @@ import (
 	"periph.io/x/devices/v3/mfrc522"
 	"periph.io/x/host/v3"
 	"periph.io/x/host/v3/rpi"
+	"rfid-reader/mqtt"
 	"strings"
 	"time"
 )
@@ -17,8 +18,8 @@ type Rfid struct {
 	rfid              *mfrc522.Dev
 	lastId            string
 	removeCounter     int
-	sendStatusMessage func(message string)
 	sendCardIdMessage func(cardId string)
+	sendStatusMessage func(messageType mqtt.StatusType, message ...any)
 }
 
 func (r *Rfid) Run() {
@@ -89,7 +90,7 @@ func (r *Rfid) listen(cb chan []byte) {
 				if cardId != r.lastId {
 					log.Println("New card present: ", cardId)
 					r.sendCardIdMessage(cardId)
-					r.sendStatusMessage("New card present: " + cardId)
+					r.sendStatusMessage(mqtt.Info, "New card present: ", cardId)
 					r.lastId = cardId
 				}
 				r.removeCounter = 0
@@ -99,7 +100,7 @@ func (r *Rfid) listen(cb chan []byte) {
 					if r.removeCounter >= removeOkThreshold {
 						log.Print("Card removed...")
 						r.sendCardIdMessage("")
-						r.sendStatusMessage("Card removed: " + r.lastId)
+						r.sendStatusMessage(mqtt.Info, "Card removed: ", r.lastId)
 						r.lastId = ""
 						r.removeCounter = 0
 					}
@@ -109,6 +110,6 @@ func (r *Rfid) listen(cb chan []byte) {
 	}
 }
 
-func NewRfid(cardIdMessage func(message string), statusMessage func(cardId string)) *Rfid {
+func NewRfid(cardIdMessage func(cardId string), statusMessage func(messageType mqtt.StatusType, message ...any)) *Rfid {
 	return &Rfid{sendStatusMessage: statusMessage, sendCardIdMessage: cardIdMessage}
 }

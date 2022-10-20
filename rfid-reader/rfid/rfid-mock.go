@@ -1,27 +1,20 @@
 package rfid
 
 import (
-	"log"
 	"rfid-reader/mqtt"
 )
 
 type Mock struct {
-	cardId     string
-	mqttClient *mqtt.Client
+	cardId            string
+	sendCardIdMessage func(cardId string)
+	sendStatusMessage func(messageType mqtt.StatusType, message ...any)
 }
 
 func (m *Mock) Run() {
-	log.Println("Sending mock message...")
-	message := &CardIdPublishMessage{
-		CardId: m.cardId,
-	}
-
-	m.mqttClient.SendMessage(&mqtt.Message{
-		Topic: "/rfidReader/cardId",
-		Value: message,
-	})
+	m.sendCardIdMessage(m.cardId)
+	m.sendStatusMessage(mqtt.Info, "Mock CardId '", m.cardId, "' send to controller...")
 }
 
-func NewMock(cardId *string, mqttClient *mqtt.Client) *Mock {
-	return &Mock{*cardId, mqttClient}
+func NewMock(cardId *string, cardIdMessage func(cardId string), statusMessage func(messageType mqtt.StatusType, message ...any)) *Mock {
+	return &Mock{cardId: *cardId, sendStatusMessage: statusMessage, sendCardIdMessage: cardIdMessage}
 }

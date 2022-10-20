@@ -64,7 +64,7 @@ func (c *Client) Disconnect() {
 	client.Disconnect(100)
 }
 
-func (c *Client) SendMessage(message *Message) {
+func (c *Client) Publish(message *Message) {
 	if c.client == nil {
 		log.Println(notConnected)
 	} else {
