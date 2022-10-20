@@ -6,6 +6,7 @@ import (
 	dbSchema "controller/database/schema"
 	"controller/mqtt"
 	"controller/utils"
+	"log"
 	"mime/multipart"
 	"path/filepath"
 	"sort"
@@ -147,7 +148,7 @@ func (a *AudioBookService) PlayAudioTrack(id uint, idxTrack uint) error {
 	mediaPath := utils.GetCompletePathToMediaFolder(id)
 	audioFilePath := filepath.Join(mediaPath, track.FileName)
 
-	request := &audioPlayerPublishMessage{
+	request := &mqtt.AudioPlayerPublishMessage{
 		Id:        id,
 		TrackList: []string{audioFilePath},
 	}
@@ -196,7 +197,12 @@ func NewAudioBookService() *AudioBookService {
 	}
 
 	mqttClient = mqtt.CreateClient(*cliOptions.mqttBrokerIp, 1883, *cliOptions.mqttClientId)
-	mqttClient.Connect()
+	err = mqttClient.Connect()
+	if err != nil {
+		if err != nil {
+			log.Fatalln("MQTT broker not found... exiting.")
+		}
+	}
 	mqttClient.Subscribe("/rfidReader/cardId", audioBookService.OnMessageReceivedCardId)
 	mqttClient.Subscribe("/audioPlayer/done", audioBookService.OnMessageReceivedPlayDone)
 
@@ -204,7 +210,7 @@ func NewAudioBookService() *AudioBookService {
 }
 
 func (a *AudioBookService) OnMessageReceivedCardId(message mqtt.Message) {
-	card := &rfidReaderSubscribeMessage{}
+	card := &mqtt.RfidReaderSubscribeMessage{}
 	message.ToStruct(card)
 
 	audioPlayerMessage := &mqtt.Message{}
@@ -216,7 +222,7 @@ func (a *AudioBookService) OnMessageReceivedCardId(message mqtt.Message) {
 		audioBookDb, dbResult := a.dbClient.GetAudioBookByCardId(card.CardId)
 
 		if dbResult != database.DbRecordNotFound {
-			request := &audioPlayerPublishMessage{
+			request := &mqtt.AudioPlayerPublishMessage{
 				Id:        audioBookDb.ID,
 				TrackList: []string{},
 			}
@@ -237,13 +243,15 @@ func (a *AudioBookService) OnMessageReceivedCardId(message mqtt.Message) {
 			if dbResult == database.DbRecordNotFound {
 				a.dbClient.AddUnusedCard(card.CardId)
 
-				statusMessage := &statusPublishMessage{
+				statusMessage := &mqtt.StatusPublishMessage{
+					Type:   mqtt.Info,
 					Status: "Added new card: " + card.CardId,
 				}
 
 				audioPlayerMessage.Value = statusMessage
 			} else {
-				statusMessage := &statusPublishMessage{
+				statusMessage := &mqtt.StatusPublishMessage{
+					Type:   mqtt.Info,
 					Status: "Card not assigned: " + card.CardId,
 				}
 
@@ -256,7 +264,7 @@ func (a *AudioBookService) OnMessageReceivedCardId(message mqtt.Message) {
 }
 
 func (a *AudioBookService) OnMessageReceivedPlayDone(message mqtt.Message) {
-	playDone := &PlayDoneSubscribeMessage{}
+	playDone := &mqtt.PlayDoneSubscribeMessage{}
 	message.ToStruct(playDone)
 
 	audioBookDb, dbResult := a.dbClient.GetAudioBookById(playDone.Uid)

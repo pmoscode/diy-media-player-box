@@ -2,6 +2,7 @@ package api
 
 import (
 	"controller/api/schema"
+	"controller/mqtt"
 	"controller/utils"
 	"github.com/labstack/echo/v4"
 	"net/http"
@@ -21,7 +22,7 @@ var cardService = NewCardService()
 func GetAllAudioBooks(c echo.Context) error {
 	audioBooks, err := audioBookService.GetAllAudioBooks()
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, &response{message: err.Error()})
+		return c.JSON(http.StatusInternalServerError, &mqtt.Response{Message: err.Error()})
 	}
 
 	return c.JSON(http.StatusOK, audioBooks)
@@ -43,12 +44,12 @@ func AddAudioBook(c echo.Context) error {
 	if err == nil {
 		audioBookResult, err := audioBookService.AddAudioBook(&audioBook)
 		if err != nil {
-			return c.JSON(http.StatusInternalServerError, &response{message: err.Error()})
+			return c.JSON(http.StatusInternalServerError, &mqtt.Response{Message: err.Error()})
 		}
 		return c.JSON(http.StatusOK, audioBookResult)
 	}
 
-	return c.JSON(http.StatusInternalServerError, &response{message: err.Error()})
+	return c.JSON(http.StatusInternalServerError, &mqtt.Response{Message: err.Error()})
 }
 
 // UpdateAudioBook godoc
@@ -71,13 +72,13 @@ func UpdateAudioBook(c echo.Context) error {
 	if errBind == nil {
 		audioBook, err := audioBookService.UpdateAudioBook(utils.ConvertToUint(id), &audioBookUi)
 		if err != nil {
-			return c.JSON(http.StatusInternalServerError, &response{message: err.Error()})
+			return c.JSON(http.StatusInternalServerError, &mqtt.Response{Message: err.Error()})
 		}
 
 		return c.JSON(http.StatusOK, &audioBook)
 	}
 
-	return c.JSON(http.StatusInternalServerError, &response{message: errBind.Error()})
+	return c.JSON(http.StatusInternalServerError, &mqtt.Response{Message: errBind.Error()})
 }
 
 // DeleteAudioBook godoc
@@ -94,7 +95,7 @@ func DeleteAudioBook(c echo.Context) error {
 
 	audioBook, err := audioBookService.DeleteAudioBook(utils.ConvertToUint(id))
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, &response{message: err.Error()})
+		return c.JSON(http.StatusInternalServerError, &mqtt.Response{Message: err.Error()})
 	}
 
 	return c.JSON(http.StatusOK, audioBook)
@@ -117,7 +118,7 @@ func UploadTracks(c echo.Context) error {
 
 	tracks, err := audioBookService.UploadTracks(utils.ConvertToUint(id), files)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, &response{message: err.Error()})
+		return c.JSON(http.StatusInternalServerError, &mqtt.Response{Message: err.Error()})
 	}
 
 	return c.JSON(http.StatusOK, tracks)
@@ -137,7 +138,7 @@ func DeleteAllTracks(c echo.Context) error {
 
 	audioBook, err := audioBookService.DeleteAllTracks(utils.ConvertToUint(id))
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, &response{message: err.Error()})
+		return c.JSON(http.StatusInternalServerError, &mqtt.Response{Message: err.Error()})
 	}
 
 	return c.JSON(http.StatusOK, audioBook)
@@ -154,7 +155,7 @@ func DeleteAllTracks(c echo.Context) error {
 func GetAllUnassignedCards(c echo.Context) error {
 	cards, err := cardService.GetAllUnusedCards()
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, &response{message: err.Error()})
+		return c.JSON(http.StatusInternalServerError, &mqtt.Response{Message: err.Error()})
 	}
 
 	return c.JSON(http.StatusOK, cards)
@@ -177,7 +178,7 @@ func PlayTrack(c echo.Context) error {
 	err := audioBookService.PlayAudioTrack(utils.ConvertToUint(id), utils.ConvertToUint(idxTrack))
 
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, &response{message: err.Error()})
+		return c.JSON(http.StatusInternalServerError, &mqtt.Response{Message: err.Error()})
 	}
 
 	return c.NoContent(http.StatusOK)
@@ -195,7 +196,7 @@ func PauseTrack(c echo.Context) error {
 	err := audioBookService.PauseAudioTrack()
 
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, &response{message: err.Error()})
+		return c.JSON(http.StatusInternalServerError, &mqtt.Response{Message: err.Error()})
 	}
 
 	return c.NoContent(http.StatusOK)
@@ -213,7 +214,7 @@ func StopTrack(c echo.Context) error {
 	err := audioBookService.StopAudioTrack()
 
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, &response{message: err.Error()})
+		return c.JSON(http.StatusInternalServerError, &mqtt.Response{Message: err.Error()})
 	}
 
 	return c.NoContent(http.StatusOK)
