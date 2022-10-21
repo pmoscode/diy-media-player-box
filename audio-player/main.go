@@ -56,6 +56,7 @@ func main() {
 	mqttClient.Subscribe("/audioPlayer/play", audioClient.OnMessageReceivedPlay)
 	mqttClient.Subscribe("/audioPlayer/switch", audioClient.OnMessageReceivedSwitch)
 	mqttClient.Subscribe("/audioPlayer/stop", audioClient.OnMessageReceivedStop)
+	mqttClient.Subscribe("/audioPlayer/volume", audioClient.OnMessageReceivedVolume)
 	mqttClient.LoopForever()
 }
 

@@ -17,6 +17,10 @@ type TracksSubscriptionMessage struct {
 	TrackList []string `json:"trackList" binding:"required"`
 }
 
+type VolumeChangeSubscriptionMessage struct {
+	VolumeOffset float64 `json:"volumeOffset"`
+}
+
 type StatusPublishMessage struct {
 	Type   StatusType `json:"type"`
 	Status string     `json:"status"`

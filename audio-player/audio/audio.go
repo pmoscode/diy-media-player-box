@@ -4,6 +4,7 @@ import (
 	"audio-player/mqtt"
 	"fmt"
 	"github.com/faiface/beep"
+	"github.com/faiface/beep/effects"
 	"github.com/faiface/beep/mp3"
 	"github.com/faiface/beep/speaker"
 	"log"
@@ -14,6 +15,7 @@ const DefaultSampleRate = 44100
 
 type Audio struct {
 	control             *beep.Ctrl
+	volume              *effects.Volume
 	lastPlayedUid       uint
 	sendStatusMessage   func(messageType mqtt.StatusType, message ...any)
 	sendPlayDoneMessage func(id uint)
@@ -82,9 +84,19 @@ func (a *Audio) OnMessageReceivedPlay(message mqtt.Message) {
 
 		if len(samples) > 0 {
 			sequence := beep.Seq(samples...)
-			a.control = &beep.Ctrl{Streamer: sequence, Paused: false}
+			a.control = &beep.Ctrl{
+				Streamer: sequence,
+				Paused:   false,
+			}
 
-			speaker.Play(a.control)
+			a.volume = &effects.Volume{
+				Streamer: a.control,
+				Base:     2,
+				Volume:   0,
+				Silent:   false,
+			}
+
+			speaker.Play(a.volume)
 
 			a.sendStatusMessage("playing")
 		} else {
@@ -121,6 +133,16 @@ func (a *Audio) OnMessageReceivedStop(message mqtt.Message) {
 
 	a.lastPlayedUid = 0
 	a.sendStatusMessage("stopped")
+}
+
+func (a *Audio) OnMessageReceivedVolume(message mqtt.Message) {
+	volumeMessage := &mqtt.VolumeChangeSubscriptionMessage{}
+
+	message.ToStruct(volumeMessage)
+
+	speaker.Lock()
+	a.volume.Volume += volumeMessage.VolumeOffset
+	speaker.Unlock()
 }
 
 func NewAudio(statusMessage func(messageType mqtt.StatusType, message ...any), playDoneMessage func(id uint)) *Audio {
