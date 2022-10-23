@@ -58,5 +58,5 @@ func convertMinutes(min string) string {
 		return min
 	}
 
-	return split[0] + ":" + fmt.Sprintf("%.0f", secs*0.6)
+	return split[0] + ":" + fmt.Sprintf("%02.0f", secs*0.6)
 }
