@@ -53,10 +53,10 @@ func main() {
 
 	audioClient := audio.NewAudio(sendStatusMessage, sendPlayDoneMessage)
 
-	mqttClient.Subscribe("/audioPlayer/play", audioClient.OnMessageReceivedPlay)
-	mqttClient.Subscribe("/audioPlayer/switch", audioClient.OnMessageReceivedSwitch)
-	mqttClient.Subscribe("/audioPlayer/stop", audioClient.OnMessageReceivedStop)
-	mqttClient.Subscribe("/audioPlayer/volume", audioClient.OnMessageReceivedVolume)
+	mqttClient.Subscribe("/audio-player/play", audioClient.OnMessageReceivedPlay)
+	mqttClient.Subscribe("/audio-player/switch", audioClient.OnMessageReceivedSwitch)
+	mqttClient.Subscribe("/audio-player/stop", audioClient.OnMessageReceivedStop)
+	mqttClient.Subscribe("/audio-player/volume", audioClient.OnMessageReceivedVolume)
 	mqttClient.LoopForever()
 }
 
@@ -84,7 +84,7 @@ func sendPlayDoneMessage(id uint) {
 	}
 
 	mqttClient.Publish(&mqtt.Message{
-		Topic: "/audioPlayer/done",
+		Topic: "/audio-player/done",
 		Value: publishMessage,
 	})
 }
