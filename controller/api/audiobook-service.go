@@ -154,7 +154,7 @@ func (a *AudioBookService) PlayAudioTrack(id uint, idxTrack uint) error {
 	}
 
 	message := &mqtt.Message{
-		Topic: "/audioPlayer/play",
+		Topic: "/audio-player/play",
 		Value: request,
 	}
 
@@ -165,7 +165,7 @@ func (a *AudioBookService) PlayAudioTrack(id uint, idxTrack uint) error {
 
 func (a *AudioBookService) StopAudioTrack() error {
 	message := &mqtt.Message{
-		Topic: "/audioPlayer/stop",
+		Topic: "/audio-player/stop",
 		Value: nil,
 	}
 
@@ -176,7 +176,7 @@ func (a *AudioBookService) StopAudioTrack() error {
 
 func (a *AudioBookService) PauseAudioTrack() error {
 	message := &mqtt.Message{
-		Topic: "/audioPlayer/switch",
+		Topic: "/audio-player/switch",
 		Value: nil,
 	}
 
@@ -204,7 +204,7 @@ func NewAudioBookService() *AudioBookService {
 		}
 	}
 	mqttClient.Subscribe("/rfid-reader/cardId", audioBookService.OnMessageReceivedCardId)
-	mqttClient.Subscribe("/audioPlayer/done", audioBookService.OnMessageReceivedPlayDone)
+	mqttClient.Subscribe("/audio-player/done", audioBookService.OnMessageReceivedPlayDone)
 
 	return audioBookService
 }
@@ -216,7 +216,7 @@ func (a *AudioBookService) OnMessageReceivedCardId(message mqtt.Message) {
 	audioPlayerMessage := &mqtt.Message{}
 
 	if card.CardId == "" {
-		audioPlayerMessage.Topic = "/audioPlayer/switch"
+		audioPlayerMessage.Topic = "/audio-player/switch"
 		audioPlayerMessage.Value = nil
 	} else {
 		audioBookDb, dbResult := a.dbClient.GetAudioBookByCardId(card.CardId)
@@ -234,7 +234,7 @@ func (a *AudioBookService) OnMessageReceivedCardId(message mqtt.Message) {
 				request.TrackList = append(request.TrackList, audioFilePath)
 
 			}
-			audioPlayerMessage.Topic = "/audioPlayer/play"
+			audioPlayerMessage.Topic = "/audio-player/play"
 			audioPlayerMessage.Value = request
 		} else {
 			_, dbResult := a.dbClient.GetCard(card.CardId)
