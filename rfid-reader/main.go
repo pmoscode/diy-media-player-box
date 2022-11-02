@@ -18,11 +18,11 @@ type CliOptions struct {
 	logStatusToConsole *bool
 }
 
-var cliOptions CliOptions
-
 type Module interface {
 	Run()
 }
+
+var cliOptions CliOptions
 
 func getCliOptions() CliOptions {
 	mqttBrokerIp := flag.String("mqtt-broker", "localhost", "Ip of MQTT broker")
