@@ -31,6 +31,8 @@ func getCliOptions() CliOptions {
 	logStatusToConsole := flag.Bool("log-console", false, "Log messages also to current std console")
 	flag.Parse()
 
+	log.Println("Publishing / Subscribing to broker: ", *mqttBrokerIp)
+
 	return CliOptions{
 		mqttBrokerIp:       mqttBrokerIp,
 		mqttClientId:       mqttClientId,
