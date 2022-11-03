@@ -1,0 +1,24 @@
+version: '3'
+
+dotenv: ['.env']
+
+tasks:
+  initSysroot:
+    desc: Get all needed files from original raspberry pi filesystem
+    cmds:
+      - sshpass -p "$RASPBERRY_PASSWORD" ./scripts/sysroot-rsync.sh pi@$REMOTE_SERVER:/ sysroot
+
+  buildBinaries:
+    desc: Build all binaries
+    cmds:
+      - docker run --rm --privileged -v $PWD:/go/src/diy-audio-player -w /go/src/diy-audio-player/audio-player -v /var/run/docker.sock:/var/run/docker.sock -v $PWD/sysroot:/sysroot -e CGO_ENABLED=1 goreleaser/goreleaser-cross:v1.19.2 build --snapshot --rm-dist
+
+  copyBinariesToRaspberryPi:
+    desc: Copy all build binaries to the target Raspberry Pi machine
+    cmds:
+      - sshpass -p "$RASPBERRY_PASSWORD" scp -r ./audio-player/audio-player ./controller/controller ./rfid-reader/rfid-reader pi@$REMOTE_SERVER:/home/pi/
+
+  default:
+    cmds:
+      - go-task -l
+    silent: true

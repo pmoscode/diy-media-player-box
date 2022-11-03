@@ -1,0 +1,72 @@
+project_name: diy-media-box
+
+builds:
+  - id: audio-player
+    main: ./
+    binary: audio-player
+    dir: audio-player
+    no_unique_dist_dir: true
+    hooks:
+      pre:
+        - go mod tidy
+    goos:
+      - linux
+    goarch:
+      - arm
+    goarm:
+      - 6
+    env:
+      - CC=arm-linux-gnueabihf-gcc
+      - CXX=arm-linux-gnueabihf-g++
+      - CGO_CFLAGS=--sysroot=/sysroot
+      - CGO_LDFLAGS=--sysroot=/sysroot
+      - PKG_CONFIG_SYSROOT_DIR=/sysroot
+      - PKG_CONFIG_PATH=/sysroot/usr/lib/arm-linux-gnueabihf/pkgconfig
+    flags:
+      - -mod=readonly
+    ldflags:
+      - -s #-w -X main.version={{.Version}}
+  - id: controller
+    main: ./
+    binary: controller
+    dir: controller
+    no_unique_dist_dir: true
+    goos:
+      - linux
+    goarch:
+      - arm
+    goarm:
+      - 6
+    env:
+      - CC=arm-linux-gnueabihf-gcc
+      - CXX=arm-linux-gnueabihf-g++
+      - CGO_CFLAGS=--sysroot=/sysroot
+      - CGO_LDFLAGS=--sysroot=/sysroot
+      - PKG_CONFIG_SYSROOT_DIR=/sysroot
+      - PKG_CONFIG_PATH=/sysroot/usr/lib/arm-linux-gnueabihf/pkgconfig
+    flags:
+      - -mod=readonly
+    ldflags:
+      - -s #-w -X main.version={{.Version}}
+  - id: rfid-reader
+    main: ./
+    binary: rfid-reader
+    dir: rfid-reader
+    no_unique_dist_dir: true
+    goos:
+      - linux
+    goarch:
+      - arm
+    goarm:
+      - 6
+    env:
+      - CC=arm-linux-gnueabihf-gcc
+      - CXX=arm-linux-gnueabihf-g++
+      - CGO_CFLAGS=--sysroot=/sysroot
+      - CGO_LDFLAGS=--sysroot=/sysroot
+      - PKG_CONFIG_SYSROOT_DIR=/sysroot
+      - PKG_CONFIG_PATH=/sysroot/usr/lib/arm-linux-gnueabihf/pkgconfig
+    flags:
+      - -mod=readonly
+    ldflags:
+      - -s -w -X main.version={{.Version}}
