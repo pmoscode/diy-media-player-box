@@ -1,0 +1,13 @@
+- name: "Setup Target"
+  hosts: all
+  remote_user: pi
+
+  tasks:
+    - name: Compile components
+      include_tasks: partial/compile-component.yml
+      vars:
+        component_name: "{{ item }}"
+      loop:
+        - "rfid-reader"
+        - "controller"
+        - "audio-player"

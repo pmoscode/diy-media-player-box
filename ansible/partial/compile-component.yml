@@ -1,0 +1,26 @@
+---
+- name: "[{{ component_name }}]: Copy source to target"
+  copy:
+    src: "../{{ component_name }}"
+    dest: "/tmp/"
+  register: copy_info
+
+- name: "[{{ component_name }}]: Init go modules"
+  shell: /usr/local/go/bin/go mod tidy
+  args:
+    chdir: "/tmp/{{ component_name }}"
+  when: copy_info.changed
+
+- name: "[{{ component_name }}]: Compile component"
+  shell: /usr/local/go/bin/go build
+  args:
+    chdir: "/tmp/{{ component_name }}"
+  when: copy_info.changed
+
+- name: "[{{ component_name }}]: Copy compiled binary to target"
+  copy:
+    src: "/tmp/{{ component_name }}/{{ component_name }}"
+    dest: "/home/pi/{{ component_name }}"
+    remote_src: yes
+    mode: preserve
+  when: copy_info.changed
