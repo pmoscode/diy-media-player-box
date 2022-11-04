@@ -4,18 +4,24 @@
     src: "../{{ component_name }}"
     dest: "/tmp/"
   register: copy_info
+  tags:
+    - "{{ tag_name }}"
 
 - name: "[{{ component_name }}]: Init go modules"
   shell: /usr/local/go/bin/go mod tidy
   args:
     chdir: "/tmp/{{ component_name }}"
   when: copy_info.changed
+  tags:
+    - "{{ tag_name }}"
 
 - name: "[{{ component_name }}]: Compile component"
   shell: /usr/local/go/bin/go build
   args:
     chdir: "/tmp/{{ component_name }}"
   when: copy_info.changed
+  tags:
+    - "{{ tag_name }}"
 
 - name: "[{{ component_name }}]: Copy compiled binary to target"
   copy:
@@ -24,3 +30,5 @@
     remote_src: yes
     mode: preserve
   when: copy_info.changed
+  tags:
+     - "{{ tag_name }}"

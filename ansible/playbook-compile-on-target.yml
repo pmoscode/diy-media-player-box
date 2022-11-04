@@ -7,7 +7,17 @@
       include_tasks: partial/compile-component.yml
       vars:
         component_name: "{{ item }}"
+        tag_name: "{{ item }}"
       loop:
         - "rfid-reader"
         - "controller"
         - "audio-player"
+      tags:
+        - backend
+
+    - name: Copy UI to target
+      copy:
+        src: ../controller/ui
+        dest: "/home/pi/"
+      tags:
+        - ui

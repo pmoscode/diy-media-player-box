@@ -4,15 +4,47 @@ dotenv: ['.env']
 
 tasks:
   setupTarget:
-    desc: Initial setup on target machine (Install go and alsa dev dependencies)
+    desc: Initial setup on target machine (Install go and alsa dev dependencies) -- Just run it once
     dir: ansible
     cmds:
       - sshpass -p "$RASPBERRY_PASSWORD" ansible-playbook -i $REMOTE_SERVER, playbook-setup-target.yml --ask-pass
 
-  compileProject:
+  compileAudioPlayer:
+    desc: The audio-player will be compile remotely and copied to pi's homedir
     dir: ansible
     cmds:
-      - sshpass -p "$RASPBERRY_PASSWORD" ansible-playbook -i $REMOTE_SERVER, playbook-compile-on-target.yml --ask-pass
+      - sshpass -p "$RASPBERRY_PASSWORD" ansible-playbook -i $REMOTE_SERVER, playbook-compile-on-target.yml --tags "backend, audio-player" --ask-pass
+
+  compileController:
+    desc: The controller will be compile remotely and copied to pi's homedir
+    dir: ansible
+    cmds:
+      - sshpass -p "$RASPBERRY_PASSWORD" ansible-playbook -i $REMOTE_SERVER, playbook-compile-on-target.yml --tags "backend, controller" --ask-pass
+
+  compileRfidReader:
+    desc: The rfid-reader will be compile remotely and copied to pi's homedir
+    dir: ansible
+    cmds:
+      - sshpass -p "$RASPBERRY_PASSWORD" ansible-playbook -i $REMOTE_SERVER, playbook-compile-on-target.yml --tags "backend, rfid-reader" --ask-pass
+
+  compileAll:
+    desc: Compile everything (Might take a lot og time...)
+    dir: ansible
+    cmds:
+      - sshpass -p "$RASPBERRY_PASSWORD" ansible-playbook -i $REMOTE_SERVER, playbook-compile-on-target.yml --tags "backend, audio-player, controller, rfid-reader" --ask-pass
+
+  compileUi:
+    desc: Compile the ui and copy it to controller's folder
+    dir: ui
+    cmds:
+      - npm install
+      - npm run build
+
+  copyUi:
+    desc: Copy the ui from controller's folder to target machine (into pi's homedir)
+    dir: ansible
+    cmds:
+      - sshpass -p "$RASPBERRY_PASSWORD" ansible-playbook -i $REMOTE_SERVER, playbook-compile-on-target.yml --tags "ui" --ask-pass
 
   default:
     cmds:
