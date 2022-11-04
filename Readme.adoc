@@ -1,78 +1,61 @@
-= DIY Media Player Box - Backend
+= DIY Media Player Box
 
 This is a small application which turns any Raspberry Pi in a music box.
 
 My target was to build a DIY Music Box for small children. (Like the Toniebox)
 
-This is the main repository which merges the backend and the ui. (ui as a submodule)
-
 == Preparation
 
 You need:
 
-* NodeJS >= 10.23
+* Taskfile on local machine -> https://taskfile.dev/
+* Ansible -> https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-and-upgrading-ansible
+* NodeJS >= 10.23 to build the UI -> https://nodejs.org/en/download/
+* A running MQTT broker on the raspi (like mosquitto -> `apt install mosquitto`)
 * If you use a HifiBerry DAC zero, see here: https://www.hifiberry.com/docs/software/configuring-linux-3-18-x/
 
-If you are testing the backend, you should create a `.env` file in the root dir.
+You need to create a `.env` file in the root dir. (Copy `.env.dist` and adjust settings)
+The assumption is, that the default Raspian user (pi) is used.
 
-The content could look like:
+The content:
 
 [source,bash]
 ----
-PORT=8080
-UI_CONTENT_PATH=ui/public
-HTTP_REQUEST_SIZE_LIMIT=60mb
-ALLOW_ALL_ORIGIN=false
+REMOTE_SERVER=<ip_address_of_pi>
+RASPBERRY_PASSWORD=<password_of_pi_user>
 ----
-
-Here is a short description:
-
-|===
-|Name                       |Default value                  |Description
-
-|PORT                       |8080                           |The port the application server is listening on.
-|UI_CONTENT_PATH            |Application root + 'ui/public' |Points to the path where the UI content is located.
-|HTTP_REQUEST_SIZE_LIMIT    |30mb                           |The maximum http request header size (must end with 'mb')
-|ALLOW_ALL_ORIGIN           |false                          |If you are running the backend and the ui on different ports, you need to enable this to be able to access the backend API. (Should be used only for testing. UI content is served by the application server usually.)
-|===
-
-You can also define these as usual environment variables. (export ...)
 
 == Before you start
 
-I tested this on a Raspberry PI (3 and Zero) and the audio preview in the browser.
+I tested this on a Raspberry PI Zero and the audio preview in the browser.
 
 NOTE: You cannot compile the UI on a Raspberry Pi Zero due to lack of memory (512 MB)
 
-So you will have to compile it elsewhere and copy it to the Pi Zero. Here you can use the `UI_CONTENT_PATH` variable.
+== How to use / deploy it
 
-== Init submodule (UI)
-Load (aka clone) the content of the UI repository.
+=== The Taskfile
 
-To do so, run `git submodule update --init --recursive`
+The Taskfile has everything you need to make it run on the pi. Here are the tasks to accomplish this:
 
-== Install dependencies backend
-Install all necessary libraries for the backend part.
+|===
+|Task name                       |Description
+|setupTarget | If the Raspberry was freshly set up, use this to prepare the pi for all compile tasks (install golang and some dev-dependencies)
+|compileRfidReader | Copy the rfid-reader folder to the raspi, compile it and copy the compiled artifact to the pi's home folder
+|compileController | Copy the controller folder to the raspi, compile it and copy the compiled artifact to the pi's home folder
+|compileAudioPlayer | Copy the audio-player folder to the raspi, compile it and copy the compiled artifact to the pi's home folder
+|compileAll | Execute the tasks "compileRfidReader", "compileController" and "compileAudioPlayer" at once
+|compileUi | Build and package the UI and copy the result to the controller folder (into "ui" folder)
+|copyUi | Copy the ui from controller folder to the raspi into the pi's home folder
+|===
 
-Run `npm install`
+=== Order of operation
 
-== Install dependencies UI
+* Call `setupTarget` once when you have a fresh raspberry pi set up
+* Call `compileAll` to compile all binaries (it may take some time on the raspi zero...)
+* Call `compileUi` to build the ui
+* Call `copyUi` to copy the ui to the raspi. You have to do this, otherwise you will get an error message, when you start the controller and try to access the web interface
 
-NOTE: Not working on the Raspberry Pi Zero (See 'Before you start')
+=== Others
 
-Install all necessary libraries for the UI part. (Needed to build the UI).
-
-Run `npm run ui-init`
-
-== Build UI
-
-NOTE: Not working on the Raspberry Pi Zero (See 'Before you start')
-
-Build the UI part.
-
-Run `npm run ui-build`
-
-== Run it
-If the `UI_CONTENT_PATH` environment variable is not changed, start the server with
-
- `npm start`
+Everything will be compiled on the Raspi, because te local compile is not working for some reason.
+The current state is located in the folder: local-compile
