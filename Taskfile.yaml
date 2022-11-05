@@ -10,19 +10,19 @@ tasks:
       - sshpass -p "$RASPBERRY_PASSWORD" ansible-playbook -i $REMOTE_SERVER, playbook-setup-target.yml --ask-pass
 
   compileAudioPlayer:
-    desc: The audio-player will be compile remotely and copied to pi's homedir
+    desc: The audio-player will be compile remotely and copied to Pi's homedir
     dir: ansible
     cmds:
       - sshpass -p "$RASPBERRY_PASSWORD" ansible-playbook -i $REMOTE_SERVER, playbook-compile-on-target.yml --tags "backend, audio-player" --ask-pass
 
   compileController:
-    desc: The controller will be compile remotely and copied to pi's homedir
+    desc: The controller will be compile remotely and copied to Pi's homedir
     dir: ansible
     cmds:
       - sshpass -p "$RASPBERRY_PASSWORD" ansible-playbook -i $REMOTE_SERVER, playbook-compile-on-target.yml --tags "backend, controller" --ask-pass
 
   compileRfidReader:
-    desc: The rfid-reader will be compile remotely and copied to pi's homedir
+    desc: The rfid-reader will be compile remotely and copied to Pi's homedir
     dir: ansible
     cmds:
       - sshpass -p "$RASPBERRY_PASSWORD" ansible-playbook -i $REMOTE_SERVER, playbook-compile-on-target.yml --tags "backend, rfid-reader" --ask-pass
@@ -41,7 +41,7 @@ tasks:
       - npm run build
 
   copyUi:
-    desc: Copy the ui from controller's folder to target machine (into pi's homedir)
+    desc: Copy the ui from controller's folder to target machine (into Pi's homedir)
     dir: ansible
     cmds:
       - sshpass -p "$RASPBERRY_PASSWORD" ansible-playbook -i $REMOTE_SERVER, playbook-compile-on-target.yml --tags "ui" --ask-pass
