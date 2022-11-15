@@ -12,6 +12,7 @@
         - "rfid-reader"
         - "controller"
         - "audio-player"
+        - "io-controller"
       tags:
         - backend
 
@@ -19,5 +20,6 @@
       copy:
         src: ../controller/ui
         dest: "/home/pi/"
+
       tags:
         - ui
