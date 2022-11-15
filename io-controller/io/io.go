@@ -1,7 +1,6 @@
 package io
 
 import (
-	"fmt"
 	"io-controller/cli"
 	"io-controller/mqtt"
 	"log"
@@ -10,6 +9,8 @@ import (
 	"periph.io/x/host/v3"
 	"time"
 )
+
+const volumeOffset = 0.5
 
 type IO struct {
 	sendVolumeChangeMessage func(volumeOffset float64)
@@ -22,26 +23,55 @@ type IO struct {
 }
 
 func (i *IO) Run() {
-	log.Println(gpioreg.All())
+	i.sendStatusMessage(mqtt.Info, "Configuring pins...")
+	i.setupPins()
+	i.sendStatusMessage(mqtt.Info, "...Pins configured")
 
+	i.sendStatusMessage(mqtt.Info, "Starting loop...")
+	for {
+		i.checkVolumeStates()
+		i.checkTrackStates()
+
+		time.Sleep(1 * time.Second)
+	}
+}
+
+func (i *IO) setupPins() {
 	if err := i.volUpPin.In(gpio.Float, gpio.NoEdge); err != nil {
-		log.Println("error occurred")
 		log.Fatal(err)
 	}
+	if err := i.volDownPin.In(gpio.Float, gpio.NoEdge); err != nil {
+		log.Fatal(err)
+	}
+	if err := i.trackNext.In(gpio.Float, gpio.NoEdge); err != nil {
+		log.Fatal(err)
+	}
+	if err := i.trackPrev.In(gpio.Float, gpio.NoEdge); err != nil {
+		log.Fatal(err)
+	}
+}
 
-	fmt.Printf("%s: %s\n", i.volUpPin, i.volUpPin.Function())
+func (i *IO) checkVolumeStates() {
+	if i.volUpPin.Read() == gpio.High {
+		i.sendStatusMessage(mqtt.Info, "Volume up button pressed")
+		i.sendVolumeChangeMessage(volumeOffset)
+	}
 
-	i.sendStatusMessage(mqtt.Info, "Pin configured as input...")
+	if i.volDownPin.Read() == gpio.High {
+		i.sendStatusMessage(mqtt.Info, "Volume down button pressed")
+		i.sendVolumeChangeMessage(-volumeOffset)
+	}
+}
 
-	for {
-		i.sendStatusMessage(mqtt.Info, "Waiting for input...")
-		//read := i.volUpPin.WaitForEdge(1 * time.Second)
-		//if read {
-		time.Sleep(1 * time.Second)
-		i.sendStatusMessage(mqtt.Info, "... Pin is: ", fmt.Sprintf("-> %s\n", i.volUpPin.Read().String()))
-		//} else {
-		//	i.sendStatusMessage(mqtt.Info, "... Pin ", i.volUpPin.Name(), " was not triggered...")
-		//}
+func (i *IO) checkTrackStates() {
+	if i.trackNext.Read() == gpio.High {
+		i.sendStatusMessage(mqtt.Info, "Next track button pressed")
+		i.sendTrackChangeMessage(1)
+	}
+
+	if i.trackPrev.Read() == gpio.High {
+		i.sendStatusMessage(mqtt.Info, "Previous track button pressed")
+		i.sendTrackChangeMessage(-1)
 	}
 }
 
