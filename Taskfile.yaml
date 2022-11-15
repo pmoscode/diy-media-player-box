@@ -21,6 +21,12 @@ tasks:
     cmds:
       - sshpass -p "$RASPBERRY_PASSWORD" ansible-playbook -i $REMOTE_SERVER, playbook-compile-on-target.yml --tags "backend, controller" --ask-pass
 
+  compileIoController:
+    desc: The io-controller will be compile remotely and copied to Pi's homedir
+    dir: ansible
+    cmds:
+      - sshpass -p "$RASPBERRY_PASSWORD" ansible-playbook -i $REMOTE_SERVER, playbook-compile-on-target.yml --tags "backend, io-controller" --ask-pass
+
   compileRfidReader:
     desc: The rfid-reader will be compile remotely and copied to Pi's homedir
     dir: ansible
@@ -28,7 +34,7 @@ tasks:
       - sshpass -p "$RASPBERRY_PASSWORD" ansible-playbook -i $REMOTE_SERVER, playbook-compile-on-target.yml --tags "backend, rfid-reader" --ask-pass
 
   compileAll:
-    desc: Compile everything (Might take a lot og time...)
+    desc: Compile everything (Might take a lot of time...)
     dir: ansible
     cmds:
       - sshpass -p "$RASPBERRY_PASSWORD" ansible-playbook -i $REMOTE_SERVER, playbook-compile-on-target.yml --tags "backend, audio-player, controller, rfid-reader" --ask-pass
@@ -45,8 +51,3 @@ tasks:
     dir: ansible
     cmds:
       - sshpass -p "$RASPBERRY_PASSWORD" ansible-playbook -i $REMOTE_SERVER, playbook-compile-on-target.yml --tags "ui" --ask-pass
-
-  default:
-    cmds:
-      - go-task -l
-    silent: true
