@@ -3,6 +3,14 @@
   remote_user: pi
 
   tasks:
+    - name: Ensure "archives" folder exists
+      file:
+        path: "../archives"
+        state: directory
+      delegate_to: localhost
+      tags:
+        - backend
+
     - name: Compile components
       include_tasks: partial/compile-component.yml
       vars:
@@ -20,6 +28,5 @@
       copy:
         src: ../controller/ui
         dest: "/home/pi/"
-
       tags:
         - ui

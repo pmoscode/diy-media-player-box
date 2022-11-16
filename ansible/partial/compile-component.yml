@@ -1,13 +1,29 @@
 ---
-- name: "[{{ component_name }}]: Copy source to target"
+- name: ">>{{ component_name }}<<: Archive on localhost to prevent long copy action"
+  archive:
+    path: "../{{ component_name }}"
+    dest: "../archives/{{ component_name }}.tar.gz"
+  delegate_to: localhost
+  tags:
+    - "{{ tag_name }}"
+
+- name: ">>{{ component_name }}<<: Copy source archive to target"
   copy:
-    src: "../{{ component_name }}"
+    src: "../archives/{{ component_name }}.tar.gz"
     dest: "/tmp/"
   register: copy_info
   tags:
     - "{{ tag_name }}"
 
-- name: "[{{ component_name }}]: Init go modules"
+- name: ">>{{ component_name }}<<: Unpack uploaded"
+  unarchive:
+    src: "/tmp/{{ component_name }}.tar.gz"
+    dest: "/tmp/"
+    remote_src: yes
+  tags:
+    - "{{ tag_name }}"
+
+- name: ">>{{ component_name }}<<: Init go modules"
   shell: /usr/local/go/bin/go mod tidy
   args:
     chdir: "/tmp/{{ component_name }}"
@@ -15,7 +31,7 @@
   tags:
     - "{{ tag_name }}"
 
-- name: "[{{ component_name }}]: Compile component"
+- name: ">>{{ component_name }}<<: Compile component"
   shell: /usr/local/go/bin/go build
   args:
     chdir: "/tmp/{{ component_name }}"
@@ -23,7 +39,7 @@
   tags:
     - "{{ tag_name }}"
 
-- name: "[{{ component_name }}]: Copy compiled binary to target"
+- name: ">>{{ component_name }}<<: Copy compiled binary to target"
   copy:
     src: "/tmp/{{ component_name }}/{{ component_name }}"
     dest: "/home/pi/{{ component_name }}"
