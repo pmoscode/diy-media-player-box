@@ -64,13 +64,9 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
         HttpClientModule,
         MatProgressSpinnerModule
     ],
-    entryComponents: [
-        AudioBookDialogComponent,
-        AudioBookManageFilesDialogComponent
-    ],
     providers: [
-        {provide: 'AudioBookService', useClass: environment.audioBookService},
-        {provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: {hasBackdrop: true}}
+        { provide: 'AudioBookService', useClass: environment.audioBookService },
+        { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true } }
     ],
     bootstrap: [AppComponent]
 })
