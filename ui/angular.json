@@ -52,6 +52,7 @@
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
+              "outputPath": "../controller/ui",
               "budgets": [
                 {
                   "type": "initial",
@@ -115,6 +116,6 @@
           }
         }
       }
-    }},
-  "defaultProject": "diy-media-player-for-children"
+    }
+  }
 }

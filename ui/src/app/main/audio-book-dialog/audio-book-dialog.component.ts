@@ -1,5 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {AudioBookServiceInterface} from '../service/audio-book-service-interface';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {AudioBook} from '../service/audio-book';
@@ -12,10 +12,10 @@ import {Card} from '../service/card';
 })
 export class AudioBookDialogComponent implements OnInit {
 
-    formGroup = new FormGroup({
-        title: new FormControl('', [Validators.required]),
-        card: new FormControl('', []),
-        isMusic: new FormControl(false, [])
+    formGroup = new UntypedFormGroup({
+        title: new UntypedFormControl('', [Validators.required]),
+        card: new UntypedFormControl('', []),
+        isMusic: new UntypedFormControl(false, [])
     });
 
     cards: Card[] = [];
