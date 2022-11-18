@@ -1,7 +1,10 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {AudioBookServiceInterface} from '../service/audio-book-service-interface';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {
+    MAT_DIALOG_DATA,
+    MatDialogRef
+} from '@angular/material/dialog';
 import {AudioBook} from '../service/audio-book';
 import {Card} from '../service/card';
 

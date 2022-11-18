@@ -12,5 +12,5 @@ export function indicate<T>(indicator: Subject<boolean>): (source: Observable<T>
     return (source: Observable<T>): Observable<T> => source.pipe(
         prepare(() => indicator.next(true)),
         finalize(() => indicator.next(false))
-    )
+    );
 }

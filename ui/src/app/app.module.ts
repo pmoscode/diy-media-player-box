@@ -20,13 +20,15 @@ import {AudioBookTrackListComponent} from './main/audio-book/audio-book-track-li
 import {AudioBookInformationComponent} from './main/audio-book/audio-book-information/audio-book-information.component';
 import {AudioBookComponent} from './main/audio-book/audio-book.component';
 import {AudioBookDialogComponent} from './main/audio-book-dialog/audio-book-dialog.component';
-import {MAT_DIALOG_DEFAULT_OPTIONS, MatDialogModule} from '@angular/material/dialog';
+import {MatDialogModule} from '@angular/material/dialog';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
 import {MatInputModule} from '@angular/material/input';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 // tslint:disable-next-line:max-line-length
-import {AudioBookManageFilesDialogComponent} from './main/audio-book/audio-book-manage-files-dialog/audio-book-manage-files-dialog.component';
+import {
+    AudioBookManageFilesDialogComponent
+} from './main/audio-book/audio-book-manage-files-dialog/audio-book-manage-files-dialog.component';
 import {NgxFileDropModule} from 'ngx-file-drop';
 import {HttpClientModule} from '@angular/common/http';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
@@ -65,8 +67,7 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
         MatProgressSpinnerModule
     ],
     providers: [
-        { provide: 'AudioBookService', useClass: environment.audioBookService },
-        { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true } }
+        {provide: 'AudioBookService', useClass: environment.audioBookService}
     ],
     bootstrap: [AppComponent]
 })
