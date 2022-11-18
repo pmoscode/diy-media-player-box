@@ -42,7 +42,7 @@ func (a *Audio) OnMessageReceivedPlay(message mqtt.Message) {
 
 	transition := fmt.Sprintf("%d to %d", a.lastPlayedUid, body.Id)
 	uidChanged := a.checkLastPlayedUidChanged(&body)
-	a.sendStatusMessage("uid changed: ", transition)
+	a.sendStatusMessage(mqtt.Info, "uid changed: ", transition)
 
 	if uidChanged {
 		speaker.Clear()
@@ -78,7 +78,7 @@ func (a *Audio) OnMessageReceivedPlay(message mqtt.Message) {
 
 		samples = append(samples, beep.Callback(func() {
 			a.lastPlayedUid = 0
-			a.sendStatusMessage("stopped")
+			a.sendStatusMessage(mqtt.Info, "stopped")
 			a.sendPlayDoneMessage(body.Id)
 		}))
 
@@ -98,15 +98,15 @@ func (a *Audio) OnMessageReceivedPlay(message mqtt.Message) {
 
 			speaker.Play(a.volume)
 
-			a.sendStatusMessage("playing")
+			a.sendStatusMessage(mqtt.Info, "playing")
 		} else {
-			a.sendStatusMessage("no tracks")
+			a.sendStatusMessage(mqtt.Info, "no tracks")
 		}
 	} else {
 		if a.control.Paused {
 			a.OnMessageReceivedSwitch(message)
 		} else {
-			a.sendStatusMessage("untouched")
+			a.sendStatusMessage(mqtt.Info, "untouched")
 		}
 	}
 }
@@ -124,7 +124,7 @@ func (a *Audio) OnMessageReceivedSwitch(message mqtt.Message) {
 
 		a.sendStatusMessage(mqtt.Info, status)
 	} else {
-		a.sendStatusMessage("no audio stream")
+		a.sendStatusMessage(mqtt.Info, "no audio stream")
 	}
 }
 
@@ -132,7 +132,7 @@ func (a *Audio) OnMessageReceivedStop(message mqtt.Message) {
 	speaker.Clear()
 
 	a.lastPlayedUid = 0
-	a.sendStatusMessage("stopped")
+	a.sendStatusMessage(mqtt.Info, "stopped")
 }
 
 func (a *Audio) OnMessageReceivedVolume(message mqtt.Message) {
