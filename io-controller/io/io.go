@@ -10,68 +10,95 @@ import (
 	"time"
 )
 
-const volumeOffset = 0.5
+const waitForEdgeTime = 100 // In milliseconds
 
 type IO struct {
 	sendVolumeChangeMessage func(volumeOffset float64)
 	sendTrackChangeMessage  func(direction int)
 	sendStatusMessage       func(messageType mqtt.StatusType, message ...any)
 	volUpPin                gpio.PinIn
+	volUpLastState          gpio.Level
 	volDownPin              gpio.PinIn
-	trackNext               gpio.PinIn
-	trackPrev               gpio.PinIn
+	volDownLastState        gpio.Level
+	trackNextPin            gpio.PinIn
+	trackNextLastState      gpio.Level
+	trackPrevPin            gpio.PinIn
+	trackPrevLastState      gpio.Level
+	volumeOffset            float64
 }
 
 func (i *IO) Run() {
-	i.sendStatusMessage(mqtt.Info, "Configuring pins...")
+	i.sendStatusMessage(mqtt.Info, "Configuring pins and states...")
 	i.setupPins()
-	i.sendStatusMessage(mqtt.Info, "...Pins configured")
+	i.setupStates()
+	i.sendStatusMessage(mqtt.Info, "...done")
 
 	i.sendStatusMessage(mqtt.Info, "Starting loop...")
 	for {
 		i.checkVolumeStates()
 		i.checkTrackStates()
-
-		time.Sleep(1 * time.Second)
 	}
 }
 
+func (i *IO) setupStates() {
+	i.volUpLastState = gpio.Low
+	i.volDownLastState = gpio.Low
+	i.trackNextLastState = gpio.Low
+	i.trackPrevLastState = gpio.Low
+}
+
 func (i *IO) setupPins() {
-	if err := i.volUpPin.In(gpio.Float, gpio.NoEdge); err != nil {
+	if err := i.volUpPin.In(gpio.PullDown, gpio.RisingEdge); err != nil {
 		log.Fatal(err)
 	}
-	if err := i.volDownPin.In(gpio.Float, gpio.NoEdge); err != nil {
+	if err := i.volDownPin.In(gpio.PullDown, gpio.RisingEdge); err != nil {
 		log.Fatal(err)
 	}
-	if err := i.trackNext.In(gpio.Float, gpio.NoEdge); err != nil {
+	if err := i.trackNextPin.In(gpio.PullDown, gpio.RisingEdge); err != nil {
 		log.Fatal(err)
 	}
-	if err := i.trackPrev.In(gpio.Float, gpio.NoEdge); err != nil {
+	if err := i.trackPrevPin.In(gpio.PullDown, gpio.RisingEdge); err != nil {
 		log.Fatal(err)
 	}
 }
 
 func (i *IO) checkVolumeStates() {
-	if i.volUpPin.Read() == gpio.High {
+	up := i.volUpPin.WaitForEdge(waitForEdgeTime * time.Millisecond)
+	if up && i.volUpLastState == gpio.Low {
+		i.volUpLastState = gpio.High
 		i.sendStatusMessage(mqtt.Info, "Volume up button pressed")
-		i.sendVolumeChangeMessage(volumeOffset)
+		i.sendVolumeChangeMessage(i.volumeOffset)
+	} else if !up {
+		i.volUpLastState = gpio.Low
 	}
 
-	if i.volDownPin.Read() == gpio.High {
+	down := i.volDownPin.WaitForEdge(waitForEdgeTime * time.Millisecond)
+	if down && i.volDownLastState == gpio.Low {
+		i.volDownLastState = gpio.High
 		i.sendStatusMessage(mqtt.Info, "Volume down button pressed")
-		i.sendVolumeChangeMessage(-volumeOffset)
+		i.sendVolumeChangeMessage(-i.volumeOffset)
+	} else if !up {
+		i.volDownLastState = gpio.Low
 	}
 }
 
 func (i *IO) checkTrackStates() {
-	if i.trackNext.Read() == gpio.High {
+	next := i.trackNextPin.WaitForEdge(waitForEdgeTime * time.Millisecond)
+	if next && i.trackNextLastState == gpio.Low {
+		i.trackNextLastState = gpio.High
 		i.sendStatusMessage(mqtt.Info, "Next track button pressed")
 		i.sendTrackChangeMessage(1)
+	} else if !next {
+		i.trackNextLastState = gpio.Low
 	}
 
-	if i.trackPrev.Read() == gpio.High {
+	prev := i.trackPrevPin.WaitForEdge(waitForEdgeTime * time.Millisecond)
+	if prev && i.trackPrevLastState == gpio.Low {
+		i.trackPrevLastState = gpio.High
 		i.sendStatusMessage(mqtt.Info, "Previous track button pressed")
 		i.sendTrackChangeMessage(-1)
+	} else if !next {
+		i.trackPrevLastState = gpio.Low
 	}
 }
 
@@ -80,13 +107,20 @@ func NewOI(cliOptions *cli.Options, volumeChangeMessage func(volumeOffset float6
 		log.Fatal(err)
 	}
 
+	log.Println("Wiring pins to:")
+	log.Println("\tVolDown:   ", "GPIO", *cliOptions.PinVolumeDown)
+	log.Println("\tVolUp:     ", "GPIO", *cliOptions.PinVolumeUp)
+	log.Println("\tTrackNext: ", "GPIO", *cliOptions.PinTrackNext)
+	log.Println("\tTrackPrev: ", "GPIO", *cliOptions.PinTrackPrev)
+
 	return &IO{
 		sendStatusMessage:       statusMessage,
 		sendVolumeChangeMessage: volumeChangeMessage,
 		sendTrackChangeMessage:  trackChangeMessage,
 		volDownPin:              gpioreg.ByName("GPIO" + *cliOptions.PinVolumeDown),
 		volUpPin:                gpioreg.ByName("GPIO" + *cliOptions.PinVolumeUp),
-		trackNext:               gpioreg.ByName("GPIO" + *cliOptions.PinTrackNext),
-		trackPrev:               gpioreg.ByName("GPIO" + *cliOptions.PinTrackPrev),
+		trackNextPin:            gpioreg.ByName("GPIO" + *cliOptions.PinTrackNext),
+		trackPrevPin:            gpioreg.ByName("GPIO" + *cliOptions.PinTrackPrev),
+		volumeOffset:            *cliOptions.VolumeOffset,
 	}
 }

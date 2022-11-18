@@ -17,8 +17,6 @@ type Module interface {
 }
 
 func main() {
-	// Pins 20 (38), 16 (36), 13 (33), 12 (32)
-
 	cliOptions = cli.GetCliOptions()
 
 	mqttClient = mqtt.CreateClient(*cliOptions.MqttBrokerIp, 1883, *cliOptions.MqttClientId)
