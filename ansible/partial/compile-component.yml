@@ -4,6 +4,7 @@
     path: "../{{ component_name }}"
     dest: "../archives/{{ component_name }}.tar.gz"
   delegate_to: localhost
+  register: pack_info
   tags:
     - "{{ tag_name }}"
 
@@ -11,7 +12,7 @@
   copy:
     src: "../archives/{{ component_name }}.tar.gz"
     dest: "/tmp/"
-  register: copy_info
+  when: pack_info.changed
   tags:
     - "{{ tag_name }}"
 
@@ -20,6 +21,8 @@
     src: "/tmp/{{ component_name }}.tar.gz"
     dest: "/tmp/"
     remote_src: yes
+  register: unpack_info
+  when: pack_info.changed
   tags:
     - "{{ tag_name }}"
 
@@ -27,7 +30,7 @@
   shell: /usr/local/go/bin/go mod tidy
   args:
     chdir: "/tmp/{{ component_name }}"
-  when: copy_info.changed
+  when: pack_info.changed and unpack_info.changed
   tags:
     - "{{ tag_name }}"
 
@@ -35,7 +38,7 @@
   shell: /usr/local/go/bin/go build
   args:
     chdir: "/tmp/{{ component_name }}"
-  when: copy_info.changed
+  when: pack_info.changed and unpack_info.changed
   tags:
     - "{{ tag_name }}"
 
@@ -45,6 +48,6 @@
     dest: "/home/pi/{{ component_name }}"
     remote_src: yes
     mode: preserve
-  when: copy_info.changed
+  when: pack_info.changed and unpack_info.changed
   tags:
      - "{{ tag_name }}"
