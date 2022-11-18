@@ -1,6 +1,9 @@
 <h1 mat-dialog-title>{{data.audioBook ? "Update" : "Add new"}} audio book</h1>
 <form mat-dialog-content [formGroup]="formGroup">
     <div class="field-container">
+<!--        <section>-->
+<!--            <mat-checkbox formControlName="isMusic">Is Music</mat-checkbox>-->
+<!--        </section>-->
         <mat-form-field class="form-field">
             <label>
                 <input matInput placeholder="Title of audio book" formControlName="title" required>

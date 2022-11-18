@@ -6,7 +6,7 @@
         <mat-panel-description>
             # Tracks: {{audioBook.trackList ? audioBook.trackList.length : 'No tracklist available yet'}}
             <span>Last played: {{audioBook.lastPlayed ? (audioBook.lastPlayed | timeAgo) : 'never'}}</span>
-            <mat-icon>audiotrack</mat-icon>
+            <mat-icon>{{audioBook.isMusic ? 'audiotrack' : 'book'}}</mat-icon>
         </mat-panel-description>
     </mat-expansion-panel-header>
     <mat-grid-list cols="5" rowHeight="300">

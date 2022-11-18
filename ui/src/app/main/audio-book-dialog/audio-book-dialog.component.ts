@@ -14,7 +14,8 @@ export class AudioBookDialogComponent implements OnInit {
 
     formGroup = new FormGroup({
         title: new FormControl('', [Validators.required]),
-        card: new FormControl('', [])
+        card: new FormControl('', []),
+        isMusic: new FormControl(false, [])
     });
 
     cards: Card[] = [];
@@ -33,6 +34,7 @@ export class AudioBookDialogComponent implements OnInit {
                 }
                 this.formGroup.controls.title.setValue(this.data.audioBook.title);
                 this.formGroup.controls.card.setValue(this.data.audioBook.card);
+                this.formGroup.controls.isMusic.setValue(this.data.audioBook.isMusic);
 
                 this.cards.sort((a, b) => a.cardId.localeCompare(b.cardId));
             }
