@@ -25,7 +25,7 @@ var cliOptions CliOptions
 func getCliOptions() CliOptions {
 	mqttBrokerIp := flag.String("mqtt-broker", "localhost", "Ip of MQTT broker")
 	mqttClientId := flag.String("mqtt-client-id", "audio-player", "Client id for Mqtt connection")
-	sampleRateFactor := flag.Int("sample-rate-factor", 10, "Buffer size of audio player")
+	sampleRateFactor := flag.Int("buffer-sample-rate", 400, "Defines buffer size of audio player # in milliseconds")
 	logStatusToConsole := flag.Bool("log-console", false, "Log messages also to current std console")
 	flag.Parse()
 
@@ -49,7 +49,10 @@ func main() {
 	}
 
 	const sampleRate = beep.SampleRate(audio.DefaultSampleRate)
-	speaker.Init(sampleRate, sampleRate.N(time.Second/time.Duration(*cliOptions.sampleRateFactor)))
+	err = speaker.Init(sampleRate, sampleRate.N(time.Duration(*cliOptions.sampleRateFactor)*time.Millisecond))
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	audioClient := audio.NewAudio(sendStatusMessage, sendPlayDoneMessage)
 
