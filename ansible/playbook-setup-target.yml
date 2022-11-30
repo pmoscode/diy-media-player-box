@@ -7,6 +7,13 @@
     GO_BIN_ARCHIVE: "go{{ GO_VERSION }}.linux-armv6l.tar.gz"
 
   tasks:
+    - name: Ensure mosquitto is installed
+      apt:
+        name: mosquitto
+        state: present
+        update_cache: yes
+      become: yes
+
     - name: Check if GO dist is installed in /usr/local/go
       stat:
         path: /usr/local/go
@@ -40,3 +47,27 @@
           state: present
 
       when: not is_go_dir_info.stat.exists
+
+    - name: Copy start/terminate scripts to target
+      copy:
+        src: "scripts/{{ item }}"
+        dest: "/home/pi"
+        mode: +x
+      loop:
+        - "startAll.sh"
+        - "terminateAll.sh"
+        - "livenessProbe.sh"
+
+    - name: Setup autostart
+      cron:
+        name: "Start everything after reboot"
+        state: present
+        special_time: reboot
+        job: "sleep 60 && /home/pi/startAll.sh 2>&1"
+
+    - name: Setup liveness check
+      cron:
+        name: "Check processes every 5th minute"
+        state: present
+        minute: "*/5"
+        job: "/home/pi/livenessProbe.sh 2>&1"

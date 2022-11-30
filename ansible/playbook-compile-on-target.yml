@@ -30,14 +30,3 @@
         dest: "/home/pi/"
       tags:
         - ui
-
-    - name: Copy start/terminate scripts to target
-      copy:
-        src: "scripts/{{ item }}"
-        dest: "/home/pi"
-        mode: +x
-      loop:
-        - "startAll.sh"
-        - "terminateAll.sh"
-      tags:
-        - backend
