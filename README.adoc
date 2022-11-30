@@ -1,5 +1,5 @@
 
-image::doc/Logo.svg[]
+image::doc/Logo.png[]
 
 
 image::https://img.shields.io/badge/License-GPL%20v3-yellow.svg[GPLv3 License]
