@@ -57,7 +57,8 @@ func main() {
 	audioClient := audio.NewAudio(sendStatusMessage, sendPlayDoneMessage)
 
 	mqttClient.Subscribe("/audio-player/play", audioClient.OnMessageReceivedPlay)
-	mqttClient.Subscribe("/audio-player/switch", audioClient.OnMessageReceivedSwitch)
+	mqttClient.Subscribe("/audio-player/pause", audioClient.OnMessageReceivedPause)
+	mqttClient.Subscribe("/audio-player/resume", audioClient.OnMessageReceivedResume)
 	mqttClient.Subscribe("/audio-player/stop", audioClient.OnMessageReceivedStop)
 	mqttClient.Subscribe("/audio-player/volume", audioClient.OnMessageReceivedVolume)
 	mqttClient.LoopForever()

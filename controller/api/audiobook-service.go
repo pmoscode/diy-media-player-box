@@ -16,8 +16,9 @@ import (
 var mqttClient *mqtt.Client
 
 type AudioBookService struct {
-	dbClient    *database.Database
-	cardService *CardService
+	dbClient      *database.Database
+	cardService   *CardService
+	lastPlayedUid string
 }
 
 func (a *AudioBookService) GetAllAudioBooks() ([]*uiSchema.AudioBookFull, error) {
@@ -192,8 +193,9 @@ func NewAudioBookService() *AudioBookService {
 	}
 
 	audioBookService := &AudioBookService{
-		dbClient:    databaseSingleton,
-		cardService: NewCardService(),
+		dbClient:      databaseSingleton,
+		cardService:   NewCardService(),
+		lastPlayedUid: "",
 	}
 
 	mqttClient = mqtt.CreateClient(*cliOptions.mqttBrokerIp, 1883, *cliOptions.mqttClientId)
@@ -216,48 +218,56 @@ func (a *AudioBookService) OnMessageReceivedCardId(message mqtt.Message) {
 	audioPlayerMessage := &mqtt.Message{}
 
 	if card.CardId == "" {
-		audioPlayerMessage.Topic = "/audio-player/switch"
+		audioPlayerMessage.Topic = "/audio-player/pause"
 		audioPlayerMessage.Value = nil
 	} else {
-		audioBookDb, dbResult := a.dbClient.GetAudioBookByCardId(card.CardId)
+		if a.lastPlayedUid != card.CardId {
+			audioBookDb, dbResult := a.dbClient.GetAudioBookByCardId(card.CardId)
 
-		if dbResult != database.DbRecordNotFound {
-			request := &mqtt.AudioPlayerPublishMessage{
-				Id:        audioBookDb.ID,
-				TrackList: []string{},
-			}
-
-			for _, track := range audioBookDb.TrackList {
-				mediaPath := utils.GetCompletePathToMediaFolder(audioBookDb.ID)
-				audioFilePath := filepath.Join(mediaPath, track.FileName)
-
-				request.TrackList = append(request.TrackList, audioFilePath)
-
-			}
-			audioPlayerMessage.Topic = "/audio-player/play"
-			audioPlayerMessage.Value = request
-		} else {
-			_, dbResult := a.dbClient.GetCard(card.CardId)
-			audioPlayerMessage.Topic = "/status/controller"
-
-			if dbResult == database.DbRecordNotFound {
-				a.dbClient.AddUnusedCard(card.CardId)
-
-				statusMessage := &mqtt.StatusPublishMessage{
-					Type:   mqtt.Info,
-					Status: "Added new card: " + card.CardId,
+			if dbResult != database.DbRecordNotFound {
+				request := &mqtt.AudioPlayerPublishMessage{
+					Id:        audioBookDb.ID,
+					TrackList: []string{},
 				}
 
-				audioPlayerMessage.Value = statusMessage
+				for _, track := range audioBookDb.TrackList {
+					mediaPath := utils.GetCompletePathToMediaFolder(audioBookDb.ID)
+					audioFilePath := filepath.Join(mediaPath, track.FileName)
+
+					request.TrackList = append(request.TrackList, audioFilePath)
+
+				}
+				a.lastPlayedUid = card.CardId
+
+				audioPlayerMessage.Topic = "/audio-player/play"
+				audioPlayerMessage.Value = request
 			} else {
-				statusMessage := &mqtt.StatusPublishMessage{
-					Type:   mqtt.Info,
-					Status: "Card not assigned: " + card.CardId,
-				}
+				_, dbResult := a.dbClient.GetCard(card.CardId)
+				audioPlayerMessage.Topic = "/status/controller"
 
-				audioPlayerMessage.Value = statusMessage
+				if dbResult == database.DbRecordNotFound {
+					a.dbClient.AddUnusedCard(card.CardId)
+
+					statusMessage := &mqtt.StatusPublishMessage{
+						Type:   mqtt.Info,
+						Status: "Added new card: " + card.CardId,
+					}
+
+					audioPlayerMessage.Value = statusMessage
+				} else {
+					statusMessage := &mqtt.StatusPublishMessage{
+						Type:   mqtt.Info,
+						Status: "Card not assigned: " + card.CardId,
+					}
+
+					audioPlayerMessage.Value = statusMessage
+				}
 			}
+		} else {
+			audioPlayerMessage.Topic = "/audio-player/resume"
+			audioPlayerMessage.Value = nil
 		}
+
 	}
 
 	mqttClient.Publish(audioPlayerMessage)
