@@ -136,13 +136,19 @@ func (a *Audio) OnMessageReceivedStop(message mqtt.Message) {
 }
 
 func (a *Audio) OnMessageReceivedVolume(message mqtt.Message) {
-	volumeMessage := &mqtt.VolumeChangeSubscriptionMessage{}
+	if a.volume != nil {
+		volumeMessage := &mqtt.VolumeChangeSubscriptionMessage{}
 
-	message.ToStruct(volumeMessage)
+		message.ToStruct(volumeMessage)
 
-	speaker.Lock()
-	a.volume.Volume += volumeMessage.VolumeOffset
-	speaker.Unlock()
+		speaker.Lock()
+		a.volume.Volume += volumeMessage.VolumeOffset
+		speaker.Unlock()
+
+		a.sendStatusMessage(mqtt.Info, "Volume changed by ", volumeMessage.VolumeOffset)
+	} else {
+		a.sendStatusMessage(mqtt.Warn, "Volume not changed, because nothing is played...")
+	}
 }
 
 func NewAudio(statusMessage func(messageType mqtt.StatusType, message ...any), playDoneMessage func(id uint)) *Audio {

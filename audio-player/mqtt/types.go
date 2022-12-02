@@ -5,6 +5,7 @@ type StatusType string
 const (
 	Info  StatusType = "info"
 	Error StatusType = "error"
+	Warn  StatusType = "warn"
 )
 
 type Message struct {
