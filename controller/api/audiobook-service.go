@@ -285,4 +285,6 @@ func (a *AudioBookService) OnMessageReceivedPlayDone(message mqtt.Message) {
 
 		a.dbClient.UpdateAudioBook(audioBookDb)
 	}
+
+	a.lastPlayedUid = ""
 }
