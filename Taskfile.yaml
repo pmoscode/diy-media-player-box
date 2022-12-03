@@ -3,37 +3,37 @@ version: '3'
 dotenv: ['.env']
 
 tasks:
-  setupTarget:
+  setup-target:
     desc: Initial setup on target machine (Install go and alsa dev dependencies) -- Just run it once
     dir: ansible
     cmds:
       - sshpass -p "$RASPBERRY_PASSWORD" ansible-playbook -i $REMOTE_SERVER, playbook-setup-target.yml --ask-pass
 
-  compileAudioPlayer:
+  compile-audio-player:
     desc: The audio-player will be compile remotely and copied to Pi's homedir
     dir: ansible
     cmds:
       - sshpass -p "$RASPBERRY_PASSWORD" ansible-playbook -i $REMOTE_SERVER, playbook-compile-on-target.yml --tags "backend, audio-player" --ask-pass
 
-  compileController:
+  compile-controller:
     desc: The controller will be compile remotely and copied to Pi's homedir
     dir: ansible
     cmds:
       - sshpass -p "$RASPBERRY_PASSWORD" ansible-playbook -i $REMOTE_SERVER, playbook-compile-on-target.yml --tags "backend, controller" --ask-pass
 
-  compileIoController:
+  compile-io-controller:
     desc: The io-controller will be compile remotely and copied to Pi's homedir
     dir: ansible
     cmds:
       - sshpass -p "$RASPBERRY_PASSWORD" ansible-playbook -i $REMOTE_SERVER, playbook-compile-on-target.yml --tags "backend, io-controller" --ask-pass
 
-  compileRfidReader:
+  compile-rfid-reader:
     desc: The rfid-reader will be compile remotely and copied to Pi's homedir
     dir: ansible
     cmds:
       - sshpass -p "$RASPBERRY_PASSWORD" ansible-playbook -i $REMOTE_SERVER, playbook-compile-on-target.yml --tags "backend, rfid-reader" --ask-pass
 
-  compileAll:
+  compile-all:
     desc: Compile everything (Might take even longer...)
     dir: ansible
     cmds:
@@ -41,20 +41,20 @@ tasks:
       - task: compileUi
       - task: copyUi
 
-  compileAllBackend:
+  compile-all-backend:
     desc: Compile all backend components (Might take a lot of time...)
     dir: ansible
     cmds:
       - sshpass -p "$RASPBERRY_PASSWORD" ansible-playbook -i $REMOTE_SERVER, playbook-compile-on-target.yml --tags "backend, audio-player, controller, rfid-reader, io-controller" --ask-pass
 
-  compileUi:
+  compile-ui:
     desc: Compile the ui and copy it to controller's folder
     dir: ui
     cmds:
       - npm install --force
       - npm run build --force
 
-  copyUi:
+  copy-ui:
     desc: Copy the ui from controller's folder to target machine (into Pi's homedir)
     dir: ansible
     cmds:
