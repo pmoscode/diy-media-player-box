@@ -3,9 +3,16 @@
 function check() {
   PROCESS_NAME=$1
   COMMAND=$2
-  PID_PROCESS=$(pgrep $PROCESS_NAME)
+  PID_PROCESS=$(pgrep -x $PROCESS_NAME)
   echo "PID of '$PROCESS_NAME': $PID_PROCESS"
-  [  -z "$PID_PROCESS" ] && echo "Starting process: $COMMAND"; eval "$COMMAND" || echo "$PROCESS_NAME not already running"
+
+  if [  -z "$PID_PROCESS" ]
+  then
+    echo "Starting process: $COMMAND"
+    eval "$COMMAND"
+  else
+    echo "$PROCESS_NAME already running"
+  fi
 }
 
 echo "Checking rfid-reader..."
