@@ -65,7 +65,7 @@ func sendVolumeChangeMessage(volumeOffset float64) {
 	}
 
 	mqttClient.Publish(&mqtt.Message{
-		Topic: "/audio-player/volume",
+		Topic: "/io-controller/volume",
 		Value: publishMessage,
 	})
 }
@@ -76,7 +76,7 @@ func sendTrackChangeMessage(direction int) {
 	}
 
 	mqttClient.Publish(&mqtt.Message{
-		Topic: "/audio-player/track",
+		Topic: "/io-controller/track",
 		Value: publishMessage,
 	})
 }

@@ -155,7 +155,7 @@ func (a *AudioBookService) PlayAudioTrack(id uint, idxTrack uint) error {
 	}
 
 	message := &mqtt.Message{
-		Topic: "/audio-player/play",
+		Topic: "/controller/play",
 		Value: request,
 	}
 
@@ -166,7 +166,7 @@ func (a *AudioBookService) PlayAudioTrack(id uint, idxTrack uint) error {
 
 func (a *AudioBookService) StopAudioTrack() error {
 	message := &mqtt.Message{
-		Topic: "/audio-player/stop",
+		Topic: "/controller/stop",
 		Value: nil,
 	}
 
@@ -176,8 +176,9 @@ func (a *AudioBookService) StopAudioTrack() error {
 }
 
 func (a *AudioBookService) PauseAudioTrack() error {
+	// TODO Switch is removed. Has to be solved somehow.
 	message := &mqtt.Message{
-		Topic: "/audio-player/switch",
+		Topic: "/controller/switch",
 		Value: nil,
 	}
 
@@ -218,7 +219,7 @@ func (a *AudioBookService) OnMessageReceivedCardId(message mqtt.Message) {
 	audioPlayerMessage := &mqtt.Message{}
 
 	if card.CardId == "" {
-		audioPlayerMessage.Topic = "/audio-player/pause"
+		audioPlayerMessage.Topic = "/controller/pause"
 		audioPlayerMessage.Value = nil
 	} else {
 		if a.lastPlayedUid != card.CardId {
@@ -239,7 +240,7 @@ func (a *AudioBookService) OnMessageReceivedCardId(message mqtt.Message) {
 				}
 				a.lastPlayedUid = card.CardId
 
-				audioPlayerMessage.Topic = "/audio-player/play"
+				audioPlayerMessage.Topic = "/controller/play"
 				audioPlayerMessage.Value = request
 			} else {
 				_, dbResult := a.dbClient.GetCard(card.CardId)
@@ -264,7 +265,7 @@ func (a *AudioBookService) OnMessageReceivedCardId(message mqtt.Message) {
 				}
 			}
 		} else {
-			audioPlayerMessage.Topic = "/audio-player/resume"
+			audioPlayerMessage.Topic = "/controller/resume"
 			audioPlayerMessage.Value = nil
 		}
 
