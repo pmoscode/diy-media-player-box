@@ -68,8 +68,9 @@ func sendStatusMessage(messageType mqtt.StatusType, message ...any) {
 	messageTxt := fmt.Sprint(message...)
 
 	mqttMessage := &mqtt.StatusPublishMessage{
-		Type:   messageType,
-		Status: messageTxt,
+		Type:      messageType,
+		Status:    messageTxt,
+		Timestamp: time.Now(),
 	}
 
 	mqttClient.Publish(&mqtt.Message{

@@ -1,5 +1,7 @@
 package mqtt
 
+import "time"
+
 type StatusType string
 
 const (
@@ -23,8 +25,9 @@ type VolumeChangeSubscriptionMessage struct {
 }
 
 type StatusPublishMessage struct {
-	Type   StatusType `json:"type"`
-	Status string     `json:"status"`
+	Type      StatusType `json:"type" binding:"required"`
+	Status    string     `json:"status"`
+	Timestamp time.Time  `json:"timestamp"`
 }
 
 type PlayDonePublishMessage struct {

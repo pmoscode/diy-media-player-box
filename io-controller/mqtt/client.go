@@ -103,7 +103,7 @@ func (c *Client) LoopForever() {
 		}()
 
 		for {
-			time.Sleep(1 * time.Second)
+			time.Sleep(10 * time.Second)
 		}
 	}
 }

@@ -250,15 +250,17 @@ func (a *AudioBookService) OnMessageReceivedCardId(message mqtt.Message) {
 					a.dbClient.AddUnusedCard(card.CardId)
 
 					statusMessage := &mqtt.StatusPublishMessage{
-						Type:   mqtt.Info,
-						Status: "Added new card: " + card.CardId,
+						Type:      mqtt.Info,
+						Status:    "Added new card: " + card.CardId,
+						Timestamp: time.Now(),
 					}
 
 					audioPlayerMessage.Value = statusMessage
 				} else {
 					statusMessage := &mqtt.StatusPublishMessage{
-						Type:   mqtt.Info,
-						Status: "Card not assigned: " + card.CardId,
+						Type:      mqtt.Info,
+						Status:    "Card not assigned: " + card.CardId,
+						Timestamp: time.Now(),
 					}
 
 					audioPlayerMessage.Value = statusMessage
