@@ -21,6 +21,7 @@
         - "controller"
         - "audio-player"
         - "io-controller"
+        - "logger"
       tags:
         - backend
 

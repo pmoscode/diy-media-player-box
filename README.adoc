@@ -1,4 +1,3 @@
-
 image::doc/Logo.png[]
 
 
@@ -9,7 +8,8 @@ image::https://img.shields.io/badge/License-GPL%20v3-yellow.svg[GPLv3 License]
 
 This is a small application which turns any Raspberry Pi in a music box.
 
-My target was to build a DIY Music Box for small children. (Like the Toniebox)
+My target was to build a DIY Music Box for small children.
+(Like the Toniebox)
 
 == Features
 
@@ -28,7 +28,6 @@ image::doc/images/new-audio-book.png[New audio book]
 image::doc/images/view-audio-book.png[Audio book view]
 image::doc/images/view-audio-books-files.png[Audio book files]
 
-
 == Installation
 
 === Preparation
@@ -40,8 +39,8 @@ You need:
 * NodeJS >= 10.23 to build the UI -> https://nodejs.org/en/download/
 * If you use a HifiBerry DAC zero, see here: https://www.hifiberry.com/docs/software/configuring-linux-3-18-x/ (If not, you will need to enable either the headphone jack or hdmi for audio output - I guess hdmi is default)
 
-You need to create a `.env` file in the root dir. (Copy `.env.dist` and adjust settings)
-The assumption is, that the default Raspbian user (Pi) is used.
+You need to create a `.env` file in the root dir.
+(Copy `.env.dist` and adjust settings) The assumption is, that the default Raspbian user (Pi) is used.
 
 The content of that .env file:
 
@@ -61,19 +60,21 @@ NOTE: You cannot compile the UI on a Raspberry Pi Zero due to lack of memory (51
 
 ==== The Taskfile
 
-The Taskfile has everything you need to make it run on the Pi. Here are the tasks to accomplish this (or parts of it, when required):
+The Taskfile has everything you need to make it run on the Pi.
+Here are the tasks to accomplish this (or parts of it, when required):
 
 |===
-|Task name            |Description
-|setupTarget          | If the Raspberry was freshly set up, use this to prepare the Pi for all compile tasks (install golang and some dev-dependencies)
-|compileRfidReader    | Copy the rfid-reader folder to the raspi, compile it and copy the compiled artifact to the Pi's home folder
-|compileController    | Copy the controller folder to the raspi, compile it and copy the compiled artifact to the Pi's home folder
-|compileIoController  | Copy the io-controller folder to the raspi, compile it and copy the compiled artifact to the Pi's home folder
-|compileAudioPlayer   | Copy the audio-player folder to the raspi, compile it and copy the compiled artifact to the Pi's home folder
-|compileAll           | Execute the tasks "compileRfidReader", "compileController", "compileIoController", "compileAudioPlayer", "compileUi" and "copyUi" at once
-|compileAllBackend    | Execute the tasks "compileRfidReader", "compileController", "compileIoController" and "compileAudioPlayer" at once
-|compileUi            | Build and package the UI and copy the result to the controller folder (into "ui" folder)
-|copyUi               | Copy the ui from controller folder to the raspi into the Pi's home folder
+|Task name              |Description
+|setup-target           | If the Raspberry was freshly set up, use this to prepare the Pi for all compile tasks (install golang and some dev-dependencies)
+|compile-rfid-reader    | Copy the rfid-reader folder to the raspi, compile it and copy the compiled artifact to the Pi's home folder
+|compile-controller     | Copy the controller folder to the raspi, compile it and copy the compiled artifact to the Pi's home folder
+|compile-io-controller  | Copy the io-controller folder to the raspi, compile it and copy the compiled artifact to the Pi's home folder
+|compile-audio-player   | Copy the audio-player folder to the raspi, compile it and copy the compiled artifact to the Pi's home folder
+|compile-logger         | Copy the logger folder to the raspi, compile it and copy the compiled artifact to the Pi's home folder
+|compile-all            | Execute the tasks "compileRfidReader", "compileController", "compileIoController", "compileAudioPlayer", "compileUi" and "copyUi" at once
+|compile-all-backend    | Execute the tasks "compileRfidReader", "compileController", "compileIoController" and "compileAudioPlayer" at once
+|compile-ui             | Build and package the UI and copy the result to the controller folder (into "ui" folder)
+|copy-ui                | Copy the ui from controller folder to the raspi into the Pi's home folder
 |===
 
 ==== Order of operation
@@ -98,18 +99,15 @@ The `setupTarget` task will also add commands to the cron file of the pi user:
 * to enable auto start of the components
 * to add a liveness probe, which checks if every component is still alive (every 5th minute)
 
-
 == Documentation
 
 The UI is that simple, that I assume, I don't need to write any documentation for it.
 
 If I'm wrong, let me know.
 
-
 == License
 
 https://choosealicense.com/licenses/gpl-3.0/[GPLv3]
-
 
 == Authors
 
@@ -117,6 +115,9 @@ https://choosealicense.com/licenses/gpl-3.0/[GPLv3]
 
 == Appendix: Possible optimizations
 
-Everything will be compiled on the Raspi, because te local compile is not working for some reason. I get a "Segmentation Fault" for controller and audio-player. Rfid-reader is working fine. And io-controller didn't exist at that time.
+Everything will be compiled on the Raspi, because te local compile is not working for some reason.
+I get a "Segmentation Fault" for controller and audio-player.
+Rfid-reader is working fine.
+And io-controller didn't exist at that time.
 
 The current state is located in the folder: `local-compile`

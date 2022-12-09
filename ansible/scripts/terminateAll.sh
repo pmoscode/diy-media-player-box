@@ -10,3 +10,4 @@ terminate audio-player
 terminate rfid-reader
 terminate io-controller
 terminate controller
+terminate logger
