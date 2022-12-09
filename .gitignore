@@ -8,24 +8,6 @@
 .DS_Store
 Thumbs.db
 
-/audio-player/audio-player
-
-/controller-old/database/
-/controller-old/logs
-/controller-old/media
-/controller-old/.env
-/controller-old/node_modules
-/controller-old/ui
-
-/controller/controller
-/controller/data.db
-/controller/media/**
-/controller/ui
-
-/rfid-reader/rfid-reader
-
-/io-controller/io-controller
-
 .env
 sysroot/
 archives/
