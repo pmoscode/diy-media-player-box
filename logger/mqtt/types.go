@@ -9,11 +9,7 @@ const (
 	Error StatusType = "error"
 )
 
-type CardIdPublishMessage struct {
-	CardId string `json:"cardId"`
-}
-
-type StatusPublishMessage struct {
+type StatusMessage struct {
 	Type      StatusType `json:"type" binding:"required"`
 	Status    string     `json:"status"`
 	Timestamp time.Time  `json:"timestamp"`

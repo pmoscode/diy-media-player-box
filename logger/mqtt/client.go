@@ -5,9 +5,6 @@ import (
 	"fmt"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"log"
-	"os"
-	"os/signal"
-	"syscall"
 	"time"
 )
 
@@ -93,17 +90,8 @@ func (c *Client) LoopForever() {
 	if c.client == nil {
 		log.Println(notConnected)
 	} else {
-		channel := make(chan os.Signal)
-		signal.Notify(channel, os.Interrupt, syscall.SIGTERM)
-		go func() {
-			<-channel
-			c.Disconnect()
-			log.Println("Exiting...")
-			os.Exit(1)
-		}()
-
 		for {
-			time.Sleep(10 * time.Second)
+			time.Sleep(1 * time.Second)
 		}
 	}
 }
