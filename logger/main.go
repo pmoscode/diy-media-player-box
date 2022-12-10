@@ -21,7 +21,7 @@ func getCliOptions() CliOptions {
 	mqttBrokerIp := flag.String("mqtt-broker", "localhost", "Ip of MQTT broker")
 	mqttClientId := flag.String("mqtt-client-id", "logger", "Client id for Mqtt connection")
 	mqttSubscriptionTopic := flag.String("mqtt-sub-topic", "/status/#", "Topic to subscribe to")
-	fileName := flag.String("filename", "music.log", "Defines the filename of the log file")
+	fileName := flag.String("filename", "logs/music.log", "Defines the filename of the log file")
 	logRotationPeriodAfterBytes := flag.Int("file-size", 10000000, "Maximum file size of the log in bytes (max == 2GB). Then log-file will be rotated.")
 	flag.Parse()
 
