@@ -15,6 +15,9 @@ function check() {
   fi
 }
 
+echo "Checking logger..."
+check logger "./logger >/dev/null 2>&1 &"
+
 echo "Checking rfid-reader..."
 check rfid-reader "./rfid-reader >/dev/null 2>&1 &"
 
@@ -26,6 +29,3 @@ check controller "./controller >/dev/null 2>&1 &"
 
 echo "Checking io-controller..."
 check io-controller "./io-controller >/dev/null 2>&1 &"
-
-echo "Checking logger..."
-check logger "./logger >/dev/null 2>&1 &"
