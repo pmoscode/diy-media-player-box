@@ -17,6 +17,7 @@ type CliOptions struct {
 	mqttClientId       *string
 	mockCardId         *string
 	logStatusToConsole *bool
+	removeThreshold    *int
 }
 
 type Module interface {
@@ -29,6 +30,7 @@ func getCliOptions() CliOptions {
 	mqttBrokerIp := flag.String("mqtt-broker", "localhost", "Ip of MQTT broker")
 	mqttClientId := flag.String("mqtt-client-id", "rfid-reader", "Client id for Mqtt connection")
 	mockCardId := flag.String("mock-card-id", "123456", "Only used when in mock mode")
+	removeThreshold := flag.Int("remove-threshold", 2, "How many checks for removed card until it will be noticed as 'card removed'")
 	logStatusToConsole := flag.Bool("log-console", false, "Log messages also to current std console")
 	flag.Parse()
 
@@ -39,6 +41,7 @@ func getCliOptions() CliOptions {
 		mqttClientId:       mqttClientId,
 		mockCardId:         mockCardId,
 		logStatusToConsole: logStatusToConsole,
+		removeThreshold:    removeThreshold,
 	}
 }
 
@@ -60,7 +63,7 @@ func main() {
 		rfidClient = rfid.NewMock(cliOptions.mockCardId, sendCardIdMessage, sendStatusMessage)
 	} else {
 		sendStatusMessage(mqtt.Info, "On Raspi... Switching to Rfid mode...")
-		rfidClient = rfid.NewRfid(sendCardIdMessage, sendStatusMessage)
+		rfidClient = rfid.NewRfid(cliOptions.removeThreshold, sendCardIdMessage, sendStatusMessage)
 	}
 	rfidClient.Run()
 }

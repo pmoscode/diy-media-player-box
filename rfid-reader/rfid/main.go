@@ -12,12 +12,11 @@ import (
 	"time"
 )
 
-const removeOkThreshold = 2
-
 type Rfid struct {
 	rfid              *mfrc522.Dev
 	lastId            string
 	removeCounter     int
+	removeThreshold   int
 	sendCardIdMessage func(cardId string)
 	sendStatusMessage func(messageType mqtt.StatusType, message ...any)
 }
@@ -97,7 +96,7 @@ func (r *Rfid) listen(cb chan []byte) {
 			} else {
 				if r.lastId != "" {
 					r.removeCounter++
-					if r.removeCounter >= removeOkThreshold {
+					if r.removeCounter >= r.removeThreshold {
 						log.Print("Card removed...")
 						r.sendCardIdMessage("")
 						r.sendStatusMessage(mqtt.Info, "Card removed: ", r.lastId)
@@ -110,6 +109,10 @@ func (r *Rfid) listen(cb chan []byte) {
 	}
 }
 
-func NewRfid(cardIdMessage func(cardId string), statusMessage func(messageType mqtt.StatusType, message ...any)) *Rfid {
-	return &Rfid{sendStatusMessage: statusMessage, sendCardIdMessage: cardIdMessage}
+func NewRfid(removeThreshold *int, cardIdMessage func(cardId string), statusMessage func(messageType mqtt.StatusType, message ...any)) *Rfid {
+	return &Rfid{
+		sendStatusMessage: statusMessage,
+		sendCardIdMessage: cardIdMessage,
+		removeThreshold: *removeThreshold,
+	}
 }
