@@ -13,7 +13,7 @@ func GetAllFilesFromRequest(c echo.Context) []*multipart.FileHeader {
 		return nil
 	}
 
-	for key, _ := range multipartForm.File {
+	for key := range multipartForm.File {
 		file, err := c.FormFile(key)
 		if err != nil {
 			return nil

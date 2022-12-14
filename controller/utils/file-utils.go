@@ -12,21 +12,15 @@ import (
 func CreateMediaFolder(id uint) bool {
 	mediaFolder := GetCompletePathToMediaFolder(id)
 	err := os.MkdirAll(mediaFolder, os.ModePerm)
-	if err != nil {
-		return false
-	}
 
-	return true
+	return err == nil
 }
 
 func DeleteMediaFolder(id uint) bool {
 	mediaFolder := GetCompletePathToMediaFolder(id)
 	err := os.RemoveAll(mediaFolder)
-	if err != nil {
-		return false
-	}
 
-	return true
+	return err == nil
 }
 
 func DeleteMediaFolderContent(audioBook *schema.AudioBook) bool {
