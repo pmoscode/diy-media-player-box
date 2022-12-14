@@ -36,7 +36,6 @@ func (m Message) ToRawString() string {
 type Client struct {
 	brokerIp string
 	port     int
-	topic    string
 	clientId string
 	client   *mqtt.Client
 }
