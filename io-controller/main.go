@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	mqtt2 "gitlab.com/pmoscodegrp/common/mqtt"
 	"io-controller/cli"
 	"io-controller/io"
 	"io-controller/mqtt"
@@ -10,7 +11,7 @@ import (
 	"time"
 )
 
-var mqttClient *mqtt.Client
+var mqttClient *mqtt2.Client
 var cliOptions *cli.Options
 
 type Module interface {
@@ -20,7 +21,7 @@ type Module interface {
 func main() {
 	cliOptions = cli.GetCliOptions()
 
-	mqttClient = mqtt.CreateClient(*cliOptions.MqttBrokerIp, 1883, *cliOptions.MqttClientId)
+	mqttClient = mqtt2.CreateClient(*cliOptions.MqttBrokerIp, 1883, *cliOptions.MqttClientId)
 	err := mqttClient.Connect()
 	if err != nil {
 		log.Fatal("MQTT broker not found... exiting.")
@@ -31,10 +32,10 @@ func main() {
 	cmd := exec.Command("cat", "/sys/firmware/devicetree/base/serial-number")
 	_, err = cmd.CombinedOutput()
 	if err != nil {
-		sendStatusMessage(mqtt.Info, "Not on Raspi... Switching to Mock mode...")
+		sendStatusMessage(mqtt2.Info, "Not on Raspi... Switching to Mock mode...")
 		ioClient = io.NewMockOI(*cliOptions.MockVolumeOffset, sendVolumeChangeMessage, sendStatusMessage)
 	} else {
-		sendStatusMessage(mqtt.Info, "On Raspi... Switching to IO mode...")
+		sendStatusMessage(mqtt2.Info, "On Raspi... Switching to IO mode...")
 		ioClient = io.NewOI(cliOptions, sendVolumeChangeMessage, sendTrackChangeMessage, sendStatusMessage)
 	}
 
@@ -42,16 +43,16 @@ func main() {
 	mqttClient.Disconnect()
 }
 
-func sendStatusMessage(messageType mqtt.StatusType, message ...any) {
+func sendStatusMessage(messageType mqtt2.StatusType, message ...any) {
 	messageTxt := fmt.Sprint(message...)
 
-	mqttMessage := &mqtt.StatusPublishMessage{
+	mqttMessage := &mqtt2.StatusPublishMessage{
 		Type:      messageType,
 		Status:    messageTxt,
 		Timestamp: time.Now(),
 	}
 
-	mqttClient.Publish(&mqtt.Message{
+	mqttClient.Publish(&mqtt2.Message{
 		Topic: "/status/audio-player",
 		Value: mqttMessage,
 	})
@@ -66,7 +67,7 @@ func sendVolumeChangeMessage(volumeOffset float64) {
 		VolumeOffset: volumeOffset,
 	}
 
-	mqttClient.Publish(&mqtt.Message{
+	mqttClient.Publish(&mqtt2.Message{
 		Topic: "/io-controller/volume",
 		Value: publishMessage,
 	})
@@ -77,7 +78,7 @@ func sendTrackChangeMessage(direction int) {
 		Direction: direction,
 	}
 
-	mqttClient.Publish(&mqtt.Message{
+	mqttClient.Publish(&mqtt2.Message{
 		Topic: "/io-controller/track",
 		Value: publishMessage,
 	})

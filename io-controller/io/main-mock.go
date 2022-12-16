@@ -1,6 +1,6 @@
 package io
 
-import "io-controller/mqtt"
+import "gitlab.com/pmoscodegrp/common/mqtt"
 
 type Mock struct {
 	volumeOffset            float64
