@@ -7,11 +7,13 @@ import (
 	"fmt"
 	"github.com/faiface/beep"
 	"github.com/faiface/beep/speaker"
+	"gitlab.com/pmoscodegrp/common/heartbeat"
+	mqtt2 "gitlab.com/pmoscodegrp/common/mqtt"
 	"log"
 	"time"
 )
 
-var mqttClient *mqtt.Client
+var mqttClient *mqtt2.Client
 
 type CliOptions struct {
 	mqttBrokerIp       *string
@@ -42,7 +44,7 @@ func getCliOptions() CliOptions {
 func main() {
 	cliOptions = getCliOptions()
 
-	mqttClient = mqtt.CreateClient(*cliOptions.mqttBrokerIp, 1883, *cliOptions.mqttClientId)
+	mqttClient = mqtt2.CreateClient(*cliOptions.mqttBrokerIp, 1883, *cliOptions.mqttClientId)
 	err := mqttClient.Connect()
 	if err != nil {
 		log.Fatal("MQTT broker not found... exiting.")
@@ -54,6 +56,9 @@ func main() {
 		log.Fatal(err)
 	}
 
+	heartBeat := heartbeat.New(10*time.Second, sendHeartbeat)
+	heartBeat.Run()
+
 	audioClient := audio.NewAudio(sendStatusMessage, sendPlayDoneMessage)
 
 	mqttClient.Subscribe("/controller/play", audioClient.OnMessageReceivedPlay)
@@ -64,16 +69,16 @@ func main() {
 	mqttClient.LoopForever()
 }
 
-func sendStatusMessage(messageType mqtt.StatusType, message ...any) {
+func sendStatusMessage(messageType mqtt2.StatusType, message ...any) {
 	messageTxt := fmt.Sprint(message...)
 
-	mqttMessage := &mqtt.StatusPublishMessage{
+	mqttMessage := &mqtt2.StatusPublishMessage{
 		Type:      messageType,
 		Status:    messageTxt,
 		Timestamp: time.Now(),
 	}
 
-	mqttClient.Publish(&mqtt.Message{
+	mqttClient.Publish(&mqtt2.Message{
 		Topic: "/status/audio-player",
 		Value: mqttMessage,
 	})
@@ -88,8 +93,17 @@ func sendPlayDoneMessage(id uint) {
 		Uid: id,
 	}
 
-	mqttClient.Publish(&mqtt.Message{
+	mqttClient.Publish(&mqtt2.Message{
 		Topic: "/audio-player/done",
 		Value: publishMessage,
+	})
+}
+
+func sendHeartbeat() {
+	mqttClient.Publish(&mqtt2.Message{
+		Topic: "/heartbeat/audio-player",
+		Value: &heartbeat.PublishMessage{
+			Alive: true,
+		},
 	})
 }

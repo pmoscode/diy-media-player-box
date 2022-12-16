@@ -6,6 +6,7 @@ import (
 	"github.com/faiface/beep/effects"
 	"github.com/faiface/beep/mp3"
 	"github.com/faiface/beep/speaker"
+	mqtt2 "gitlab.com/pmoscodegrp/common/mqtt"
 	"log"
 	"os"
 )
@@ -16,11 +17,11 @@ type Audio struct {
 	control             *beep.Ctrl
 	volume              *effects.Volume
 	lastPlayedUid       uint
-	sendStatusMessage   func(messageType mqtt.StatusType, message ...any)
+	sendStatusMessage   func(messageType mqtt2.StatusType, message ...any)
 	sendPlayDoneMessage func(id uint)
 }
 
-func (a *Audio) OnMessageReceivedPlay(message mqtt.Message) {
+func (a *Audio) OnMessageReceivedPlay(message mqtt2.Message) {
 	body := mqtt.TracksSubscriptionMessage{}
 
 	message.ToStruct(&body)
@@ -32,13 +33,13 @@ func (a *Audio) OnMessageReceivedPlay(message mqtt.Message) {
 	for _, trackPath := range body.TrackList {
 		f, err := os.Open(trackPath)
 		if err != nil {
-			a.sendStatusMessage(mqtt.Error, "Could not open '"+trackPath+"'... DYING!!!")
+			a.sendStatusMessage(mqtt2.Error, "Could not open '"+trackPath+"'... DYING!!!")
 			log.Fatal(err)
 		}
 
 		streamer, format, err := mp3.Decode(f)
 		if err != nil {
-			a.sendStatusMessage(mqtt.Error, "Could not decode '"+trackPath+"'... DYING!!!")
+			a.sendStatusMessage(mqtt2.Error, "Could not decode '"+trackPath+"'... DYING!!!")
 			log.Fatal(err)
 		}
 
@@ -47,10 +48,10 @@ func (a *Audio) OnMessageReceivedPlay(message mqtt.Message) {
 		if DefaultSampleRate != format.SampleRate {
 			const sampleRate = beep.SampleRate(DefaultSampleRate)
 			stream = beep.Resample(1, format.SampleRate, sampleRate, streamer)
-			a.sendStatusMessage(mqtt.Info, "Need to resample: '"+trackPath+"'...")
+			a.sendStatusMessage(mqtt2.Info, "Need to resample: '"+trackPath+"'...")
 		} else {
 			stream = streamer
-			a.sendStatusMessage(mqtt.Info, "No need to resample: '"+trackPath+"'...")
+			a.sendStatusMessage(mqtt2.Info, "No need to resample: '"+trackPath+"'...")
 		}
 
 		samples = append(samples, stream)
@@ -58,7 +59,7 @@ func (a *Audio) OnMessageReceivedPlay(message mqtt.Message) {
 
 	samples = append(samples, beep.Callback(func() {
 		a.lastPlayedUid = 0
-		a.sendStatusMessage(mqtt.Info, "stopped")
+		a.sendStatusMessage(mqtt2.Info, "stopped")
 		a.sendPlayDoneMessage(body.Id)
 	}))
 
@@ -78,44 +79,44 @@ func (a *Audio) OnMessageReceivedPlay(message mqtt.Message) {
 
 		speaker.Play(a.volume)
 
-		a.sendStatusMessage(mqtt.Info, "playing")
+		a.sendStatusMessage(mqtt2.Info, "playing")
 	} else {
-		a.sendStatusMessage(mqtt.Info, "no tracks")
+		a.sendStatusMessage(mqtt2.Info, "no tracks")
 	}
 }
 
-func (a *Audio) OnMessageReceivedPause(message mqtt.Message) {
+func (a *Audio) OnMessageReceivedPause(message mqtt2.Message) {
 	if a.control != nil {
 		speaker.Lock()
 		a.control.Paused = true
 		speaker.Unlock()
 
-		a.sendStatusMessage(mqtt.Info, "paused")
+		a.sendStatusMessage(mqtt2.Info, "paused")
 	} else {
-		a.sendStatusMessage(mqtt.Info, "no audio stream to pause...")
+		a.sendStatusMessage(mqtt2.Info, "no audio stream to pause...")
 	}
 }
 
-func (a *Audio) OnMessageReceivedResume(message mqtt.Message) {
+func (a *Audio) OnMessageReceivedResume(message mqtt2.Message) {
 	if a.control != nil {
 		speaker.Lock()
 		a.control.Paused = false
 		speaker.Unlock()
 
-		a.sendStatusMessage(mqtt.Info, "continuing")
+		a.sendStatusMessage(mqtt2.Info, "continuing")
 	} else {
-		a.sendStatusMessage(mqtt.Info, "no audio stream to continue...")
+		a.sendStatusMessage(mqtt2.Info, "no audio stream to continue...")
 	}
 }
 
-func (a *Audio) OnMessageReceivedStop(message mqtt.Message) {
+func (a *Audio) OnMessageReceivedStop(message mqtt2.Message) {
 	speaker.Clear()
 
 	a.lastPlayedUid = 0
-	a.sendStatusMessage(mqtt.Info, "stopped")
+	a.sendStatusMessage(mqtt2.Info, "stopped")
 }
 
-func (a *Audio) OnMessageReceivedVolume(message mqtt.Message) {
+func (a *Audio) OnMessageReceivedVolume(message mqtt2.Message) {
 	if a.volume != nil {
 		volumeMessage := &mqtt.VolumeChangeSubscriptionMessage{}
 
@@ -125,13 +126,13 @@ func (a *Audio) OnMessageReceivedVolume(message mqtt.Message) {
 		a.volume.Volume += volumeMessage.VolumeOffset
 		speaker.Unlock()
 
-		a.sendStatusMessage(mqtt.Info, "Volume changed by ", volumeMessage.VolumeOffset)
+		a.sendStatusMessage(mqtt2.Info, "Volume changed by ", volumeMessage.VolumeOffset)
 	} else {
-		a.sendStatusMessage(mqtt.Warn, "Volume not changed, because nothing is played...")
+		a.sendStatusMessage(mqtt2.Warn, "Volume not changed, because nothing is played...")
 	}
 }
 
-func NewAudio(statusMessage func(messageType mqtt.StatusType, message ...any), playDoneMessage func(id uint)) *Audio {
+func NewAudio(statusMessage func(messageType mqtt2.StatusType, message ...any), playDoneMessage func(id uint)) *Audio {
 	return &Audio{
 		sendStatusMessage:   statusMessage,
 		sendPlayDoneMessage: playDoneMessage,
