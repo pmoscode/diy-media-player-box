@@ -2,8 +2,8 @@ package logs
 
 import (
 	"fmt"
+	"gitlab.com/pmoscodegrp/common/mqtt"
 	log2 "log"
-	"logger/mqtt"
 	"os"
 	"os/signal"
 	"path"
@@ -30,7 +30,7 @@ func (l *log) Log(message mqtt.Message) {
 		l.byteCounter = 0
 	}
 
-	statusMessage := &mqtt.StatusMessage{}
+	statusMessage := &mqtt.StatusPublishMessage{}
 	message.ToStruct(statusMessage)
 
 	logLine := fmt.Sprintf("[%s] # %s # %s -> %s\n", statusMessage.Timestamp, message.Topic, statusMessage.Type, statusMessage.Status)

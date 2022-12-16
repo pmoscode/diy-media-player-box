@@ -2,9 +2,9 @@ package main
 
 import (
 	"flag"
+	"gitlab.com/pmoscodegrp/common/mqtt"
 	"log"
 	"logger/logs"
-	"logger/mqtt"
 )
 
 var mqttClient *mqtt.Client
