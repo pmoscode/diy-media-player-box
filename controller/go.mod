@@ -4,11 +4,11 @@ go 1.18
 
 require (
 	github.com/dhowden/tag v0.0.0-20220618230019-adf36e896086
-	github.com/eclipse/paho.mqtt.golang v1.4.1
 	github.com/labstack/echo/v4 v4.9.1
 	github.com/swaggo/echo-swagger v1.3.5
 	github.com/swaggo/swag v1.8.7
 	github.com/tcolgate/mp3 v0.0.0-20170426193717-e79c5a46d300
+	gitlab.com/pmoscodegrp/common v0.1.1
 	gorm.io/driver/sqlite v1.4.2
 	gorm.io/gorm v1.24.0
 )
@@ -17,6 +17,7 @@ require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/PuerkitoBio/purell v1.1.1 // indirect
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
+	github.com/eclipse/paho.mqtt.golang v1.4.2 // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
 	github.com/go-openapi/jsonreference v0.19.6 // indirect
 	github.com/go-openapi/spec v0.20.4 // indirect

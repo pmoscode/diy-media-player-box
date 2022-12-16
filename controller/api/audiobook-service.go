@@ -6,6 +6,7 @@ import (
 	dbSchema "controller/database/schema"
 	"controller/mqtt"
 	"controller/utils"
+	mqtt2 "gitlab.com/pmoscodegrp/common/mqtt"
 	"log"
 	"mime/multipart"
 	"path/filepath"
@@ -13,7 +14,7 @@ import (
 	"time"
 )
 
-var mqttClient *mqtt.Client
+var mqttClient *mqtt2.Client
 
 type AudioBookService struct {
 	dbClient      *database.Database
@@ -154,7 +155,7 @@ func (a *AudioBookService) PlayAudioTrack(id uint, idxTrack uint) error {
 		TrackList: []string{audioFilePath},
 	}
 
-	message := &mqtt.Message{
+	message := &mqtt2.Message{
 		Topic: "/controller/play",
 		Value: request,
 	}
@@ -165,7 +166,7 @@ func (a *AudioBookService) PlayAudioTrack(id uint, idxTrack uint) error {
 }
 
 func (a *AudioBookService) StopAudioTrack() error {
-	message := &mqtt.Message{
+	message := &mqtt2.Message{
 		Topic: "/controller/stop",
 		Value: nil,
 	}
@@ -177,7 +178,7 @@ func (a *AudioBookService) StopAudioTrack() error {
 
 func (a *AudioBookService) PauseAudioTrack() error {
 	// TODO Switch is removed. Has to be solved somehow.
-	message := &mqtt.Message{
+	message := &mqtt2.Message{
 		Topic: "/controller/switch",
 		Value: nil,
 	}
@@ -199,7 +200,7 @@ func NewAudioBookService() *AudioBookService {
 		lastPlayedUid: "",
 	}
 
-	mqttClient = mqtt.CreateClient(*cliOptions.mqttBrokerIp, 1883, *cliOptions.mqttClientId)
+	mqttClient = mqtt2.CreateClient(*cliOptions.mqttBrokerIp, 1883, *cliOptions.mqttClientId)
 	err = mqttClient.Connect()
 	if err != nil {
 		if err != nil {
@@ -212,11 +213,11 @@ func NewAudioBookService() *AudioBookService {
 	return audioBookService
 }
 
-func (a *AudioBookService) OnMessageReceivedCardId(message mqtt.Message) {
+func (a *AudioBookService) OnMessageReceivedCardId(message mqtt2.Message) {
 	card := &mqtt.RfidReaderSubscribeMessage{}
 	message.ToStruct(card)
 
-	audioPlayerMessage := &mqtt.Message{}
+	audioPlayerMessage := &mqtt2.Message{}
 
 	if card.CardId == "" {
 		audioPlayerMessage.Topic = "/controller/pause"
@@ -249,16 +250,16 @@ func (a *AudioBookService) OnMessageReceivedCardId(message mqtt.Message) {
 				if dbResult == database.DbRecordNotFound {
 					a.dbClient.AddUnusedCard(card.CardId)
 
-					statusMessage := &mqtt.StatusPublishMessage{
-						Type:      mqtt.Info,
+					statusMessage := &mqtt2.StatusPublishMessage{
+						Type:      mqtt2.Info,
 						Status:    "Added new card: " + card.CardId,
 						Timestamp: time.Now(),
 					}
 
 					audioPlayerMessage.Value = statusMessage
 				} else {
-					statusMessage := &mqtt.StatusPublishMessage{
-						Type:      mqtt.Info,
+					statusMessage := &mqtt2.StatusPublishMessage{
+						Type:      mqtt2.Info,
 						Status:    "Card not assigned: " + card.CardId,
 						Timestamp: time.Now(),
 					}
@@ -276,7 +277,7 @@ func (a *AudioBookService) OnMessageReceivedCardId(message mqtt.Message) {
 	mqttClient.Publish(audioPlayerMessage)
 }
 
-func (a *AudioBookService) OnMessageReceivedPlayDone(message mqtt.Message) {
+func (a *AudioBookService) OnMessageReceivedPlayDone(message mqtt2.Message) {
 	playDone := &mqtt.PlayDoneSubscribeMessage{}
 	message.ToStruct(playDone)
 
