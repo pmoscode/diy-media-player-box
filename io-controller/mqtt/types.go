@@ -27,7 +27,3 @@ type StatusPublishMessage struct {
 	Status    string     `json:"status"`
 	Timestamp time.Time  `json:"timestamp"`
 }
-
-type PlayDonePublishMessage struct {
-	Uid uint `json:"uid"`
-}
