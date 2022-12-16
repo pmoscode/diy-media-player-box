@@ -1,7 +1,7 @@
 package rfid
 
 import (
-	"rfid-reader/mqtt"
+	"gitlab.com/pmoscodegrp/common/mqtt"
 )
 
 type Mock struct {

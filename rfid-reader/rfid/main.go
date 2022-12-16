@@ -2,12 +2,12 @@ package rfid
 
 import (
 	"encoding/hex"
+	"gitlab.com/pmoscodegrp/common/mqtt"
 	"log"
 	"periph.io/x/conn/v3/spi/spireg"
 	"periph.io/x/devices/v3/mfrc522"
 	"periph.io/x/host/v3"
 	"periph.io/x/host/v3/rpi"
-	"rfid-reader/mqtt"
 	"strings"
 	"time"
 )
@@ -113,6 +113,6 @@ func NewRfid(removeThreshold *int, cardIdMessage func(cardId string), statusMess
 	return &Rfid{
 		sendStatusMessage: statusMessage,
 		sendCardIdMessage: cardIdMessage,
-		removeThreshold: *removeThreshold,
+		removeThreshold:   *removeThreshold,
 	}
 }

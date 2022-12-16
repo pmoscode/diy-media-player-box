@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	mqtt2 "gitlab.com/pmoscodegrp/common/mqtt"
 	"log"
 	"os/exec"
 	"rfid-reader/mqtt"
@@ -10,7 +11,7 @@ import (
 	"time"
 )
 
-var mqttClient *mqtt.Client
+var mqttClient *mqtt2.Client
 
 type CliOptions struct {
 	mqttBrokerIp       *string
@@ -48,7 +49,7 @@ func getCliOptions() CliOptions {
 func main() {
 	cliOptions = getCliOptions()
 
-	mqttClient = mqtt.CreateClient(*cliOptions.mqttBrokerIp, 1883, *cliOptions.mqttClientId)
+	mqttClient = mqtt2.CreateClient(*cliOptions.mqttBrokerIp, 1883, *cliOptions.mqttClientId)
 	err := mqttClient.Connect()
 	if err != nil {
 		log.Fatal("MQTT broker not found... exiting.")
@@ -59,25 +60,25 @@ func main() {
 	cmd := exec.Command("cat", "/sys/firmware/devicetree/base/serial-number")
 	_, err = cmd.CombinedOutput()
 	if err != nil {
-		sendStatusMessage(mqtt.Info, "Not on Raspi... Switching to Mock mode...")
+		sendStatusMessage(mqtt2.Info, "Not on Raspi... Switching to Mock mode...")
 		rfidClient = rfid.NewMock(cliOptions.mockCardId, sendCardIdMessage, sendStatusMessage)
 	} else {
-		sendStatusMessage(mqtt.Info, "On Raspi... Switching to Rfid mode...")
+		sendStatusMessage(mqtt2.Info, "On Raspi... Switching to Rfid mode...")
 		rfidClient = rfid.NewRfid(cliOptions.removeThreshold, sendCardIdMessage, sendStatusMessage)
 	}
 	rfidClient.Run()
 }
 
-func sendStatusMessage(messageType mqtt.StatusType, message ...any) {
+func sendStatusMessage(messageType mqtt2.StatusType, message ...any) {
 	messageTxt := fmt.Sprint(message...)
 
-	mqttMessage := &mqtt.StatusPublishMessage{
+	mqttMessage := &mqtt2.StatusPublishMessage{
 		Type:      messageType,
 		Status:    messageTxt,
 		Timestamp: time.Now(),
 	}
 
-	mqttClient.Publish(&mqtt.Message{
+	mqttClient.Publish(&mqtt2.Message{
 		Topic: "/status/rfid-reader",
 		Value: mqttMessage,
 	})
@@ -92,7 +93,7 @@ func sendCardIdMessage(cardId string) {
 		CardId: cardId,
 	}
 
-	mqttClient.Publish(&mqtt.Message{
+	mqttClient.Publish(&mqtt2.Message{
 		Topic: "/rfid-reader/cardId",
 		Value: message,
 	})
