@@ -2,9 +2,11 @@ package main
 
 import (
 	"flag"
+	"gitlab.com/pmoscodegrp/common/heartbeat"
 	"gitlab.com/pmoscodegrp/common/mqtt"
 	"log"
 	"logger/logs"
+	"time"
 )
 
 var mqttClient *mqtt.Client
@@ -44,10 +46,22 @@ func main() {
 		log.Fatal("MQTT broker not found... exiting.")
 	}
 
+	heartBeat := heartbeat.New(10*time.Second, sendHeartbeat)
+	heartBeat.Run()
+
 	logger := logs.New(*cliOptions.fileName, *cliOptions.logRotationPeriodAfterBytes)
 
 	log.Printf("Subscribing on '%s'\n", *cliOptions.mqttSubscriptionTopic)
 
 	mqttClient.Subscribe(*cliOptions.mqttSubscriptionTopic, logger.Log)
 	mqttClient.LoopForever()
+}
+
+func sendHeartbeat() {
+	mqttClient.Publish(&mqtt.Message{
+		Topic: "/heartbeat/logger",
+		Value: &heartbeat.PublishMessage{
+			Alive: true,
+		},
+	})
 }
