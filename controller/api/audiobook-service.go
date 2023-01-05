@@ -6,6 +6,7 @@ import (
 	dbSchema "controller/database/schema"
 	"controller/mqtt"
 	"controller/utils"
+	"gitlab.com/pmoscodegrp/common/heartbeat"
 	mqtt2 "gitlab.com/pmoscodegrp/common/mqtt"
 	"log"
 	"mime/multipart"
@@ -194,6 +195,9 @@ func NewAudioBookService() *AudioBookService {
 		return nil
 	}
 
+	heartBeat := heartbeat.New(10*time.Second, sendHeartbeat)
+	heartBeat.Run()
+
 	audioBookService := &AudioBookService{
 		dbClient:      databaseSingleton,
 		cardService:   NewCardService(),
@@ -291,4 +295,13 @@ func (a *AudioBookService) OnMessageReceivedPlayDone(message mqtt2.Message) {
 	}
 
 	a.lastPlayedUid = ""
+}
+
+func sendHeartbeat() {
+	mqttClient.Publish(&mqtt2.Message{
+		Topic: "/heartbeat/controller",
+		Value: &heartbeat.PublishMessage{
+			Alive: true,
+		},
+	})
 }
