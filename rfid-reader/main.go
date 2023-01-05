@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"gitlab.com/pmoscodegrp/common/heartbeat"
 	mqtt2 "gitlab.com/pmoscodegrp/common/mqtt"
 	"log"
 	"os/exec"
@@ -31,7 +32,7 @@ func getCliOptions() CliOptions {
 	mqttBrokerIp := flag.String("mqtt-broker", "localhost", "Ip of MQTT broker")
 	mqttClientId := flag.String("mqtt-client-id", "rfid-reader", "Client id for Mqtt connection")
 	mockCardId := flag.String("mock-card-id", "123456", "Only used when in mock mode")
-	removeThreshold := flag.Int("remove-threshold", 2, "How many checks for removed card until it will be noticed as 'card removed'")
+	removeThreshold := flag.Int("remove-threshold", 1, "How many checks for removed card until it will be noticed as 'card removed'")
 	logStatusToConsole := flag.Bool("log-console", false, "Log messages also to current std console")
 	flag.Parse()
 
@@ -54,6 +55,9 @@ func main() {
 	if err != nil {
 		log.Fatal("MQTT broker not found... exiting.")
 	}
+
+	heartBeat := heartbeat.New(10*time.Second, sendHeartbeat)
+	heartBeat.Run()
 
 	var rfidClient Module
 
@@ -96,5 +100,14 @@ func sendCardIdMessage(cardId string) {
 	mqttClient.Publish(&mqtt2.Message{
 		Topic: "/rfid-reader/cardId",
 		Value: message,
+	})
+}
+
+func sendHeartbeat() {
+	mqttClient.Publish(&mqtt2.Message{
+		Topic: "/heartbeat/rfid-reader",
+		Value: &heartbeat.PublishMessage{
+			Alive: true,
+		},
 	})
 }
