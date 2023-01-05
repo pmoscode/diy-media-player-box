@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"gitlab.com/pmoscodegrp/common/heartbeat"
 	mqtt2 "gitlab.com/pmoscodegrp/common/mqtt"
 	"io-controller/cli"
 	"io-controller/io"
@@ -26,6 +27,9 @@ func main() {
 	if err != nil {
 		log.Fatal("MQTT broker not found... exiting.")
 	}
+
+	heartBeat := heartbeat.New(10*time.Second, sendHeartbeat)
+	heartBeat.Run()
 
 	var ioClient Module
 
@@ -81,5 +85,14 @@ func sendTrackChangeMessage(direction int) {
 	mqttClient.Publish(&mqtt2.Message{
 		Topic: "/io-controller/track",
 		Value: publishMessage,
+	})
+}
+
+func sendHeartbeat() {
+	mqttClient.Publish(&mqtt2.Message{
+		Topic: "/heartbeat/io-controller",
+		Value: &heartbeat.PublishMessage{
+			Alive: true,
+		},
 	})
 }
