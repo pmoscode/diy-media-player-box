@@ -18,3 +18,7 @@ sleep 4
 
 echo "Starting io-controller..."
 ./io-controller >/dev/null 2>&1 &
+sleep 2
+
+echo "Starting monitor..."
+./monitor >/dev/null 2>&1 &

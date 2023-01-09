@@ -29,3 +29,6 @@ check controller "./controller >/dev/null 2>&1 &"
 
 echo "Checking io-controller..."
 check io-controller "./io-controller >/dev/null 2>&1 &"
+
+echo "Checking monitor..."
+check monitor "./monitor >/dev/null 2>&1 &"

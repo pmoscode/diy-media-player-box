@@ -57,6 +57,7 @@
         - "startAll.sh"
         - "terminateAll.sh"
         - "livenessProbe.sh"
+        - "restartMonitor.sh"
 
     - name: Setup autostart
       cron:
@@ -71,3 +72,10 @@
         state: present
         minute: "*/5"
         job: "/home/pi/livenessProbe.sh 2>&1"
+
+    - name: Setup monitor restart
+      cron:
+        name: "Restart monitor every 3rd hour"
+        state: present
+        hour: "*/3"
+        job: "/home/pi/restartMonitor.sh 2>&1"
