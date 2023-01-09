@@ -39,6 +39,12 @@ tasks:
     cmds:
       - sshpass -p "$RASPBERRY_PASSWORD" ansible-playbook -i $REMOTE_SERVER, playbook-compile-on-target.yml --tags "backend, logger" --ask-pass
 
+  compile-monitor:
+    desc: The monitor will be compile remotely and copied to Pi's homedir
+    dir: ansible
+    cmds:
+      - sshpass -p "$RASPBERRY_PASSWORD" ansible-playbook -i $REMOTE_SERVER, playbook-compile-on-target.yml --tags "backend, monitor" --ask-pass
+
   compile-all:
     desc: Compile everything (Might take even longer...)
     dir: ansible
