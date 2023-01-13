@@ -78,4 +78,5 @@
         name: "Restart monitor every 3rd hour"
         state: present
         hour: "*/3"
+        minute: 0
         job: "/home/pi/restartMonitor.sh 2>&1"
