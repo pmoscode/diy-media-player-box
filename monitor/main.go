@@ -15,6 +15,7 @@ type CliOptions struct {
 	mqttBrokerIp       *string
 	mqttClientId       *string
 	logStatusToConsole *bool
+	processNames       *string
 }
 
 var cliOptions CliOptions
@@ -22,6 +23,7 @@ var cliOptions CliOptions
 func getCliOptions() CliOptions {
 	mqttBrokerIp := flag.String("mqtt-broker", "localhost", "Ip of MQTT broker")
 	mqttClientId := flag.String("mqtt-client-id", "monitor", "Client id for Mqtt connection")
+	processNames := flag.String("process-names", "audio-player,controller,io-controller,logger,rfid-reader", "define the processes to watch for")
 	logStatusToConsole := flag.Bool("log-console", false, "Log messages also to current std console")
 	flag.Parse()
 
@@ -31,6 +33,7 @@ func getCliOptions() CliOptions {
 		mqttBrokerIp:       mqttBrokerIp,
 		mqttClientId:       mqttClientId,
 		logStatusToConsole: logStatusToConsole,
+		processNames:       processNames,
 	}
 }
 
@@ -46,7 +49,7 @@ func main() {
 
 	mqttClient.Subscribe("/heartbeat/#", monit.OnMessageReceivedHeartbeat)
 
-	monit.RunMonitor()
+	monit.RunMonitor(cliOptions.processNames)
 
 	mqttClient.LoopForever()
 }

@@ -14,6 +14,14 @@ type Manager struct {
 	threshold int
 }
 
+func (m *Manager) Init(processNames *string) {
+	processes := strings.Split(*processNames, ",")
+
+	for _, name := range processes {
+		m.addItem(name)
+	}
+}
+
 func (m *Manager) IncrementHeartbeat(name string) {
 	m.mutex.Lock()
 	_, exists := m.items[name]
@@ -87,5 +95,6 @@ func NewManager() *Manager {
 	return &Manager{
 		items:     make(map[string]*item),
 		threshold: 3,
+		mutex:     sync.Mutex{},
 	}
 }
