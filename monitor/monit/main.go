@@ -2,12 +2,15 @@ package monit
 
 import (
 	"bytes"
+	"fmt"
 	"gitlab.com/pmoscodegrp/common/heartbeat"
 	mqtt2 "gitlab.com/pmoscodegrp/common/mqtt"
+	"log"
 	"monitor/monit/storage"
 	"os/exec"
 	"path"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -30,11 +33,14 @@ func checkInstances() {
 	//manager.Debug()
 
 	deadProcesses := manager.GetExceededThresholdNames()
+	//log.Println("Dead processes: ", deadProcesses)
 
 	for _, processName := range deadProcesses {
 		processId := getProcessIdOf(processName)
+		//log.Println("Process id '", processId, "' of '", processName, "'")
 		if processId > -1 {
 			killed := killProcessWith(processId)
+			//log.Println("Process killed?: ", killed)
 			if killed {
 				manager.ResetAllCounterFor(processName)
 			}
@@ -51,12 +57,14 @@ func getProcessIdOf(processName string) int {
 	err := cmd.Run()
 
 	if err != nil {
+		log.Println(err)
 		return -1
 	}
 
-	processId, err := strconv.Atoi(out.String())
+	processId, err := strconv.Atoi(strings.Trim(out.String(), "\n"))
 
 	if err != nil {
+		log.Println(err)
 		processId = -1
 	}
 
@@ -64,7 +72,8 @@ func getProcessIdOf(processName string) int {
 }
 
 func killProcessWith(id int) bool {
-	cmd := exec.Command("kill", "-9", string(rune(id)))
+	parameterId := fmt.Sprintf("%d", id)
+	cmd := exec.Command("kill", "-9", parameterId)
 	err := cmd.Run()
 
 	return err == nil
