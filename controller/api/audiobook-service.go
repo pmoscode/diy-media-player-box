@@ -6,6 +6,7 @@ import (
 	dbSchema "controller/database/schema"
 	"controller/mqtt"
 	"controller/utils"
+	"fmt"
 	"gitlab.com/pmoscodegrp/common/heartbeat"
 	mqtt2 "gitlab.com/pmoscodegrp/common/mqtt"
 	"log"
@@ -221,11 +222,14 @@ func (a *AudioBookService) OnMessageReceivedCardId(message mqtt2.Message) {
 	card := &mqtt.RfidReaderSubscribeMessage{}
 	message.ToStruct(card)
 
+	sendStatusMessage(mqtt2.Info, "Got card id: ", card.CardId)
+
 	audioPlayerMessage := &mqtt2.Message{}
 
 	if card.CardId == "" {
 		audioPlayerMessage.Topic = "/controller/pause"
 		audioPlayerMessage.Value = nil
+		sendStatusMessage(mqtt2.Info, "Going for a short pause...")
 	} else {
 		if a.lastPlayedUid != card.CardId {
 			audioBookDb, dbResult := a.dbClient.GetAudioBookByCardId(card.CardId)
@@ -241,34 +245,25 @@ func (a *AudioBookService) OnMessageReceivedCardId(message mqtt2.Message) {
 					audioFilePath := filepath.Join(mediaPath, track.FileName)
 
 					request.TrackList = append(request.TrackList, audioFilePath)
-
 				}
 				a.lastPlayedUid = card.CardId
 
 				audioPlayerMessage.Topic = "/controller/play"
 				audioPlayerMessage.Value = request
+				sendStatusMessage(mqtt2.Info, "Playing now: ", audioBookDb.Title)
 			} else {
 				_, dbResult := a.dbClient.GetCard(card.CardId)
-				audioPlayerMessage.Topic = "/status/controller"
 
 				if dbResult == database.DbRecordNotFound {
 					a.dbClient.AddUnusedCard(card.CardId)
 
-					statusMessage := &mqtt2.StatusPublishMessage{
-						Type:      mqtt2.Info,
-						Status:    "Added new card: " + card.CardId,
-						Timestamp: time.Now(),
-					}
+					sendStatusMessage(mqtt2.Info, "Added new card: ", card.CardId)
 
-					audioPlayerMessage.Value = statusMessage
+					return
 				} else {
-					statusMessage := &mqtt2.StatusPublishMessage{
-						Type:      mqtt2.Info,
-						Status:    "Card not assigned: " + card.CardId,
-						Timestamp: time.Now(),
-					}
+					sendStatusMessage(mqtt2.Warn, "Card not assigned: ", card.CardId)
 
-					audioPlayerMessage.Value = statusMessage
+					return
 				}
 			}
 		} else {
@@ -303,5 +298,20 @@ func sendHeartbeat() {
 		Value: &heartbeat.PublishMessage{
 			Alive: true,
 		},
+	})
+}
+
+func sendStatusMessage(messageType mqtt2.StatusType, message ...any) {
+	messageTxt := fmt.Sprint(message...)
+
+	mqttMessage := &mqtt2.StatusPublishMessage{
+		Type:      messageType,
+		Status:    messageTxt,
+		Timestamp: time.Now(),
+	}
+
+	mqttClient.Publish(&mqtt2.Message{
+		Topic: "/status/controller",
+		Value: mqttMessage,
 	})
 }
