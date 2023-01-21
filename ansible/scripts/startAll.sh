@@ -5,7 +5,7 @@ echo "Starting logger..."
 sleep 2
 
 echo "Starting rfid-reader..."
-./rfid-reader >/dev/null 2>&1 &
+./rfid-reader --remove-threshold 2 >/dev/null 2>&1 &
 sleep 2
 
 echo "Starting audio-player..."

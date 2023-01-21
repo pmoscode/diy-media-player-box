@@ -19,7 +19,7 @@ echo "Checking logger..."
 check logger "./logger >/dev/null 2>&1 &"
 
 echo "Checking rfid-reader..."
-check rfid-reader "./rfid-reader >/dev/null 2>&1 &"
+check rfid-reader "./rfid-reader --remove-threshold 2 >/dev/null 2>&1 &"
 
 echo "Checking audio-player..."
 check audio-player "./audio-player --buffer-sample-rate 700 >/dev/null 2>&1 &"
