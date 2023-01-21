@@ -19,6 +19,7 @@ type Audio struct {
 	lastPlayedUid       uint
 	sendStatusMessage   func(messageType mqtt2.StatusType, message ...any)
 	sendPlayDoneMessage func(id uint)
+	currentVolume       float64
 }
 
 func (a *Audio) OnMessageReceivedPlay(message mqtt2.Message) {
@@ -76,7 +77,7 @@ func (a *Audio) OnMessageReceivedPlay(message mqtt2.Message) {
 		a.volume = &effects.Volume{
 			Streamer: a.control,
 			Base:     2,
-			Volume:   0,
+			Volume:   a.currentVolume,
 			Silent:   false,
 		}
 
@@ -127,6 +128,7 @@ func (a *Audio) OnMessageReceivedVolume(message mqtt2.Message) {
 
 		speaker.Lock()
 		a.volume.Volume += volumeMessage.VolumeOffset
+		a.currentVolume = a.volume.Volume
 		speaker.Unlock()
 
 		a.sendStatusMessage(mqtt2.Info, "Volume changed by ", volumeMessage.VolumeOffset)
@@ -139,5 +141,6 @@ func NewAudio(statusMessage func(messageType mqtt2.StatusType, message ...any), 
 	return &Audio{
 		sendStatusMessage:   statusMessage,
 		sendPlayDoneMessage: playDoneMessage,
+		currentVolume:       0.0,
 	}
 }
