@@ -26,8 +26,18 @@ func (a *Audio) OnMessageReceivedPlay(message mqtt2.Message) {
 	body := mqtt.TracksSubscriptionMessage{}
 
 	message.ToStruct(&body)
+	a.sendStatusMessage(mqtt2.Info, "Got audio book: ", body.Id)
+	a.sendStatusMessage(mqtt2.Info, "and track list of size: ", len(body.TrackList))
 
-	speaker.Clear()
+	//if a.volume != nil {
+	//	speaker.Clear()
+	//}
+
+	if len(body.TrackList) == 0 {
+		a.sendStatusMessage(mqtt2.Warn, "no tracks")
+
+		return
+	}
 
 	var samples []beep.Streamer
 
@@ -84,8 +94,6 @@ func (a *Audio) OnMessageReceivedPlay(message mqtt2.Message) {
 		speaker.Play(a.volume)
 
 		a.sendStatusMessage(mqtt2.Info, "playing")
-	} else {
-		a.sendStatusMessage(mqtt2.Info, "no tracks")
 	}
 }
 
