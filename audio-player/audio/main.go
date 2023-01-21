@@ -74,7 +74,7 @@ func (a *Audio) OnMessageReceivedPlay(message mqtt2.Message) {
 		a.sendPlayDoneMessage(body.Id)
 		a.control = nil
 		a.volume = nil
-		speaker.Clear()
+		// speaker.Clear()
 	}))
 
 	if len(samples) > 0 {
@@ -122,7 +122,7 @@ func (a *Audio) OnMessageReceivedResume(message mqtt2.Message) {
 }
 
 func (a *Audio) OnMessageReceivedStop(message mqtt2.Message) {
-	speaker.Clear()
+	//speaker.Clear()
 
 	a.lastPlayedUid = 0
 	a.sendStatusMessage(mqtt2.Info, "stopped")
