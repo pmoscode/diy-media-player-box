@@ -4,7 +4,7 @@ image::doc/Logo.png[]
 image::https://img.shields.io/badge/License-GPL%20v3-yellow.svg[GPLv3 License]
 
 
-== Project Title
+== DIY Media Player Box
 
 This is a small application which turns any Raspberry Pi in a music box.
 
@@ -19,7 +19,8 @@ My target was to build a DIY Music Box for small children.
 - Audio upload / preview in UI
 - Simple new Rfid card discovery / management
 - Works on a Raspberry Pi Nano
-- Has "easy to setup" install script (Ansible and Taskfile)
+- Has "easy to set up" install script (Ansible and Taskfile)
+- Logs (almost) everything to log files
 
 == Screenshots
 
@@ -71,8 +72,9 @@ Here are the tasks to accomplish this (or parts of it, when required):
 |compile-io-controller  | Copy the io-controller folder to the raspi, compile it and copy the compiled artifact to the Pi's home folder
 |compile-audio-player   | Copy the audio-player folder to the raspi, compile it and copy the compiled artifact to the Pi's home folder
 |compile-logger         | Copy the logger folder to the raspi, compile it and copy the compiled artifact to the Pi's home folder
-|compile-all            | Execute the tasks "compileRfidReader", "compileController", "compileIoController", "compileAudioPlayer", "compileUi" and "copyUi" at once
-|compile-all-backend    | Execute the tasks "compileRfidReader", "compileController", "compileIoController" and "compileAudioPlayer" at once
+|compile-monitor        | Copy the monitor folder to the raspi, compile it and copy the compiled artifact to the Pi's home folder
+|compile-all            | Execute the tasks "compile-all-backend", "compileUi" and "copyUi" at once
+|compile-all-backend    | Execute the tasks "compile-rfid-reader", "compile-controller", "compile-io-controller", "compile-audio-player", "compile-logger" and "compile-monitor" at once
 |compile-ui             | Build and package the UI and copy the result to the controller folder (into "ui" folder)
 |copy-ui                | Copy the ui from controller folder to the raspi into the Pi's home folder
 |===
@@ -98,6 +100,7 @@ The `setupTarget` task will also add commands to the cron file of the pi user:
 
 * to enable auto start of the components
 * to add a liveness probe, which checks if every component is still alive (every 5th minute)
+* to restart the monitor every 3rd hour
 
 == Documentation
 
