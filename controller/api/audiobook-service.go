@@ -241,6 +241,8 @@ func (a *AudioBookService) OnMessageReceivedCardId(message mqtt2.Message) {
 			audioBookDb, dbResult := a.dbClient.GetAudioBookByCardId(card.CardId)
 
 			if dbResult != database.DbRecordNotFound {
+				sendStatusMessage(mqtt2.Info, "Going to play new audio book...")
+
 				request := &mqtt.AudioPlayerPublishMessage{
 					Id:        audioBookDb.ID,
 					TrackList: []string{},
@@ -253,6 +255,7 @@ func (a *AudioBookService) OnMessageReceivedCardId(message mqtt2.Message) {
 					request.TrackList = append(request.TrackList, audioFilePath)
 				}
 				a.lastPlayedUid = card.CardId
+				sendStatusMessage(mqtt2.Info, "Setting lastPlayedUid to: ", a.lastPlayedUid)
 
 				audioPlayerMessage.Topic = "/controller/play"
 				audioPlayerMessage.Value = request
@@ -293,6 +296,7 @@ func (a *AudioBookService) OnMessageReceivedPlayDone(message mqtt2.Message) {
 		a.dbClient.UpdateAudioBook(audioBookDb)
 	}
 
+	sendStatusMessage(mqtt2.Info, "Play done -> ", playDone.Uid)
 	a.lastPlayedUid = ""
 }
 
