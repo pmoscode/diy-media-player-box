@@ -227,9 +227,15 @@ func (a *AudioBookService) OnMessageReceivedCardId(message mqtt2.Message) {
 	audioPlayerMessage := &mqtt2.Message{}
 
 	if card.CardId == "" {
-		audioPlayerMessage.Topic = "/controller/pause"
-		audioPlayerMessage.Value = nil
-		sendStatusMessage(mqtt2.Info, "Going for a short pause...")
+		if a.lastPlayedUid == "" {
+			sendStatusMessage(mqtt2.Info, "Card removed, but nothing is played currently...")
+		} else {
+			audioPlayerMessage.Topic = "/controller/pause"
+			audioPlayerMessage.Value = nil
+			mqttClient.Publish(audioPlayerMessage)
+
+			sendStatusMessage(mqtt2.Info, "Going for a short pause...")
+		}
 	} else {
 		if a.lastPlayedUid != card.CardId {
 			audioBookDb, dbResult := a.dbClient.GetAudioBookByCardId(card.CardId)
@@ -250,6 +256,8 @@ func (a *AudioBookService) OnMessageReceivedCardId(message mqtt2.Message) {
 
 				audioPlayerMessage.Topic = "/controller/play"
 				audioPlayerMessage.Value = request
+				mqttClient.Publish(audioPlayerMessage)
+
 				sendStatusMessage(mqtt2.Info, "Playing now: ", audioBookDb.Title)
 			} else {
 				_, dbResult := a.dbClient.GetCard(card.CardId)
@@ -258,22 +266,18 @@ func (a *AudioBookService) OnMessageReceivedCardId(message mqtt2.Message) {
 					a.dbClient.AddUnusedCard(card.CardId)
 
 					sendStatusMessage(mqtt2.Info, "Added new card: ", card.CardId)
-
-					return
 				} else {
 					sendStatusMessage(mqtt2.Warn, "Card not assigned: ", card.CardId)
-
-					return
 				}
 			}
 		} else {
 			audioPlayerMessage.Topic = "/controller/resume"
 			audioPlayerMessage.Value = nil
+
+			mqttClient.Publish(audioPlayerMessage)
 		}
 
 	}
-
-	mqttClient.Publish(audioPlayerMessage)
 }
 
 func (a *AudioBookService) OnMessageReceivedPlayDone(message mqtt2.Message) {
