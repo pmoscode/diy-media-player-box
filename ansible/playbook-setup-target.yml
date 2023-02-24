@@ -54,23 +54,15 @@
         dest: "/home/pi"
         mode: +x
       loop:
-        - "startAll.sh"
         - "terminateAll.sh"
         - "livenessProbe.sh"
         - "restartMonitor.sh"
 
-    - name: Setup autostart
-      cron:
-        name: "Start everything after reboot"
-        state: present
-        special_time: reboot
-        job: "sleep 60 && /home/pi/startAll.sh 2>&1"
-
     - name: Setup liveness check
       cron:
-        name: "Check processes every 5th minute"
+        name: "Check processes"
         state: present
-        minute: "*/5"
+        minute: "*/1"
         job: "/home/pi/livenessProbe.sh 2>&1"
 
     - name: Setup monitor restart
