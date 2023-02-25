@@ -30,7 +30,7 @@ export class AudioBookMockService implements AudioBookServiceInterface {
     }
 
     getUnassignedCardIds(): Observable<Card[]> {
-        return of([{id: '9', cardId: '153245432'}, {id: '8', cardId: '13452345123'}]);
+        return of([{id: 9, cardId: '153245432'}, {id: 8, cardId: '13452345123'}]);
     }
 
     addAudioBook(audioBook: AudioBook): Observable<AudioBook> {
@@ -78,7 +78,8 @@ export class AudioBookMockService implements AudioBookServiceInterface {
     getRandomAudioBook(title: string, countTrackListItems: number, lastPlayedDaysBefore: number, timesPlayed: number): AudioBook {
         return {
             id: uuid(),
-            card: {id: '9', cardId: '123456'},
+            isMusic: false,
+            card: {id: 9, cardId: '123456'},
             title,
             trackList: this.getRandomTrackList(countTrackListItems),
             lastPlayed: this.getDateBeforeDays(lastPlayedDaysBefore),

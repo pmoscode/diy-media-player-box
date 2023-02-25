@@ -32,6 +32,7 @@ import {
 import {NgxFileDropModule} from 'ngx-file-drop';
 import {HttpClientModule} from '@angular/common/http';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 @NgModule({
     declarations: [
@@ -64,7 +65,8 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
         MatSnackBarModule,
         NgxFileDropModule,
         HttpClientModule,
-        MatProgressSpinnerModule
+        MatProgressSpinnerModule,
+        MatCheckboxModule
     ],
     providers: [
         {provide: 'AudioBookService', useClass: environment.audioBookService}
