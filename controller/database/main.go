@@ -63,7 +63,7 @@ func (r *Database) initDatabase(dbFilename string, debug bool) {
 func (r *Database) GetAllAudioBooks() (*[]schema.AudioBook, DbResult) {
 	var data []schema.AudioBook
 
-	result := r.db.Preload(clause.Associations).Find(&data)
+	result := r.db.Preload(clause.Associations).Order("Title").Find(&data)
 
 	if result.RowsAffected == 0 {
 		return &data, DbRecordNotFound
