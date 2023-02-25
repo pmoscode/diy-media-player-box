@@ -12,4 +12,5 @@ type AudioBook struct {
 	CardId      string
 	TimesPlayed int
 	TrackList   []*AudioTrack
+	IsMusic     bool `gorm:"default:false"`
 }

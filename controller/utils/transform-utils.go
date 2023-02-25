@@ -12,6 +12,7 @@ func ConvertAudioBookUiToDb(src *uiSchema.AudioBookUi) *dbSchema.AudioBook {
 		dest.CardId = src.Card.CardId
 	}
 	dest.Title = src.Title
+	dest.IsMusic = src.IsMusic
 
 	return dest
 }
@@ -28,6 +29,7 @@ func ConvertAudioBookDbToUi(src *dbSchema.AudioBook) *uiSchema.AudioBookFull {
 	dest.Title = src.Title
 	dest.LastPlayed = src.LastPlayed
 	dest.TimesPlayed = src.TimesPlayed
+	dest.IsMusic = src.IsMusic
 
 	if src.TrackList != nil {
 		dest.TrackList = ConvertAudioBookTracksDbToUi(src.TrackList)
@@ -38,6 +40,7 @@ func ConvertAudioBookDbToUi(src *dbSchema.AudioBook) *uiSchema.AudioBookFull {
 
 func MergeAudioBookUiToDb(dest *dbSchema.AudioBook, src *uiSchema.AudioBookUi) {
 	dest.Title = src.Title
+	dest.IsMusic = src.IsMusic
 
 	if src.Card != nil {
 		dest.CardId = src.Card.CardId

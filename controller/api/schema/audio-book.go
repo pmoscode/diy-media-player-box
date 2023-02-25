@@ -11,9 +11,11 @@ type AudioBookFull struct {
 	Card        *Card         `json:"card"`
 	TimesPlayed int           `json:"timesPlayed"`
 	TrackList   []*AudioTrack `json:"trackList"`
+	IsMusic     bool          `json:"isMusic"`
 }
 
 type AudioBookUi struct {
-	Title string `json:"title"`
-	Card  *Card  `json:"card"`
+	Title   string `json:"title"`
+	Card    *Card  `json:"card"`
+	IsMusic bool   `json:"isMusic"`
 }
