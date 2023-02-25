@@ -41,7 +41,7 @@ You need:
 * If you use a HifiBerry DAC zero, see here: https://www.hifiberry.com/docs/software/configuring-linux-3-18-x/ (If not, you will need to enable either the headphone jack or hdmi for audio output - I guess hdmi is default)
 
 You need to create a `.env` file in the root dir.
-(Copy `.env.dist` and adjust settings) The assumption is, that the default Raspbian user (Pi) is used.
+(Copy `.env.dist` and adjust settings) The assumption is, that the default Raspbian user (pi) is used.
 
 The content of that .env file:
 
@@ -98,7 +98,6 @@ task compileAll
 
 The `setupTarget` task will also add commands to the cron file of the pi user:
 
-* to enable auto start of the components
 * to add a liveness probe, which checks if every component is still alive (every 5th minute)
 * to restart the monitor every 3rd hour
 
@@ -107,6 +106,18 @@ The `setupTarget` task will also add commands to the cron file of the pi user:
 The UI is that simple, that I assume, I don't need to write any documentation for it.
 
 If I'm wrong, let me know.
+
+== Contribution
+
+Feel free to suggest new features and submit any pull requests. :)
+
+=== Static code analyze
+
+Static code analyze is not handled by the taskfile.
+It is done via:
+
+ https://staticcheck.io/docs/getting-started/
+
 
 == License
 
