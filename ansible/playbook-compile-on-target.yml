@@ -1,6 +1,5 @@
 - name: "Setup Target"
   hosts: all
-  remote_user: pi
 
   tasks:
     - name: Ensure "archives" folder exists

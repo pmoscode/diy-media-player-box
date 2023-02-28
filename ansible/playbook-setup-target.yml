@@ -1,6 +1,5 @@
 - name: "Setup Target"
   hosts: all
-  remote_user: pi
 
   vars:
     GO_VERSION: 1.19.3
