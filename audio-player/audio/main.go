@@ -37,6 +37,7 @@ func (a *Audio) OnMessageReceivedPlay(message mqtt2.Message) {
 	}
 
 	var samples []beep.Streamer
+	var resampledCnt int = 0
 
 	for _, trackPath := range body.TrackList {
 		f, err := os.Open(trackPath)
@@ -56,14 +57,15 @@ func (a *Audio) OnMessageReceivedPlay(message mqtt2.Message) {
 		if DefaultSampleRate != format.SampleRate {
 			const sampleRate = beep.SampleRate(DefaultSampleRate)
 			stream = beep.Resample(1, format.SampleRate, sampleRate, streamer)
-			a.sendStatusMessage(mqtt2.Info, "Need to resample: '"+trackPath+"'...")
+			resampledCnt++
 		} else {
 			stream = streamer
-			a.sendStatusMessage(mqtt2.Info, "No need to resample: '"+trackPath+"'...")
 		}
 
 		samples = append(samples, stream)
 	}
+
+	a.sendStatusMessage(mqtt2.Info, "Tracks resampled: ", resampledCnt, " of ", len(samples))
 
 	samples = append(samples, beep.Callback(func() {
 		a.lastPlayedUid = 0
@@ -74,24 +76,23 @@ func (a *Audio) OnMessageReceivedPlay(message mqtt2.Message) {
 		// speaker.Clear()
 	}))
 
-	if len(samples) > 0 {
-		sequence := beep.Seq(samples...)
-		a.control = &beep.Ctrl{
-			Streamer: sequence,
-			Paused:   false,
-		}
-
-		a.volume = &effects.Volume{
-			Streamer: a.control,
-			Base:     2,
-			Volume:   a.currentVolume,
-			Silent:   false,
-		}
-
-		speaker.Play(a.volume)
-
-		a.sendStatusMessage(mqtt2.Info, "playing")
+	sequence := beep.Seq(samples...)
+	a.control = &beep.Ctrl{
+		Streamer: sequence,
+		Paused:   false,
 	}
+
+	a.volume = &effects.Volume{
+		Streamer: a.control,
+		Base:     2,
+		Volume:   a.currentVolume,
+		Silent:   false,
+	}
+
+	speaker.Play(a.volume)
+
+	a.sendStatusMessage(mqtt2.Info, "playing")
+
 }
 
 func (a *Audio) OnMessageReceivedPause(message mqtt2.Message) {
