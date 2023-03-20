@@ -1,0 +1,46 @@
+# General config for all components
+mqttBroker:
+  host: localhost              # host of the MQTT broker
+  port: 1883                   # port of the MQTT broker
+
+# Rfid-Reader
+rfidReader:
+  mqttClientId: rfid-reader    # mqtt client id -> must be unique
+  mockCardId: 123456           # only used when in mock mode to mock a read card
+  removeThreshold: 1           # how many checks for removed card until it will send the 'removed card' event
+  logStatusToConsole: false    # log messages also to current std console
+
+# Audio-Player
+audioPlayer:
+  mqttClientId: audio-player   # mqtt client id -> must be unique
+  sampleRateFactor: 700        # defines buffer size of audio player # in milliseconds (700 is good for Raspi Zero)
+  logStatusToConsole: false    # log messages also to current std console
+
+# Controller
+controller:
+  mqttClientId: controller     # mqtt client id -> must be unique
+
+# IO-Controller
+ioController:
+  mqttClientId: io-controller  # mqtt client id -> must be unique
+  mockVolumeOffset: 1          # volume offset to change (+/-) for the mock behaviour
+  volumeOffset: 0.4            # volume offset to change (+/-) for real
+  pinVolumeUp: 17              # GPIO pin on Raspi to control volume up changes
+  pinVolumeDown: 23            # GPIO pin on Raspi to control volume down changes
+  pinTrackNext: 22             # GPIO pin on Raspi to control track next changes
+  pinTrackPrev: 27             # GPIO pin on Raspi to control track prev changes
+  logStatusToConsole: false    # log messages also to current std console
+
+# Logger
+logger:
+  mqttClientId: logger                    # mqtt client id -> must be unique
+  logRotationPeriodAfterBytes: 10000000   # maximum file size of the log in bytes (max == 2GB) before log-file will be rotated
+  logStatusToConsole: false               # log messages also to current std console
+  fileName: logs/music.log                # the filename (and path) of the log file
+  mqttSubscriptionTopic: /status/#        # topic to subscribe where status messages are sent
+
+# Monitor
+monitor:
+  mqttClientId: monitor                                                      # mqtt client id -> must be unique
+  logStatusToConsole: false                                                  # log messages also to current std console
+  processNames: audio-player,controller,io-controller,logger,rfid-reader     # define the process names to watch for (excludes monitor process itself)

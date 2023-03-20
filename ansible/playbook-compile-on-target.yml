@@ -10,6 +10,13 @@
       tags:
         - backend
 
+    - name: Copy config file to target
+      copy:
+        src: config/config.yaml
+        dest: "/home/pi/"
+      tags:
+        - backend
+
     - name: Compile components
       include_tasks: partial/compile-component.yml
       vars:
