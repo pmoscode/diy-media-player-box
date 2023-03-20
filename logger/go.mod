@@ -2,7 +2,7 @@ module logger
 
 go 1.18
 
-require gitlab.com/pmoscodegrp/common v0.1.1
+require gitlab.com/pmoscodegrp/common v0.2.0
 
 require (
 	github.com/eclipse/paho.mqtt.golang v1.4.2 // indirect
