@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"gitlab.com/pmoscodegrp/common/heartbeat"
 	mqtt2 "gitlab.com/pmoscodegrp/common/mqtt"
+	"gitlab.com/pmoscodegrp/common/yamlconfig"
 	"log"
 	"mime/multipart"
 	"path/filepath"
@@ -199,13 +200,19 @@ func NewAudioBookService() *AudioBookService {
 	heartBeat := heartbeat.New(10*time.Second, sendHeartbeat)
 	heartBeat.Run()
 
+	var config Config
+	err = yamlconfig.LoadConfig("config.yaml", &config)
+	if err != nil {
+		log.Fatal("Could not load config file")
+	}
+
 	audioBookService := &AudioBookService{
 		dbClient:      databaseSingleton,
 		cardService:   NewCardService(),
 		lastPlayedUid: "",
 	}
 
-	mqttClient = mqtt2.CreateClient(*cliOptions.mqttBrokerIp, 1883, *cliOptions.mqttClientId)
+	mqttClient = mqtt2.CreateClient(config.MqttBroker.Host, config.MqttBroker.Port, config.Controller.MqttClientId)
 	err = mqttClient.Connect()
 	if err != nil {
 		if err != nil {

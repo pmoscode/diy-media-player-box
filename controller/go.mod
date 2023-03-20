@@ -8,7 +8,7 @@ require (
 	github.com/swaggo/echo-swagger v1.3.5
 	github.com/swaggo/swag v1.8.7
 	github.com/tcolgate/mp3 v0.0.0-20170426193717-e79c5a46d300
-	gitlab.com/pmoscodegrp/common v0.1.1
+	gitlab.com/pmoscodegrp/common v0.2.0
 	gorm.io/driver/sqlite v1.4.2
 	gorm.io/gorm v1.24.0
 )
