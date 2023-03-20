@@ -15,6 +15,6 @@ func (m *Mock) Run() {
 	m.sendStatusMessage(mqtt.Info, "Mock CardId '", m.cardId, "' send to controller...")
 }
 
-func NewMock(cardId *string, cardIdMessage func(cardId string), statusMessage func(messageType mqtt.StatusType, message ...any)) *Mock {
-	return &Mock{cardId: *cardId, sendStatusMessage: statusMessage, sendCardIdMessage: cardIdMessage}
+func NewMock(cardId string, cardIdMessage func(cardId string), statusMessage func(messageType mqtt.StatusType, message ...any)) *Mock {
+	return &Mock{cardId: cardId, sendStatusMessage: statusMessage, sendCardIdMessage: cardIdMessage}
 }

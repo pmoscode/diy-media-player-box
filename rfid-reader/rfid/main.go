@@ -109,10 +109,10 @@ func (r *Rfid) listen(cb chan []byte) {
 	}
 }
 
-func NewRfid(removeThreshold *int, cardIdMessage func(cardId string), statusMessage func(messageType mqtt.StatusType, message ...any)) *Rfid {
+func NewRfid(removeThreshold int, cardIdMessage func(cardId string), statusMessage func(messageType mqtt.StatusType, message ...any)) *Rfid {
 	return &Rfid{
 		sendStatusMessage: statusMessage,
 		sendCardIdMessage: cardIdMessage,
-		removeThreshold:   *removeThreshold,
+		removeThreshold:   removeThreshold,
 	}
 }

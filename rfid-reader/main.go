@@ -1,10 +1,10 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"gitlab.com/pmoscodegrp/common/heartbeat"
 	mqtt2 "gitlab.com/pmoscodegrp/common/mqtt"
+	"gitlab.com/pmoscodegrp/common/yamlconfig"
 	"log"
 	"os/exec"
 	"rfid-reader/mqtt"
@@ -14,44 +14,20 @@ import (
 
 var mqttClient *mqtt2.Client
 
-type CliOptions struct {
-	mqttBrokerIp       *string
-	mqttClientId       *string
-	mockCardId         *string
-	logStatusToConsole *bool
-	removeThreshold    *int
-}
-
 type Module interface {
 	Run()
 }
 
-var cliOptions CliOptions
-
-func getCliOptions() CliOptions {
-	mqttBrokerIp := flag.String("mqtt-broker", "localhost", "Ip of MQTT broker")
-	mqttClientId := flag.String("mqtt-client-id", "rfid-reader", "Client id for Mqtt connection")
-	mockCardId := flag.String("mock-card-id", "123456", "Only used when in mock mode")
-	removeThreshold := flag.Int("remove-threshold", 1, "How many checks for removed card until it will be noticed as 'card removed'")
-	logStatusToConsole := flag.Bool("log-console", false, "Log messages also to current std console")
-	flag.Parse()
-
-	log.Println("Publishing / Subscribing to broker: ", *mqttBrokerIp)
-
-	return CliOptions{
-		mqttBrokerIp:       mqttBrokerIp,
-		mqttClientId:       mqttClientId,
-		mockCardId:         mockCardId,
-		logStatusToConsole: logStatusToConsole,
-		removeThreshold:    removeThreshold,
-	}
-}
+var config Config
 
 func main() {
-	cliOptions = getCliOptions()
+	err := yamlconfig.LoadConfig("config.yaml", &config)
+	if err != nil {
+		log.Fatal("Could not load config file")
+	}
 
-	mqttClient = mqtt2.CreateClient(*cliOptions.mqttBrokerIp, 1883, *cliOptions.mqttClientId)
-	err := mqttClient.Connect()
+	mqttClient = mqtt2.CreateClient(config.MqttBroker.Host, 1883, config.RfidReader.MqttClientId)
+	err = mqttClient.Connect()
 	if err != nil {
 		log.Fatal("MQTT broker not found... exiting.")
 	}
@@ -65,10 +41,10 @@ func main() {
 	_, err = cmd.CombinedOutput()
 	if err != nil {
 		sendStatusMessage(mqtt2.Info, "Not on Raspi... Switching to Mock mode...")
-		rfidClient = rfid.NewMock(cliOptions.mockCardId, sendCardIdMessage, sendStatusMessage)
+		rfidClient = rfid.NewMock(config.RfidReader.MockCardId, sendCardIdMessage, sendStatusMessage)
 	} else {
 		sendStatusMessage(mqtt2.Info, "On Raspi... Switching to Rfid mode...")
-		rfidClient = rfid.NewRfid(cliOptions.removeThreshold, sendCardIdMessage, sendStatusMessage)
+		rfidClient = rfid.NewRfid(config.RfidReader.RemoveThreshold, sendCardIdMessage, sendStatusMessage)
 	}
 	rfidClient.Run()
 }
@@ -87,7 +63,7 @@ func sendStatusMessage(messageType mqtt2.StatusType, message ...any) {
 		Value: mqttMessage,
 	})
 
-	if *cliOptions.logStatusToConsole {
+	if config.RfidReader.LogStatusToConsole {
 		log.Println(messageType, ": ", messageTxt)
 	}
 }
