@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/faiface/beep v1.1.0
-	gitlab.com/pmoscodegrp/common v0.1.1
+	gitlab.com/pmoscodegrp/common v0.2.0
 )
 
 require (
