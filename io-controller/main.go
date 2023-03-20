@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"gitlab.com/pmoscodegrp/common/heartbeat"
 	mqtt2 "gitlab.com/pmoscodegrp/common/mqtt"
-	"io-controller/cli"
+	"gitlab.com/pmoscodegrp/common/yamlconfig"
+	config2 "io-controller/config"
 	"io-controller/io"
 	"io-controller/mqtt"
 	"log"
@@ -13,17 +14,20 @@ import (
 )
 
 var mqttClient *mqtt2.Client
-var cliOptions *cli.Options
+var config config2.Config
 
 type Module interface {
 	Run()
 }
 
 func main() {
-	cliOptions = cli.GetCliOptions()
+	err := yamlconfig.LoadConfig("config.yaml", &config)
+	if err != nil {
+		log.Fatal("Could not load config file")
+	}
 
-	mqttClient = mqtt2.CreateClient(*cliOptions.MqttBrokerIp, 1883, *cliOptions.MqttClientId)
-	err := mqttClient.Connect()
+	mqttClient = mqtt2.CreateClient(config.MqttBroker.Host, config.MqttBroker.Port, config.IoController.MqttClientId)
+	err = mqttClient.Connect()
 	if err != nil {
 		log.Fatal("MQTT broker not found... exiting.")
 	}
@@ -37,10 +41,10 @@ func main() {
 	_, err = cmd.CombinedOutput()
 	if err != nil {
 		sendStatusMessage(mqtt2.Info, "Not on Raspi... Switching to Mock mode...")
-		ioClient = io.NewMockOI(*cliOptions.MockVolumeOffset, sendVolumeChangeMessage, sendStatusMessage)
+		ioClient = io.NewMockOI(config.IoController.MockVolumeOffset, sendVolumeChangeMessage, sendStatusMessage)
 	} else {
 		sendStatusMessage(mqtt2.Info, "On Raspi... Switching to IO mode...")
-		ioClient = io.NewOI(cliOptions, sendVolumeChangeMessage, sendTrackChangeMessage, sendStatusMessage)
+		ioClient = io.NewOI(config.IoController, sendVolumeChangeMessage, sendTrackChangeMessage, sendStatusMessage)
 	}
 
 	ioClient.Run()
@@ -61,7 +65,7 @@ func sendStatusMessage(messageType mqtt2.StatusType, message ...any) {
 		Value: mqttMessage,
 	})
 
-	if *cliOptions.LogStatusToConsole {
+	if config.IoController.LogStatusToConsole {
 		log.Println(messageType, ": ", messageTxt)
 	}
 }
