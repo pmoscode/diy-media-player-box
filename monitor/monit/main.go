@@ -21,7 +21,7 @@ func OnMessageReceivedHeartbeat(message mqtt2.Message) {
 	manager.IncrementHeartbeat(processName)
 }
 
-func RunMonitor(processNames *string) {
+func RunMonitor(processNames string) {
 	manager.Init(processNames)
 
 	monitorTimer := heartbeat.New(10*time.Second, checkInstances)

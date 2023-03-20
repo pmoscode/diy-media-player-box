@@ -14,8 +14,8 @@ type Manager struct {
 	threshold int
 }
 
-func (m *Manager) Init(processNames *string) {
-	processes := strings.Split(*processNames, ",")
+func (m *Manager) Init(processNames string) {
+	processes := strings.Split(processNames, ",")
 
 	for _, name := range processes {
 		m.addItem(name)
