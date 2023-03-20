@@ -51,9 +51,17 @@ REMOTE_SERVER=<ip_address_of_pi>
 RASPBERRY_PASSWORD=<password_of_pi_user>
 ----
 
+=== Configuration
+
+Inside the folder "ansible/config" you will find the configuration of the single components. There you can make changes if desired.
+
+For "io-controller" and "audio-player" you should adjust the values to your hardware setup...
+
+This config file will be sent to remote everytime you change the "backend". (See below: The Taskfile)
+
 === Before you start
 
-I tested this on a Raspberry Pi Zero and the audio preview in the browser.
+I tested this on a Raspberry Pi Zero / Raspberry Pi 3 and the audio preview in the browser.
 
 NOTE: You cannot compile the UI on a Raspberry Pi Zero due to lack of memory (512 MB) But everything will be done by the tasks... :)
 
