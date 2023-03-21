@@ -16,6 +16,16 @@
         dest: "/home/pi/"
       tags:
         - backend
+        - config
+      register: output_config
+
+    - name: Terminate all, when config changed
+      shell:
+        cmd: ./terminateAll.sh
+      tags:
+        - backend
+        - config
+      when: output_config.changed
 
     - name: Compile components
       include_tasks: partial/compile-component.yml
