@@ -7,7 +7,7 @@ mqttBroker:
 rfidReader:
   mqttClientId: rfid-reader    # mqtt client id -> must be unique
   mockCardId: 123456           # only used when in mock mode to mock a read card
-  removeThreshold: 1           # how many checks for removed card until it will send the 'removed card' event
+  removeThreshold: 2           # how many checks for removed card until it will send the 'removed card' event
   logStatusToConsole: false    # log messages also to current std console
 
 # Audio-Player
