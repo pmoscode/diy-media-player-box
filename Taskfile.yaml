@@ -71,3 +71,9 @@ tasks:
     dir: ansible
     cmds:
       - sshpass -p "$RASPBERRY_PASSWORD" ansible-playbook --user $RASPBERRY_USER -i $REMOTE_SERVER, playbook-compile-on-target.yml --tags "ui" --ask-pass
+
+  copy-config:
+    desc: Copy the config file to target machine (into Pi's homedir)
+    dir: ansible
+    cmds:
+      - sshpass -p "$RASPBERRY_PASSWORD" ansible-playbook --user $RASPBERRY_USER -i $REMOTE_SERVER, playbook-compile-on-target.yml --tags "config" --ask-pass

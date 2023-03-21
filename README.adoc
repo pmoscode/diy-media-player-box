@@ -57,7 +57,7 @@ Inside the folder "ansible/config" you will find the configuration of the single
 
 For "io-controller" and "audio-player" you should adjust the values to your hardware setup...
 
-This config file will be sent to remote everytime you change the "backend". (See below: The Taskfile)
+This config file will be sent to remote everytime you change the "backend" or can be copied via Taskfile task (See below: The Taskfile)
 
 === Before you start
 
