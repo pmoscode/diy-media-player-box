@@ -26,7 +26,7 @@ My target was to build a DIY Music Box for small children.
 
 This is a short overview of the architecture. All communication is done via the mqtt protocol.
 
-[source,mermaid]
+[mermaid]
 ----
 graph LR;
     A(rfid-reader) -->|sends rfid id| C(controller)
