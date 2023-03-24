@@ -22,6 +22,22 @@ My target was to build a DIY Music Box for small children.
 - Has "easy to set up" install script (Ansible and Taskfile)
 - Logs (almost) everything to log files
 
+== Architecture
+
+This is a short overview of the architecture. All communication is done via the mqtt protocol.
+
+[source,mermaid]
+----
+graph LR;
+    A(rfid-reader) -->|sends rfid id| C(controller)
+    B(io-controller) -->|sends volume +/- and track +/-| C
+    C --> |sends track metadata| D(audio-player)
+    C --> |provides| E(UI)
+
+    F(monitor) --> |checks and kills| G(rfid-reader / controller / io-controller / audio-player / logger)
+    H(logger) --> |logs| I(rfid-reader / controller / io-controller / audio-player)
+----
+
 == Screenshots
 
 image::doc/images/main-screen.png[Main screen]
