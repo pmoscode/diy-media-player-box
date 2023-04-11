@@ -61,7 +61,7 @@ func sendStatusMessage(messageType mqtt2.StatusType, message ...any) {
 	}
 
 	mqttClient.Publish(&mqtt2.Message{
-		Topic: "/status/audio-player",
+		Topic: "/status/io-controller",
 		Value: mqttMessage,
 	})
 
