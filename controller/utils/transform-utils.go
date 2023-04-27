@@ -44,6 +44,8 @@ func MergeAudioBookUiToDb(dest *dbSchema.AudioBook, src *uiSchema.AudioBookUi) {
 
 	if src.Card != nil {
 		dest.CardId = src.Card.CardId
+	} else {
+		dest.CardId = ""
 	}
 }
 

@@ -58,7 +58,7 @@ func (a *AudioBookService) AddAudioBook(audioBook *uiSchema.AudioBookUi) (*uiSch
 func (a *AudioBookService) UpdateAudioBook(id uint, audioBookUi *uiSchema.AudioBookUi) (*uiSchema.AudioBookFull, error) {
 	audioBookDb, _ := a.dbClient.GetAudioBookById(id)
 
-	if audioBookDb.CardId != "" && audioBookUi.Card != nil && audioBookDb.CardId != audioBookUi.Card.CardId {
+	if (audioBookDb.CardId != "" && audioBookUi.Card == nil) || (audioBookDb.CardId != "" && audioBookUi.Card != nil && audioBookDb.CardId != audioBookUi.Card.CardId) {
 		_, err := a.cardService.AddUnusedCard(audioBookDb.CardId)
 		if err != nil {
 			return nil, err
