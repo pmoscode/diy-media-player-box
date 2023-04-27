@@ -48,7 +48,7 @@ export class MainComponent implements OnInit {
     }
 
     audioBookDeleted() {
-        this.loadAudioBooks()
+        this.loadAudioBooks();
     }
 
     private loadAudioBooks() {

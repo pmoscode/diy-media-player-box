@@ -12,6 +12,7 @@
         <mat-form-field>
             <mat-label>CardId (optional)</mat-label>
             <mat-select [compareWith]="compareCard" formControlName="card">
+                <mat-option [value]="null"></mat-option>
                 <mat-option *ngFor="let card of cards" [value]="card">{{card.cardId}}</mat-option>
             </mat-select>
         </mat-form-field>
