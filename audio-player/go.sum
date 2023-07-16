@@ -37,6 +37,8 @@ github.com/mewkiz/pkg v0.0.0-20190919212034-518ade7978e2/go.mod h1:3E2FUC/qYUfM8
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
+github.com/pmoscode/go-common v0.3.0 h1:dWkWAbqEHbDMDPFtBYOO4F3RwVcUCUzpA32q4oZTaAk=
+github.com/pmoscode/go-common v0.3.0/go.mod h1:vCyGEuGDT/yBUqJ+w2tRjfAO+quOK6I+9iCKYw/RdYg=
 github.com/yuin/goldmark v1.4.13/go.mod h1:6yULJ656Px+3vBD8DxQVa3kxgyrAnzto9xy5taEt/CY=
 gitlab.com/pmoscodegrp/common v0.2.0 h1:cW89ISHEIVFO37HZsY0KMIEQTvQL2uCJmMv1ZRoIJpg=
 gitlab.com/pmoscodegrp/common v0.2.0/go.mod h1:o3FU1Un7eg3udNmIZFvrwrcj2CMyvD4o2kHhvh4KGRI=

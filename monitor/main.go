@@ -1,8 +1,8 @@
 package main
 
 import (
-	mqtt2 "gitlab.com/pmoscodegrp/common/mqtt"
-	"gitlab.com/pmoscodegrp/common/yamlconfig"
+	mqtt2 "github.com/pmoscode/go-common/mqtt"
+	"github.com/pmoscode/go-common/yamlconfig"
 	"log"
 	"monitor/monit"
 )

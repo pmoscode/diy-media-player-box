@@ -1,10 +1,10 @@
 module audio-player
 
-go 1.18
+go 1.20
 
 require (
 	github.com/faiface/beep v1.1.0
-	gitlab.com/pmoscodegrp/common v0.2.0
+	github.com/pmoscode/go-common v0.3.0
 )
 
 require (

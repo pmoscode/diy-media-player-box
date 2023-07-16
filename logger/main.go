@@ -1,9 +1,9 @@
 package main
 
 import (
-	"gitlab.com/pmoscodegrp/common/heartbeat"
-	"gitlab.com/pmoscodegrp/common/mqtt"
-	"gitlab.com/pmoscodegrp/common/yamlconfig"
+	"github.com/pmoscode/go-common/heartbeat"
+	"github.com/pmoscode/go-common/mqtt"
+	"github.com/pmoscode/go-common/yamlconfig"
 	"log"
 	"logger/logs"
 	"time"

@@ -19,7 +19,7 @@ import (
 // @contact.email info@pmoscode.de
 
 // @license.name GNU General Public License v3.0
-// @license.url https://gitlab.com/pmoscode/diy-media-player-box/-/raw/master/LICENSE
+// @license.url https://github.com/pmoscode/diy-media-player-box/-/raw/master/LICENSE
 
 // @host localhost:2020
 // @BasePath /api

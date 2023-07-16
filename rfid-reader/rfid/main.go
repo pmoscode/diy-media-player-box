@@ -2,7 +2,7 @@ package rfid
 
 import (
 	"encoding/hex"
-	"gitlab.com/pmoscodegrp/common/mqtt"
+	"github.com/pmoscode/go-common/mqtt"
 	"log"
 	"periph.io/x/conn/v3/spi/spireg"
 	"periph.io/x/devices/v3/mfrc522"

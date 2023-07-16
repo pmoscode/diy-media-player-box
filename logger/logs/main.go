@@ -2,7 +2,7 @@ package logs
 
 import (
 	"fmt"
-	"gitlab.com/pmoscodegrp/common/mqtt"
+	"github.com/pmoscode/go-common/mqtt"
 	log2 "log"
 	"os"
 	"os/signal"

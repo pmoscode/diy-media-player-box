@@ -1,9 +1,9 @@
 module rfid-reader
 
-go 1.18
+go 1.20
 
 require (
-	gitlab.com/pmoscodegrp/common v0.2.0
+	github.com/pmoscode/go-common v0.3.0
 	periph.io/x/conn/v3 v3.7.0
 	periph.io/x/devices/v3 v3.7.1
 	periph.io/x/host/v3 v3.8.2

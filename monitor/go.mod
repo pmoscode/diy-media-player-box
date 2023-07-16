@@ -1,8 +1,8 @@
 module monitor
 
-go 1.18
+go 1.20
 
-require gitlab.com/pmoscodegrp/common v0.2.0
+require github.com/pmoscode/go-common v0.3.0
 
 require (
 	github.com/eclipse/paho.mqtt.golang v1.4.3 // indirect

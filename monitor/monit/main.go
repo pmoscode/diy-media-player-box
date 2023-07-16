@@ -3,8 +3,8 @@ package monit
 import (
 	"bytes"
 	"fmt"
-	"gitlab.com/pmoscodegrp/common/heartbeat"
-	mqtt2 "gitlab.com/pmoscodegrp/common/mqtt"
+	"github.com/pmoscode/go-common/heartbeat"
+	mqtt2 "github.com/pmoscode/go-common/mqtt"
 	"log"
 	"monitor/monit/storage"
 	"os/exec"

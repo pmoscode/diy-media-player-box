@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"gitlab.com/pmoscodegrp/common/heartbeat"
-	mqtt2 "gitlab.com/pmoscodegrp/common/mqtt"
-	"gitlab.com/pmoscodegrp/common/yamlconfig"
+	"github.com/pmoscode/go-common/heartbeat"
+	mqtt2 "github.com/pmoscode/go-common/mqtt"
+	"github.com/pmoscode/go-common/yamlconfig"
 	"log"
 	"os/exec"
 	"rfid-reader/mqtt"

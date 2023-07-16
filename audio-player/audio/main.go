@@ -6,7 +6,7 @@ import (
 	"github.com/faiface/beep/effects"
 	"github.com/faiface/beep/mp3"
 	"github.com/faiface/beep/speaker"
-	mqtt2 "gitlab.com/pmoscodegrp/common/mqtt"
+	mqtt2 "github.com/pmoscode/go-common/mqtt"
 	"log"
 	"os"
 )

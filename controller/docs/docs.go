@@ -17,7 +17,7 @@ const docTemplate = `{
         },
         "license": {
             "name": "GNU General Public License v3.0",
-            "url": "https://gitlab.com/pmoscode/diy-media-player-box/-/raw/master/LICENSE"
+            "url": "https://github.com/pmoscode/diy-media-player-box/-/raw/master/LICENSE"
         },
         "version": "{{.Version}}"
     },

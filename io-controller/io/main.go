@@ -1,7 +1,7 @@
 package io
 
 import (
-	"gitlab.com/pmoscodegrp/common/mqtt"
+	"github.com/pmoscode/go-common/mqtt"
 	"io-controller/config"
 	"log"
 	"periph.io/x/conn/v3/gpio"
