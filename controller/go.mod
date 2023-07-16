@@ -9,8 +9,8 @@ require (
 	github.com/swaggo/swag v1.8.7
 	github.com/tcolgate/mp3 v0.0.0-20170426193717-e79c5a46d300
 	gitlab.com/pmoscodegrp/common v0.2.0
-	gorm.io/driver/sqlite v1.4.2
-	gorm.io/gorm v1.24.0
+	gorm.io/driver/sqlite v1.5.2
+	gorm.io/gorm v1.25.2-0.20230530020048-26663ab9bf55
 )
 
 require (
@@ -31,7 +31,7 @@ require (
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
-	github.com/mattn/go-sqlite3 v1.14.15 // indirect
+	github.com/mattn/go-sqlite3 v1.14.17 // indirect
 	github.com/stretchr/testify v1.8.1 // indirect
 	github.com/swaggo/files v0.0.0-20220728132757-551d4a08d97a // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
