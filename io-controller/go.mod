@@ -5,7 +5,7 @@ go 1.18
 require (
 	gitlab.com/pmoscodegrp/common v0.2.0
 	periph.io/x/conn/v3 v3.7.0
-	periph.io/x/host/v3 v3.8.0
+	periph.io/x/host/v3 v3.8.2
 )
 
 require (
