@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/dhowden/tag v0.0.0-20230630033851-978a0926ee25
 	github.com/labstack/echo/v4 v4.11.0
-	github.com/swaggo/echo-swagger v1.3.5
+	github.com/swaggo/echo-swagger v1.4.0
 	github.com/swaggo/swag v1.16.1
 	github.com/tcolgate/mp3 v0.0.0-20170426193717-e79c5a46d300
 	gitlab.com/pmoscodegrp/common v0.2.0
@@ -34,6 +34,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.17 // indirect
 	github.com/stretchr/testify v1.8.1 // indirect
 	github.com/swaggo/files v0.0.0-20220728132757-551d4a08d97a // indirect
+	github.com/swaggo/files/v2 v2.0.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
 	golang.org/x/crypto v0.11.0 // indirect
