@@ -87,3 +87,4 @@ tasks:
       - cd logger && go get -u
       - cd monitor && go get -u
       - cd rfid-reader && go get -u
+      - cd ui && ncu -u && npm install
