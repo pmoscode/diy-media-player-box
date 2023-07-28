@@ -55,6 +55,8 @@ golang.org/x/exp/shiny v0.0.0-20230724220655-d98519c11495 h1:XA3VaonVliqKyDJS/gZ
 golang.org/x/exp/shiny v0.0.0-20230724220655-d98519c11495/go.mod h1:UH99kUObWAZkDnWqppdQe5ZhPYESUw8I0zVV1uWBR+0=
 golang.org/x/exp/shiny v0.0.0-20230725093048-515e97ebf090 h1:nfjdoprNBcjd/lcK+b5UlX3rlqdAAgwhChdxzrz6kz0=
 golang.org/x/exp/shiny v0.0.0-20230725093048-515e97ebf090/go.mod h1:UH99kUObWAZkDnWqppdQe5ZhPYESUw8I0zVV1uWBR+0=
+golang.org/x/exp/shiny v0.0.0-20230728194245-b0cb94b80691 h1:jD/jGaVr7i39ELoc9JLk0Pteh6d++tAbFaZM9g8A78U=
+golang.org/x/exp/shiny v0.0.0-20230728194245-b0cb94b80691/go.mod h1:UH99kUObWAZkDnWqppdQe5ZhPYESUw8I0zVV1uWBR+0=
 golang.org/x/image v0.0.0-20190220214146-31aff87c08e9/go.mod h1:kZ7UVZpmo3dzQBMxlp+ypCbDeSB+sBbTgSJuh5dn5js=
 golang.org/x/image v0.0.0-20190227222117-0694c2d4d067/go.mod h1:kZ7UVZpmo3dzQBMxlp+ypCbDeSB+sBbTgSJuh5dn5js=
 golang.org/x/image v0.5.0 h1:5JMiNunQeQw++mMOz48/ISeNu3Iweh/JaZU8ZLqHRrI=
