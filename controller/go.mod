@@ -10,7 +10,7 @@ require (
 	github.com/swaggo/swag v1.16.1
 	github.com/tcolgate/mp3 v0.0.0-20170426193717-e79c5a46d300
 	gorm.io/driver/sqlite v1.5.2
-	gorm.io/gorm v1.25.2
+	gorm.io/gorm v1.25.3
 )
 
 require (
