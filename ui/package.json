@@ -39,7 +39,7 @@
     "@angular/platform-browser": "^16.2.0",
     "@angular/platform-browser-dynamic": "^16.2.0",
     "@angular/router": "^16.2.0",
-    "core-js": "^3.32.0",
+    "core-js": "^3.33.2",
     "ngx-file-drop": "^16.0.0",
     "register-service-worker": "^1.7.2",
     "rxjs": "~7.8.1",
