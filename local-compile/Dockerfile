@@ -1,4 +1,4 @@
-FROM golang:1.22-rc-bullseye
+FROM golang:1.22rc1-bookworm
 LABEL os=linux
 LABEL arch=armhf
 
