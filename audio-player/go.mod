@@ -13,7 +13,7 @@ require (
 	github.com/hajimehoshi/go-mp3 v0.3.4 // indirect
 	github.com/hajimehoshi/oto v1.0.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	golang.org/x/exp/shiny v0.0.0-20240103183307-be819d1f06fc // indirect
+	golang.org/x/exp/shiny v0.0.0-20240110193028-0dcbfd608b1e // indirect
 	golang.org/x/image v0.15.0 // indirect
 	golang.org/x/mobile v0.0.0-20231127183840-76ac6878050a // indirect
 	golang.org/x/net v0.20.0 // indirect
