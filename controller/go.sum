@@ -121,6 +121,8 @@ github.com/pmoscode/go-common v0.3.0 h1:dWkWAbqEHbDMDPFtBYOO4F3RwVcUCUzpA32q4oZT
 github.com/pmoscode/go-common v0.3.0/go.mod h1:vCyGEuGDT/yBUqJ+w2tRjfAO+quOK6I+9iCKYw/RdYg=
 github.com/pmoscode/go-common v0.6.2 h1:NN6wbzVVbvJaLcXdEv7RPPCi1wh8RVbmRtiQjrzAOKQ=
 github.com/pmoscode/go-common v0.6.2/go.mod h1:ulZcG6nlqg6RBbSrF2+ioQFLVsePkpY+ApiyJlI8kAE=
+github.com/pmoscode/go-common v0.7.0 h1:ahKE1aSboWoMzQhvmoDO5MxLYlrXPhJVRlBPPDBK7l0=
+github.com/pmoscode/go-common v0.7.0/go.mod h1:4Wvy8qnyhdoXZlB81LFJj7BmOeoUXIN0XTLtHfym5ww=
 github.com/rogpeppe/go-internal v1.11.0 h1:cWPaGQEPrBb5/AsnsZesgZZ9yb1OQ+GOISoDNXVBh4M=
 github.com/rogpeppe/go-internal v1.11.0/go.mod h1:ddIwULY96R17DhadqLgMfk9H9tvdUzkipdSkR5nkCZA=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
@@ -289,3 +291,5 @@ gorm.io/gorm v1.25.6 h1:V92+vVda1wEISSOMtodHVRcUIOPYa2tgQtyF+DfFx+A=
 gorm.io/gorm v1.25.6/go.mod h1:hbnx/Oo0ChWMn1BIhpy1oYozzpM15i4YPuHDmfYtwg8=
 gorm.io/gorm v1.25.7 h1:VsD6acwRjz2zFxGO50gPO6AkNs7KKnvfzUjHQhZDz/A=
 gorm.io/gorm v1.25.7/go.mod h1:hbnx/Oo0ChWMn1BIhpy1oYozzpM15i4YPuHDmfYtwg8=
+gorm.io/gorm v1.25.9 h1:wct0gxZIELDk8+ZqF/MVnHLkA1rvYlBWUMv2EdsK1g8=
+gorm.io/gorm v1.25.9/go.mod h1:hbnx/Oo0ChWMn1BIhpy1oYozzpM15i4YPuHDmfYtwg8=

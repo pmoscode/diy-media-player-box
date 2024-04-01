@@ -5,12 +5,12 @@ go 1.20
 require (
 	github.com/dhowden/tag v0.0.0-20240122214204-713ab0e94639
 	github.com/labstack/echo/v4 v4.11.4
-	github.com/pmoscode/go-common v0.6.2
+	github.com/pmoscode/go-common v0.7.0
 	github.com/swaggo/echo-swagger v1.4.1
 	github.com/swaggo/swag v1.16.3
 	github.com/tcolgate/mp3 v0.0.0-20170426193717-e79c5a46d300
 	gorm.io/driver/sqlite v1.5.5
-	gorm.io/gorm v1.25.7
+	gorm.io/gorm v1.25.9
 )
 
 require (

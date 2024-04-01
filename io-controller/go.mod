@@ -3,7 +3,7 @@ module io-controller
 go 1.20
 
 require (
-	github.com/pmoscode/go-common v0.6.2
+	github.com/pmoscode/go-common v0.7.0
 	periph.io/x/conn/v3 v3.7.0
 	periph.io/x/host/v3 v3.8.2
 )
