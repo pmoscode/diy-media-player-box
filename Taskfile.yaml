@@ -78,7 +78,7 @@ tasks:
     cmds:
       - sshpass -p "$RASPBERRY_PASSWORD" ansible-playbook --user $RASPBERRY_USER -i $REMOTE_SERVER, playbook-compile-on-target.yml --tags "config" --ask-pass
 
-  update-deps:
+  upgrade:
     desc: Update all go dependencies
     cmds:
       - cd audio-player && go get -u
