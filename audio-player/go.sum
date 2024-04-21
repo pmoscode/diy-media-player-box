@@ -64,6 +64,8 @@ golang.org/x/exp/shiny v0.0.0-20240325151524-a685a6edb6d8 h1:GYlVE/zmuKm+XvR3nYW
 golang.org/x/exp/shiny v0.0.0-20240325151524-a685a6edb6d8/go.mod h1:3F+MieQB7dRYLTmnncoFbb1crS5lfQoTfDgQy6K4N0o=
 golang.org/x/exp/shiny v0.0.0-20240409090435-93d18d7e34b8 h1:hYHwiFyEh3Z8hNGBbrVTT3FjsHiJ0ZqjHRH8sQgopUc=
 golang.org/x/exp/shiny v0.0.0-20240409090435-93d18d7e34b8/go.mod h1:3F+MieQB7dRYLTmnncoFbb1crS5lfQoTfDgQy6K4N0o=
+golang.org/x/exp/shiny v0.0.0-20240416160154-fe59bbe5cc7f h1:W11kcexeK9nBV2PQVuWu7jFf0rIyI9jb+5AH1IxP7Xc=
+golang.org/x/exp/shiny v0.0.0-20240416160154-fe59bbe5cc7f/go.mod h1:3F+MieQB7dRYLTmnncoFbb1crS5lfQoTfDgQy6K4N0o=
 golang.org/x/image v0.0.0-20190220214146-31aff87c08e9/go.mod h1:kZ7UVZpmo3dzQBMxlp+ypCbDeSB+sBbTgSJuh5dn5js=
 golang.org/x/image v0.0.0-20190227222117-0694c2d4d067/go.mod h1:kZ7UVZpmo3dzQBMxlp+ypCbDeSB+sBbTgSJuh5dn5js=
 golang.org/x/image v0.12.0 h1:w13vZbU4o5rKOFFR8y7M+c4A5jXDC0uXTdHYRP8X2DQ=
