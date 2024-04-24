@@ -1,4 +1,4 @@
-FROM golang:1.22.0-bookworm
+FROM golang:1.22.2-bookworm
 LABEL os=linux
 LABEL arch=armhf
 
