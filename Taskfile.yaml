@@ -79,7 +79,7 @@ tasks:
       - sshpass -p "$RASPBERRY_PASSWORD" ansible-playbook --user $RASPBERRY_USER -i $REMOTE_SERVER, playbook-compile-on-target.yml --tags "config" --ask-pass
 
   upgrade:
-    desc: Update all go dependencies
+    desc: Update all go dependencies (but just check ui deps - no update)
     cmds:
       - cd audio-player && go get -u
       - cd controller && go get -u
@@ -87,4 +87,4 @@ tasks:
       - cd logger && go get -u
       - cd monitor && go get -u
       - cd rfid-reader && go get -u
-      - cd ui && ncu -u && npm install
+      - cd ui && ncu
