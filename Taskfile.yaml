@@ -88,3 +88,10 @@ tasks:
       - cd monitor && go get -u
       - cd rfid-reader && go get -u
       - cd ui && ncu
+
+  upgrade-ui:
+    desc: Updates the UI deps
+    dir: ui
+    cmds:
+    - ncu -u
+    - npm install
