@@ -72,18 +72,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "diy-media-player-box:build"
+            "buildTarget": "diy-media-player-box:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "diy-media-player-box:build:production"
+              "buildTarget": "diy-media-player-box:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "diy-media-player-box:build"
+            "buildTarget": "diy-media-player-box:build"
           }
         },
         "test": {
