@@ -1,8 +1,8 @@
 {
   "name": "diy-media-player-box-ui",
   "description": "A media player for a DIY musc box for children. This is the UI part.",
-  "version": "0.0.3",
-  "homepage": "https://gitlab.com/pmoscode/diy-media-player-box-ui",
+  "version": "0.1.0",
+  "homepage": "https://github.com/pmoscode/diy-media-player-box-ui",
   "license": "GNU General Public License v3.0",
   "author": {
     "name": "pmoscode",
@@ -12,10 +12,10 @@
     "pmoscode"
   ],
   "bugs": {
-    "url": "https://gitlab.com/pmoscode/diy-media-player-box-ui/issues"
+    "url": "https://github.com/pmoscode/diy-media-player-box/issues"
   },
   "repository": {
-    "url": "https://gitlab.com/pmoscode/diy-media-player-box-ui",
+    "url": "https://github.com/pmoscode/diy-media-player-box",
     "type": "git"
   },
   "scripts": {
@@ -30,12 +30,12 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "^17.3.5",
-    "@angular/cdk": "^16.2.0",
+    "@angular/cdk": "^17.3.5",
     "@angular/common": "^17.3.5",
     "@angular/compiler": "^17.3.5",
     "@angular/core": "^17.3.5",
     "@angular/forms": "^17.3.5",
-    "@angular/material": "^16.2.0",
+    "@angular/material": "^17.3.5",
     "@angular/platform-browser": "^17.3.5",
     "@angular/platform-browser-dynamic": "^17.3.5",
     "@angular/router": "^17.3.5",
