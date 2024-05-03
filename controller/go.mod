@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/dhowden/tag v0.0.0-20240417053706-3d75831295e8
 	github.com/labstack/echo/v4 v4.12.0
-	github.com/pmoscode/go-common v0.7.0
+	github.com/pmoscode/go-common v0.8.0
 	github.com/swaggo/echo-swagger v1.4.1
 	github.com/swaggo/swag v1.16.3
 	github.com/tcolgate/mp3 v0.0.0-20170426193717-e79c5a46d300
