@@ -82,8 +82,9 @@ func sendCardIdMessage(cardId string) {
 func sendHeartbeat() {
 	mqttClient.Publish(&mqtt2.Message{
 		Topic: "/heartbeat/rfid-reader",
-		Value: &heartbeat.PublishMessage{
-			Alive: true,
+		Value: &mqtt2.StatusPublishMessage{
+			Status: "online",
+			Type:   mqtt2.Info,
 		},
 	})
 }

@@ -310,8 +310,9 @@ func (a *AudioBookService) OnMessageReceivedPlayDone(message mqtt2.Message) {
 func sendHeartbeat() {
 	mqttClient.Publish(&mqtt2.Message{
 		Topic: "/heartbeat/controller",
-		Value: &heartbeat.PublishMessage{
-			Alive: true,
+		Value: &mqtt2.StatusPublishMessage{
+			Status: "online",
+			Type:   mqtt2.Info,
 		},
 	})
 }

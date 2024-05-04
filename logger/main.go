@@ -39,8 +39,9 @@ func main() {
 func sendHeartbeat() {
 	mqttClient.Publish(&mqtt.Message{
 		Topic: "/heartbeat/logger",
-		Value: &heartbeat.PublishMessage{
-			Alive: true,
+		Value: &mqtt.StatusPublishMessage{
+			Status: "online",
+			Type:   mqtt.Info,
 		},
 	})
 }

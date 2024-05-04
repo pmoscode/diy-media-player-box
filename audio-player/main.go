@@ -81,8 +81,9 @@ func sendPlayDoneMessage(id uint) {
 func sendHeartbeat() {
 	mqttClient.Publish(&mqtt2.Message{
 		Topic: "/heartbeat/audio-player",
-		Value: &heartbeat.PublishMessage{
-			Alive: true,
+		Value: &mqtt2.StatusPublishMessage{
+			Status: "online",
+			Type:   mqtt2.Info,
 		},
 	})
 }

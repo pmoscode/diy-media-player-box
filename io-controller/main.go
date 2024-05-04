@@ -95,8 +95,9 @@ func sendTrackChangeMessage(direction int) {
 func sendHeartbeat() {
 	mqttClient.Publish(&mqtt2.Message{
 		Topic: "/heartbeat/io-controller",
-		Value: &heartbeat.PublishMessage{
-			Alive: true,
+		Value: &mqtt2.StatusPublishMessage{
+			Status: "online",
+			Type:   mqtt2.Info,
 		},
 	})
 }
