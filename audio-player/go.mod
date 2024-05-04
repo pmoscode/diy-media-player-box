@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/faiface/beep v1.1.0
-	github.com/pmoscode/go-common v0.7.0
+	github.com/pmoscode/go-common v0.8.0
 )
 
 require (
@@ -18,6 +18,6 @@ require (
 	golang.org/x/mobile v0.0.0-20240404231514-09dbf07665ed // indirect
 	golang.org/x/net v0.24.0 // indirect
 	golang.org/x/sync v0.7.0 // indirect
-	golang.org/x/sys v0.19.0 // indirect
+	golang.org/x/sys v0.20.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
