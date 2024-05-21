@@ -15,7 +15,7 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	golang.org/x/exp/shiny v0.0.0-20240506185415-9bf2ced13842 // indirect
 	golang.org/x/image v0.16.0 // indirect
-	golang.org/x/mobile v0.0.0-20240506190922-a1a533f289d3 // indirect
+	golang.org/x/mobile v0.0.0-20240520174638-fa72addaaa1b // indirect
 	golang.org/x/net v0.25.0 // indirect
 	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/sys v0.20.0 // indirect
