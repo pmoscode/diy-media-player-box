@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/faiface/beep v1.1.0
-	github.com/pmoscode/go-common v0.8.1
+	github.com/pmoscode/go-common v0.9.0
 )
 
 require (
