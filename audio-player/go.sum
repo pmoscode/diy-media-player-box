@@ -76,6 +76,8 @@ golang.org/x/exp/shiny v0.0.0-20240506185415-9bf2ced13842 h1:kEvPiBVeT1JJGw/3THf
 golang.org/x/exp/shiny v0.0.0-20240506185415-9bf2ced13842/go.mod h1:3F+MieQB7dRYLTmnncoFbb1crS5lfQoTfDgQy6K4N0o=
 golang.org/x/exp/shiny v0.0.0-20240529005216-23cca8864a10 h1:nzSZlHjEQgqpuqTkJztCb9FsnCxsz3c+kQCpLpJ0Cf0=
 golang.org/x/exp/shiny v0.0.0-20240529005216-23cca8864a10/go.mod h1:3F+MieQB7dRYLTmnncoFbb1crS5lfQoTfDgQy6K4N0o=
+golang.org/x/exp/shiny v0.0.0-20240531132922-fd00a4e0eefc h1:wOt9t5OwGKIglzTkMx37jYhb4ByZ69qAAQuvBTztxF0=
+golang.org/x/exp/shiny v0.0.0-20240531132922-fd00a4e0eefc/go.mod h1:3F+MieQB7dRYLTmnncoFbb1crS5lfQoTfDgQy6K4N0o=
 golang.org/x/image v0.0.0-20190220214146-31aff87c08e9/go.mod h1:kZ7UVZpmo3dzQBMxlp+ypCbDeSB+sBbTgSJuh5dn5js=
 golang.org/x/image v0.0.0-20190227222117-0694c2d4d067/go.mod h1:kZ7UVZpmo3dzQBMxlp+ypCbDeSB+sBbTgSJuh5dn5js=
 golang.org/x/image v0.12.0 h1:w13vZbU4o5rKOFFR8y7M+c4A5jXDC0uXTdHYRP8X2DQ=
