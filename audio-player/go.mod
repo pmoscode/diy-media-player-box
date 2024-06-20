@@ -9,15 +9,15 @@ require (
 
 require (
 	github.com/eclipse/paho.mqtt.golang v1.4.3 // indirect
-	github.com/gorilla/websocket v1.5.1 // indirect
+	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/hajimehoshi/go-mp3 v0.3.4 // indirect
 	github.com/hajimehoshi/oto v1.0.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	golang.org/x/exp/shiny v0.0.0-20240531132922-fd00a4e0eefc // indirect
-	golang.org/x/image v0.16.0 // indirect
-	golang.org/x/mobile v0.0.0-20240520174638-fa72addaaa1b // indirect
-	golang.org/x/net v0.25.0 // indirect
+	golang.org/x/exp/shiny v0.0.0-20240613232115-7f521ea00fb8 // indirect
+	golang.org/x/image v0.17.0 // indirect
+	golang.org/x/mobile v0.0.0-20240604190613-2782386b8afd // indirect
+	golang.org/x/net v0.26.0 // indirect
 	golang.org/x/sync v0.7.0 // indirect
-	golang.org/x/sys v0.20.0 // indirect
+	golang.org/x/sys v0.21.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
