@@ -30,12 +30,11 @@ import {
     AudioBookManageFilesDialogComponent
 } from './main/audio-book/audio-book-manage-files-dialog/audio-book-manage-files-dialog.component';
 import {NgxFileDropModule} from 'ngx-file-drop';
-import {HttpClientModule} from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 
-@NgModule({
-    declarations: [
+@NgModule({ declarations: [
         AppComponent,
         MainComponent,
         TimeAgoPipe,
@@ -45,8 +44,7 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
         AudioBookDialogComponent,
         AudioBookManageFilesDialogComponent
     ],
-    imports: [
-        BrowserModule,
+    bootstrap: [AppComponent], imports: [BrowserModule,
         AppRoutingModule,
         BrowserAnimationsModule,
         FormsModule,
@@ -64,14 +62,10 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
         MatInputModule,
         MatSnackBarModule,
         NgxFileDropModule,
-        HttpClientModule,
         MatProgressSpinnerModule,
-        MatCheckboxModule
-    ],
-    providers: [
-        {provide: 'AudioBookService', useClass: environment.audioBookService}
-    ],
-    bootstrap: [AppComponent]
-})
+        MatCheckboxModule], providers: [
+        { provide: 'AudioBookService', useClass: environment.audioBookService },
+        provideHttpClient(withInterceptorsFromDi())
+    ] })
 export class AppModule {
 }

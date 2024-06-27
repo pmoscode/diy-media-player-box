@@ -3,7 +3,7 @@ import {AudioBookServiceInterface} from './audio-book-service-interface';
 import {AudioBook} from './audio-book';
 import {Observable} from 'rxjs';
 import {AudioBookTrackList} from './audio-book-track-list';
-import {HttpClient} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import {Card} from './card';
 
 @Injectable({
