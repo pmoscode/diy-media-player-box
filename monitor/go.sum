@@ -18,6 +18,8 @@ github.com/pmoscode/go-common v0.8.1 h1:FG0/4oNK2y3P6PzH4s97IAHoHpfDqm2IgIRJUwn7
 github.com/pmoscode/go-common v0.8.1/go.mod h1:tDqhaNcUDPKY5llAbXoI4prt0TULFtsHlxaaPAicrTk=
 github.com/pmoscode/go-common v0.9.0 h1:b8jeA6uSMWu1C58CQmoqtJnfBSEQeyVGWRxL7lzEXx4=
 github.com/pmoscode/go-common v0.9.0/go.mod h1:oUIVlNnZr5JEacjLaHmlixGhk97nZ3y8hg5sdTWdXVI=
+github.com/pmoscode/go-common v0.9.1 h1:PrFh0R7Vv4elEqdRRezEQbLPiL/0VMWQXX2vL/IXoys=
+github.com/pmoscode/go-common v0.9.1/go.mod h1:HCbOtXOV7YdS9LbN3VgjgAwVFlRtapbtRy0Zd0WkQtM=
 golang.org/x/net v0.12.0 h1:cfawfvKITfUsFCeJIHJrbSxpeu/E81khclypR0GVT50=
 golang.org/x/net v0.12.0/go.mod h1:zEVYFnQC7m/vmpQFELhcD1EWkZlX69l4oqgmer6hfKA=
 golang.org/x/net v0.13.0 h1:Nvo8UFsZ8X3BhAC9699Z1j7XQ3rsZnUUm7jfBEk1ueY=

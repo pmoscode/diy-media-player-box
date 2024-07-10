@@ -46,6 +46,8 @@ github.com/pmoscode/go-common v0.8.1 h1:FG0/4oNK2y3P6PzH4s97IAHoHpfDqm2IgIRJUwn7
 github.com/pmoscode/go-common v0.8.1/go.mod h1:tDqhaNcUDPKY5llAbXoI4prt0TULFtsHlxaaPAicrTk=
 github.com/pmoscode/go-common v0.9.0 h1:b8jeA6uSMWu1C58CQmoqtJnfBSEQeyVGWRxL7lzEXx4=
 github.com/pmoscode/go-common v0.9.0/go.mod h1:oUIVlNnZr5JEacjLaHmlixGhk97nZ3y8hg5sdTWdXVI=
+github.com/pmoscode/go-common v0.9.1 h1:PrFh0R7Vv4elEqdRRezEQbLPiL/0VMWQXX2vL/IXoys=
+github.com/pmoscode/go-common v0.9.1/go.mod h1:HCbOtXOV7YdS9LbN3VgjgAwVFlRtapbtRy0Zd0WkQtM=
 github.com/yuin/goldmark v1.4.13/go.mod h1:6yULJ656Px+3vBD8DxQVa3kxgyrAnzto9xy5taEt/CY=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/crypto v0.0.0-20210921155107-089bfa567519/go.mod h1:GvvjBRRGRdwPK5ydBHafDWAxML/pGHZbMvKqRZ5+Abc=

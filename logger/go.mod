@@ -2,7 +2,7 @@ module logger
 
 go 1.20
 
-require github.com/pmoscode/go-common v0.9.0
+require github.com/pmoscode/go-common v0.9.1
 
 require (
 	github.com/eclipse/paho.mqtt.golang v1.4.3 // indirect
