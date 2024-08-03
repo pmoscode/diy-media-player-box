@@ -2,6 +2,8 @@ github.com/DATA-DOG/go-sqlmock v1.3.3/go.mod h1:f/Ixk793poVmq4qj/V1dPUg2JEAKC73Q
 github.com/d4l3k/messagediff v1.2.2-0.20190829033028-7e0a312ae40b/go.mod h1:Oozbb1TVXFac9FtSIxHBMnBCq2qeH/2KkEQxENCrlLo=
 github.com/eclipse/paho.mqtt.golang v1.4.3 h1:2kwcUGn8seMUfWndX0hGbvH8r7crgcJguQNCyp70xik=
 github.com/eclipse/paho.mqtt.golang v1.4.3/go.mod h1:CSYvoAlsMkhYOXh/oKyxa8EcBci6dVkLCbo5tTC1RIE=
+github.com/eclipse/paho.mqtt.golang v1.5.0 h1:EH+bUVJNgttidWFkLLVKaQPGmkTUfQQqjOsyvMGvD6o=
+github.com/eclipse/paho.mqtt.golang v1.5.0/go.mod h1:du/2qNQVqJf/Sqs4MEL77kR8QTqANF7XU7Fk0aOTAgk=
 github.com/faiface/beep v1.1.0 h1:A2gWP6xf5Rh7RG/p9/VAW2jRSDEGQm5sbOb38sf5d4c=
 github.com/faiface/beep v1.1.0/go.mod h1:6I8p6kK2q4opL/eWb+kAkk38ehnTunWeToJB+s51sT4=
 github.com/gdamore/encoding v1.0.0/go.mod h1:alR0ol34c49FCSBLjhosxzcPHQbf2trDkoo5dl+VrEg=
@@ -86,6 +88,8 @@ golang.org/x/exp/shiny v0.0.0-20240613232115-7f521ea00fb8 h1:6USxaDEaUiRmwCweLdj
 golang.org/x/exp/shiny v0.0.0-20240613232115-7f521ea00fb8/go.mod h1:3F+MieQB7dRYLTmnncoFbb1crS5lfQoTfDgQy6K4N0o=
 golang.org/x/exp/shiny v0.0.0-20240707233637-46b078467d37 h1:SOSg7+sueresE4IbmmGM60GmlIys+zNX63d6/J4CMtU=
 golang.org/x/exp/shiny v0.0.0-20240707233637-46b078467d37/go.mod h1:3F+MieQB7dRYLTmnncoFbb1crS5lfQoTfDgQy6K4N0o=
+golang.org/x/exp/shiny v0.0.0-20240719175910-8a7402abbf56 h1:8jM66xzUJjNInw31Y8bic4AYSLVChztDRT93+kmofUY=
+golang.org/x/exp/shiny v0.0.0-20240719175910-8a7402abbf56/go.mod h1:3F+MieQB7dRYLTmnncoFbb1crS5lfQoTfDgQy6K4N0o=
 golang.org/x/image v0.0.0-20190220214146-31aff87c08e9/go.mod h1:kZ7UVZpmo3dzQBMxlp+ypCbDeSB+sBbTgSJuh5dn5js=
 golang.org/x/image v0.0.0-20190227222117-0694c2d4d067/go.mod h1:kZ7UVZpmo3dzQBMxlp+ypCbDeSB+sBbTgSJuh5dn5js=
 golang.org/x/image v0.12.0 h1:w13vZbU4o5rKOFFR8y7M+c4A5jXDC0uXTdHYRP8X2DQ=
@@ -127,6 +131,8 @@ golang.org/x/mobile v0.0.0-20240604190613-2782386b8afd h1:ow0zRCrn9LoaazcXsRUYYj
 golang.org/x/mobile v0.0.0-20240604190613-2782386b8afd/go.mod h1:CKRkjuY6XI4LTd47GM+4lCT8aFnTO+FcLAGMu0ibd0g=
 golang.org/x/mobile v0.0.0-20240707233753-b765e5d5218f h1:2Syp6WwwHOaGteLQmOlHCCXA8EyxXppdeDEyNtod9Os=
 golang.org/x/mobile v0.0.0-20240707233753-b765e5d5218f/go.mod h1:TCsc78+c4cqb8IKEosz2LwJ6YRNkIjMuAYeHYjchGDE=
+golang.org/x/mobile v0.0.0-20240716161057-1ad2df20a8b6 h1:/VlmIrkuLf2wzPjkZ8imSpckHoW7Y71h66dxbLHSpi8=
+golang.org/x/mobile v0.0.0-20240716161057-1ad2df20a8b6/go.mod h1:TCsc78+c4cqb8IKEosz2LwJ6YRNkIjMuAYeHYjchGDE=
 golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4/go.mod h1:jJ57K6gSWd91VN4djpZkiMVwK6gcyfeH4XE8wZrZaV4=
 golang.org/x/mod v0.8.0/go.mod h1:iBbtSCu2XBx23ZKBPSOrRkjjQPZFPuis4dIYUhu/chs=
 golang.org/x/net v0.0.0-20190213061140-3a22650c66bd/go.mod h1:mL1N/T3taQHkDXs73rZJwtUhF3w3ftmwwsq0BUmARs4=
