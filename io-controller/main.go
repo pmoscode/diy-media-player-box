@@ -26,11 +26,14 @@ func main() {
 		log.Fatal("Could not load config file")
 	}
 
-	mqttClient = mqtt2.CreateClient(config.MqttBroker.Host, config.MqttBroker.Port, config.IoController.MqttClientId)
+	mqttClient = mqtt2.NewClient(mqtt2.WithBroker(config.MqttBroker.Host, 1883),
+		mqtt2.WithClientId(config.IoController.MqttClientId),
+		mqtt2.WithOrderMatters(false))
 	err = mqttClient.Connect()
 	if err != nil {
 		log.Fatal("MQTT broker not found... exiting.")
 	}
+	defer mqttClient.Disconnect()
 
 	heartBeat := heartbeat.New(10*time.Second, sendHeartbeat)
 	heartBeat.Run()
@@ -48,7 +51,6 @@ func main() {
 	}
 
 	ioClient.Run()
-	mqttClient.Disconnect()
 }
 
 func sendStatusMessage(messageType mqtt2.StatusType, message ...any) {
