@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/pmoscode/go-common/heartbeat"
 	"github.com/pmoscode/go-common/mqtt"
+	"github.com/pmoscode/go-common/shutdown"
 	"github.com/pmoscode/go-common/yamlconfig"
 	"log"
 	"logger/logs"
@@ -14,12 +15,16 @@ var mqttClient *mqtt.Client
 var config Config
 
 func main() {
+	defer shutdown.ExitOnPanic()
+
 	err := yamlconfig.LoadConfig("config.yaml", &config)
 	if err != nil {
 		log.Fatal("Could not load config file")
 	}
 
-	mqttClient = mqtt.CreateClient(config.MqttBroker.Host, config.MqttBroker.Port, config.Logger.MqttClientId)
+	mqttClient = mqtt.NewClient(mqtt.WithBroker(config.MqttBroker.Host, 1883),
+		mqtt.WithClientId(config.Logger.MqttClientId),
+		mqtt.WithOrderMatters(false))
 	err = mqttClient.Connect()
 	if err != nil {
 		log.Fatal("MQTT broker not found... exiting.")
