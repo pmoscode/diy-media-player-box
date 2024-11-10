@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/pmoscode/go-common/shutdown"
 	echoSwagger "github.com/swaggo/echo-swagger"
 	"log"
 )
@@ -24,6 +25,8 @@ import (
 // @host localhost:2020
 // @BasePath /api
 func main() {
+	defer shutdown.ExitOnPanic()
+
 	router := echo.New()
 	router.Use(middleware.Recover())
 

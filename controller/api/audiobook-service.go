@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/pmoscode/go-common/heartbeat"
 	mqtt2 "github.com/pmoscode/go-common/mqtt"
+	"github.com/pmoscode/go-common/shutdown"
 	"github.com/pmoscode/go-common/yamlconfig"
 	"log"
 	"mime/multipart"
@@ -206,23 +207,34 @@ func NewAudioBookService() *AudioBookService {
 		log.Fatal("Could not load config file")
 	}
 
-	audioBookService := &AudioBookService{
+	service := &AudioBookService{
 		dbClient:      databaseSingleton,
 		cardService:   NewCardService(),
 		lastPlayedUid: "",
 	}
 
-	mqttClient = mqtt2.CreateClient(config.MqttBroker.Host, config.MqttBroker.Port, config.Controller.MqttClientId)
+	mqttClient = mqtt2.NewClient(mqtt2.WithBroker(config.MqttBroker.Host, 1883),
+		mqtt2.WithClientId(config.Controller.MqttClientId),
+		mqtt2.WithOrderMatters(false))
 	err = mqttClient.Connect()
 	if err != nil {
 		if err != nil {
 			log.Fatalln("MQTT broker not found... exiting.")
 		}
 	}
-	mqttClient.Subscribe("/rfid-reader/cardId", audioBookService.OnMessageReceivedCardId)
-	mqttClient.Subscribe("/audio-player/done", audioBookService.OnMessageReceivedPlayDone)
+	shutdown.GetObserver().AddCommand(func() error {
+		err2 := mqttClient.Disconnect()
+		if err2 != nil {
+			return err2
+		}
 
-	return audioBookService
+		return nil
+	})
+
+	mqttClient.Subscribe("/rfid-reader/cardId", service.OnMessageReceivedCardId)
+	mqttClient.Subscribe("/audio-player/done", service.OnMessageReceivedPlayDone)
+
+	return service
 }
 
 func (a *AudioBookService) OnMessageReceivedCardId(message mqtt2.Message) {
