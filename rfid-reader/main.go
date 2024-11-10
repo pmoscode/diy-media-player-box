@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/pmoscode/go-common/heartbeat"
 	mqtt2 "github.com/pmoscode/go-common/mqtt"
+	"github.com/pmoscode/go-common/shutdown"
 	"github.com/pmoscode/go-common/yamlconfig"
 	"log"
 	"os/exec"
@@ -21,16 +22,21 @@ type Module interface {
 var config Config
 
 func main() {
+	defer shutdown.ExitOnPanic()
+
 	err := yamlconfig.LoadConfig("config.yaml", &config)
 	if err != nil {
 		log.Fatal("Could not load config file")
 	}
 
-	mqttClient = mqtt2.CreateClient(config.MqttBroker.Host, 1883, config.RfidReader.MqttClientId)
+	mqttClient = mqtt2.NewClient(mqtt2.WithBroker(config.MqttBroker.Host, 1883),
+		mqtt2.WithClientId(config.RfidReader.MqttClientId),
+		mqtt2.WithOrderMatters(false))
 	err = mqttClient.Connect()
 	if err != nil {
 		log.Fatal("MQTT broker not found... exiting.")
 	}
+	defer mqttClient.Disconnect()
 
 	heartBeat := heartbeat.New(10*time.Second, sendHeartbeat)
 	heartBeat.Run()

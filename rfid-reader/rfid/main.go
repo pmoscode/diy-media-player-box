@@ -3,6 +3,7 @@ package rfid
 import (
 	"encoding/hex"
 	"github.com/pmoscode/go-common/mqtt"
+	"github.com/pmoscode/go-common/shutdown"
 	"log"
 	"periph.io/x/conn/v3/spi/spireg"
 	"periph.io/x/devices/v3/mfrc522"
@@ -35,7 +36,7 @@ func (r *Rfid) Run() {
 	}
 	defer p.Close()
 
-	r.rfid, err = mfrc522.NewSPI(p, rpi.P1_22, rpi.P1_18)
+	r.rfid, err = mfrc522.NewSPI(p, rpi.P1_22, rpi.P1_18, mfrc522.WithSync())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -48,6 +49,12 @@ func (r *Rfid) Run() {
 	defer func() {
 		close(cb)
 	}()
+
+	shutdown.GetObserver().AddCommand(func() error {
+		r.sendStatusMessage(mqtt.Error, "Rfid-reader: lastId -> ", r.lastId, " # removeCounter -> ", r.removeCounter, " # removeThreshold -> ", r.removeThreshold)
+
+		return nil
+	})
 
 	r.listen(cb)
 }
@@ -74,9 +81,9 @@ func (r *Rfid) listen(cb chan []byte) {
 			}
 
 			cb <- uid
-			if len(uid) > 0 {
+			/*if len(uid) > 0 {
 				time.Sleep(time.Second)
-			}
+			}*/
 		}
 	}()
 
@@ -95,7 +102,6 @@ func (r *Rfid) listen(cb chan []byte) {
 				r.removeCounter = 0
 			} else {
 				if r.lastId != "" {
-					r.removeCounter++
 					if r.removeCounter >= r.removeThreshold {
 						log.Print("Card removed...")
 						r.sendCardIdMessage("")
@@ -103,6 +109,7 @@ func (r *Rfid) listen(cb chan []byte) {
 						r.lastId = ""
 						r.removeCounter = 0
 					}
+					r.removeCounter++
 				}
 			}
 		}
