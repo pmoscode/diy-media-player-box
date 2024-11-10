@@ -4,10 +4,11 @@ import (
 	"audio-player/audio"
 	"audio-player/mqtt"
 	"fmt"
-	"github.com/faiface/beep"
-	"github.com/faiface/beep/speaker"
+	"github.com/gopxl/beep/v2"
+	"github.com/gopxl/beep/v2/speaker"
 	"github.com/pmoscode/go-common/heartbeat"
 	mqtt2 "github.com/pmoscode/go-common/mqtt"
+	"github.com/pmoscode/go-common/shutdown"
 	"github.com/pmoscode/go-common/yamlconfig"
 	"log"
 	"time"
@@ -18,16 +19,21 @@ var mqttClient *mqtt2.Client
 var config Config
 
 func main() {
+	defer shutdown.ExitOnPanic()
+
 	err := yamlconfig.LoadConfig("config.yaml", &config)
 	if err != nil {
 		log.Fatal("Could not load config file")
 	}
 
-	mqttClient = mqtt2.CreateClient(config.MqttBroker.Host, config.MqttBroker.Port, config.AudioPlayer.MqttClientId)
+	mqttClient = mqtt2.NewClient(mqtt2.WithBroker(config.MqttBroker.Host, 1883),
+		mqtt2.WithClientId(config.AudioPlayer.MqttClientId),
+		mqtt2.WithOrderMatters(false))
 	err = mqttClient.Connect()
 	if err != nil {
 		log.Fatal("MQTT broker not found... exiting.")
 	}
+	defer mqttClient.Disconnect()
 
 	const sampleRate = beep.SampleRate(audio.DefaultSampleRate)
 	err = speaker.Init(sampleRate, sampleRate.N(time.Duration(config.AudioPlayer.SampleRateFactor)*time.Millisecond))
