@@ -17,7 +17,9 @@ func main() {
 		log.Fatal("Could not load config file")
 	}
 
-	mqttClient = mqtt2.CreateClient(config.MqttBroker.Host, config.MqttBroker.Port, config.Monitor.MqttClientId)
+	mqttClient = mqtt2.NewClient(mqtt2.WithBroker(config.MqttBroker.Host, 1883),
+		mqtt2.WithClientId(config.Monitor.MqttClientId),
+		mqtt2.WithOrderMatters(false))
 	err = mqttClient.Connect()
 	if err != nil {
 		log.Fatal("MQTT broker not found... exiting.")
@@ -30,22 +32,3 @@ func main() {
 
 	mqttClient.LoopForever()
 }
-
-//func sendStatusMessage(messageType mqtt2.StatusType, message ...any) {
-//	messageTxt := fmt.Sprint(message...)
-//
-//	mqttMessage := &mqtt2.StatusPublishMessage{
-//		Type:      messageType,
-//		Status:    messageTxt,
-//		Timestamp: time.Now(),
-//	}
-//
-//	mqttClient.Publish(&mqtt2.Message{
-//		Topic: "/status/monitor",
-//		Value: mqttMessage,
-//	})
-//
-//	if config.Monitor.LogStatusToConsole {
-//		log.Println(messageType, ": ", messageTxt)
-//	}
-//}
