@@ -2,7 +2,7 @@
   hosts: all
 
   vars:
-    GO_VERSION: 1.19.3
+    GO_VERSION: 1.23.1
     GO_BIN_ARCHIVE: "go{{ GO_VERSION }}.linux-armv6l.tar.gz"
 
   tasks:
@@ -13,39 +13,30 @@
         update_cache: yes
       become: yes
 
-    - name: Check if GO dist is installed in /usr/local/go
-      stat:
-        path: /usr/local/go
-      register: is_go_dir_info
+    - name: Download GO dist archive
+      get_url:
+        url: "https://go.dev/dl/go{{ GO_VERSION }}.linux-armv6l.tar.gz"
+        dest: /tmp/go.tar.gz
 
-    - block:
-      - name: Download GO dist archive
-        get_url:
-          url: "https://go.dev/dl/go{{ GO_VERSION }}.linux-armv6l.tar.gz"
-          dest: /tmp/go.tar.gz
+    - name: Extract archive to /usr/local/go
+      become: yes
+      unarchive:
+        src: /tmp/go.tar.gz
+        dest: /usr/local
+        remote_src: yes
 
-      - name: Extract archive to /usr/local/go
-        become: yes
-        unarchive:
-          src: /tmp/go.tar.gz
-          dest: /usr/local
-          remote_src: yes
-          creates: /usr/local/go
+    - name: Set environment for current user
+      lineinfile:
+        path: ~/.profile
+        line: "{{ item }}"
+      loop:
+        - "GOPATH=$HOME/go"
+        - "PATH=$PATH:/usr/local/go/bin"
 
-      - name: Set environment for current user
-        lineinfile:
-          path: ~/.profile
-          line: "{{ item }}"
-        loop:
-          - "GOPATH=$HOME/go"
-          - "PATH=$PATH:/usr/local/go/bin"
-
-      - name: Install OS dependencies
-        package:
-          name: libasound2-dev
-          state: present
-
-      when: not is_go_dir_info.stat.exists
+    - name: Install OS dependencies
+      package:
+        name: libasound2-dev
+        state: present
 
     - name: Copy start/terminate scripts to target
       copy:
